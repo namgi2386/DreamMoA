@@ -83,4 +83,15 @@ public class TokenProvider {
         }
         return false;
     }
+
+    // 토큰 저장 기능을 위해 만듬
+    // Access Token 만료 시간 반환
+    public long getAccessTokenExpirationTime() {
+        return ACCESS_TOKEN_EXPIRE_TIME / 1000; // 초 단위로 반환
+    }
+
+    // Refresh Token 만료 시간 반환
+    public long getRefreshTokenExpirationTime() {
+        return REFRESH_TOKEN_EXPIRE_TIME / 1000; // 초 단위로 반환
+    }
 }

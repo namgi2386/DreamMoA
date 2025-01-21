@@ -68,6 +68,12 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login/google/callback")
+                        .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserCustomService))
+                        .successHandler(oAuth2SuccessHandler())
+                )
                 // JWT 필터
                 .addFilterBefore(new JwtFilter(tokenProvider, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class)

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
@@ -24,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static CustomUserDetails fromEntity(UserEntity user) {
+    public static CustomUserDetails fromEntity(Optional<UserEntity> user) {
         return new CustomUserDetails(
                 user.getId(),
                 user.getEmail(),
