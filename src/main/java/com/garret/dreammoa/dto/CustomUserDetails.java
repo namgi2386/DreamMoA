@@ -13,10 +13,11 @@ import java.util.Optional;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-    private final Long id;
-    private final String email;
-    private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private final Long id; // 사용자 고유 ID
+    private final String email; // 사용자 이메일 (아이디 역할)
+    private final String password; // 암호화된 비밀번호
+    private final Collection<? extends GrantedAuthority> authorities; // 사용자 권한 정보
+
 
     public CustomUserDetails(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -26,11 +27,15 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public static CustomUserDetails fromEntity(Optional<UserEntity> user) {
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("UserEntity cannot be empty");
+        }
+
         return new CustomUserDetails(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                user.get().getId(),
+                user.get().getEmail(),
+                user.get().getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.get().getRole().name()))
         );
     }
 
@@ -44,22 +49,24 @@ public class CustomUserDetails implements UserDetails {
         return this.password;
     }
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
     }
 
-    // 일단 계정 만료 여부, 잠금 여부 등은 예시로 true 처리
-    // 개발하다가 필요하면 수정 할 예정
+    // 계정 상태 관련 메서드들: 현재는 모두 true로 처리
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
+
 
     @Override
     public boolean isCredentialsNonExpired() {

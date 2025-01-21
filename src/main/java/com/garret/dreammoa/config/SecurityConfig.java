@@ -1,8 +1,12 @@
 package com.garret.dreammoa.config;
 
 
+import com.garret.dreammoa.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
+import com.garret.dreammoa.config.oauth.OAuth2SuccessHandler;
+import com.garret.dreammoa.config.oauth.OAuth2UserCustomService;
 import com.garret.dreammoa.jwt.JwtFilter;
 import com.garret.dreammoa.jwt.TokenProvider;
+import com.garret.dreammoa.repository.UserRepository;
 import com.garret.dreammoa.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,13 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final TokenProvider tokenProvider;
+    private final OAuth2UserCustomService oAuth2UserCustomService; // 의존성 추가
+    private final UserRepository userRepository;
+
+    @Bean
+    public OAuth2SuccessHandler oAuth2SuccessHandler() {
+        return new OAuth2SuccessHandler(tokenProvider, userRepository);
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -45,6 +56,12 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+
+    @Bean
+    public OAuth2AuthorizationRequestBasedOnCookieRepository oAuth2AuthorizationRequestBasedOnCookieRepository() {
+        return new OAuth2AuthorizationRequestBasedOnCookieRepository();
     }
 
     @Bean
@@ -68,6 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                // 구글로그인설정
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login/google/callback")
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint.authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository()))
@@ -81,5 +99,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
+
+
     }
+
+
 }
