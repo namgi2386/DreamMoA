@@ -1,6 +1,7 @@
 package com.garret.dreammoa.controller;
 
 
+import com.garret.dreammoa.dto.CustomUserDetails;
 import com.garret.dreammoa.dto.reponsedto.TokenResponse;
 import com.garret.dreammoa.dto.requestdto.LoginRequest;
 import com.garret.dreammoa.jwt.TokenProvider;
@@ -16,7 +17,6 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 
 @RestController
-@RequestMapping("/")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -34,8 +34,15 @@ public class AuthController {
         // CustomUserDetailsService.loadUserByUsername()가 실행됨
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+
         // 인증 성공 시 JWT 생성
-        String accessToken = tokenProvider.createAccessToken(request.getEmail());
+        String accessToken = tokenProvider.createAccessToken(
+                userDetails.getUsername(),
+                userDetails.getName(),
+                userDetails.getNickname()
+        );
         String refreshToken = tokenProvider.createRefreshToken(request.getEmail());
 
         TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
