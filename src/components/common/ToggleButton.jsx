@@ -13,7 +13,7 @@ const ToggleButton = ({onToggle}) => {
       onClick={handleToggle}
       className={`
         w-16 h-8 flex items-center rounded-full p-1 cursor-pointer
-        ${isOn ? 'bg-blue-600' : 'bg-gray-300'}
+        ${isOn ? 'bg-my-blue-4' : 'bg-gray-300'}
         transition-colors duration-300 ease-in-out
       `}
     >
