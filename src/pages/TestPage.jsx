@@ -34,10 +34,11 @@ export default function TestPage() {
     </div>
     <hr />
     <h3 className="text-2xl">4. 다크모드 테스트</h3>
+    <div>{authState.isAuthenticated ? "존재" : "없음"}</div>
+    <div>{authState.accessToken ? "존재" : "없음"}</div>
     <div className="border bg-gray-200  dark:bg-gray-700 text-gray-700 dark:text-red-400">
       check
     </div>
-    <div>{authState.isAuthenticated}</div>
     </>
   );
 };
