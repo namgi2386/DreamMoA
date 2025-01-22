@@ -6,25 +6,30 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
 
+    private final Long id;
     private final String email;
     private final String password;
     private final String name;
     private final String nickname;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime lastLogin;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(UserEntity user) {
+        this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.name = user.getName();
         this.nickname = user.getNickname();
+        this.createdAt = user.getCreatedAt();
+        this.lastLogin = user.getLastLogin();
         this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
@@ -71,4 +76,6 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

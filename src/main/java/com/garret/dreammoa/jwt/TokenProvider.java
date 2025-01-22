@@ -1,5 +1,6 @@
 package com.garret.dreammoa.jwt;
 
+import com.garret.dreammoa.model.UserEntity;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -49,19 +50,22 @@ public class TokenProvider {
     }
 
 
-     public String createRefreshToken(String email) {
+     public String createRefreshToken(UserEntity user) {
          Date now = new Date();
          Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
         String refreshToken = Jwts.builder()
-                .setSubject(email) // 이메일을 토큰 주제로 설정
+                .setSubject(user.getEmail()) // 이메일을 토큰 주제로 설정
                 .setIssuedAt(now) // 토큰 발행 시간
                 .setExpiration(validity) // 토큰 만료 시간
+                .addClaims(Map.of( // 사용자 ID를 추가로 저장
+                        "userId", user.getId()
+                ))
                 .signWith(key, SignatureAlgorithm.HS256) // HMAC SHA-256으로 서명
                 .compact();
 
         // Redis에 리프레시 토큰 저장 (키: 이메일, 값: 토큰)
-        redisTemplate.opsForValue().set(email, refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.opsForValue().set(user.getId().toString(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         return refreshToken;
     }
 

@@ -1,9 +1,12 @@
 package com.garret.dreammoa.jwt;
 
 import com.garret.dreammoa.dto.CustomUserDetails;
+import com.garret.dreammoa.model.UserEntity;
+import com.garret.dreammoa.utils.AuthorityUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.catalina.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -43,16 +46,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = customUserDetails.getEmail();
         String name = customUserDetails.getName();
         String nickname = customUserDetails.getNickname();
+        Long userId = customUserDetails.getId();
+        UserEntity.Role role = AuthorityUtils.extractRoleFromAuthorities(customUserDetails.getAuthorities());
 
+        UserEntity user = new UserEntity(
+                customUserDetails.getId(),
+                customUserDetails.getName(),
+                customUserDetails.getNickname(),
+                customUserDetails.getEmail(),
+                customUserDetails.getPassword(),
+                customUserDetails.getCreatedAt(),
+                customUserDetails.getLastLogin(),
+                role
+        );
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends  GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
-
-        String role = auth.getAuthority();
+        
         // Access Token & Refresh Token 생성
         String accessToken = tokenProvider.createAccessToken(email, name, nickname);
-        String refreshToken = tokenProvider.createRefreshToken(email);
+        String refreshToken = tokenProvider.createRefreshToken(user);
 
         // Response 헤더에 토큰 추가
         response.addHeader("Authorization", "Bearer " + accessToken);

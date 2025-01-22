@@ -5,6 +5,8 @@ import com.garret.dreammoa.dto.CustomUserDetails;
 import com.garret.dreammoa.dto.reponsedto.TokenResponse;
 import com.garret.dreammoa.dto.requestdto.LoginRequest;
 import com.garret.dreammoa.jwt.TokenProvider;
+import com.garret.dreammoa.model.UserEntity;
+import com.garret.dreammoa.repository.UserRepository;
 import com.garret.dreammoa.utils.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
-
+    private final UserRepository userRepository;
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         // 이메일과 비밀번호로 인증 객체 생성
@@ -35,6 +37,8 @@ public class AuthController {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
+        UserEntity userEntity = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 인증 성공 시 JWT 생성
         String accessToken = tokenProvider.createAccessToken(
@@ -42,7 +46,7 @@ public class AuthController {
                 userDetails.getName(),
                 userDetails.getNickname()
         );
-        String refreshToken = tokenProvider.createRefreshToken(request.getEmail());
+        String refreshToken = tokenProvider.createRefreshToken(userEntity);
 
         // 쿠키에 토큰 저장
         CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) tokenProvider.getAccessTokenExpirationTime());
