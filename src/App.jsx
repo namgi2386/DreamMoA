@@ -9,7 +9,7 @@ export default function App() {
   return (
     <RecoilRoot>
       <div className="min-h-screen bg-gray-300 dark:bg-gray-800">
-        <div className="mx-auto max-w-[1000px] min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100">
+        <div className="mx-auto min-h-screen bg-white dark:bg-gray-900 dark:text-gray-100">
           <Suspense fallback={<Loading/>}>
             <TestLayoutPage/>
             <AppRoutes />
