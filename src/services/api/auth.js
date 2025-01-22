@@ -9,8 +9,11 @@ import httpClient from './axios';
 // 이메일 비번은 로그인페이지에서 가져올 예정임.
 // 즉 여기에있는 login함수를 로그인페이지에서 사용함.
 export const login = async (email, password) => {
-  return httpClient.post('/auth/login', {
+  return httpClient.post('/login', {
     email,
     password
   });
+};
+export const logout = () => {
+  return httpClient.post('/logout');
 };
