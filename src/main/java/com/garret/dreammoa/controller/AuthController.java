@@ -6,7 +6,9 @@ import com.garret.dreammoa.dto.reponsedto.TokenResponse;
 import com.garret.dreammoa.dto.requestdto.LoginRequest;
 import com.garret.dreammoa.jwt.TokenProvider;
 import com.garret.dreammoa.model.FileEntity;
+import com.garret.dreammoa.repository.UserRepository;
 import com.garret.dreammoa.service.FileService;
+import com.garret.dreammoa.service.JoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
@@ -22,11 +24,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
     private final FileService fileService;
+    private final JoinService joinService;
 
-    public AuthController(AuthenticationManager authenticationManager, TokenProvider tokenProvider, FileService fileService ) {
+    public AuthController(AuthenticationManager authenticationManager, TokenProvider tokenProvider, FileService fileService, JoinService joinService ) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
         this.fileService = fileService;
+        this.joinService = joinService;
     }
 
     @PostMapping("/login")
@@ -55,6 +59,8 @@ public class AuthController {
             Long userId = userDetails.getId();
             Optional<FileEntity> profilePicture = fileService.getProfilePicture(userId);
             String profilePictureUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+
+            joinService.updateLastLogin(userId);
 
             TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken, profilePictureUrl);
 

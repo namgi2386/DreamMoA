@@ -4,10 +4,13 @@ import com.garret.dreammoa.dto.reponsedto.JoinDto;
 import com.garret.dreammoa.model.FileEntity;
 import com.garret.dreammoa.model.UserEntity;
 import com.garret.dreammoa.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @Service
 public class JoinService {
@@ -24,6 +27,13 @@ public class JoinService {
     }
     // 여기서 초기화
 
+    @Transactional
+    public void updateLastLogin(Long userId) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+    }
 
     public void joinProcess(JoinDto joinDto){
         String email = joinDto.getEmail();

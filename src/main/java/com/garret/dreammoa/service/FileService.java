@@ -29,16 +29,6 @@ public class FileService {
     //파일 저장
     public FileEntity saveFile(MultipartFile multipartFile, Long relatedId, FileEntity.RelatedType relatedType) throws Exception {
 
-        // 파일 유효성 검사
-        if (!multipartFile.getContentType().startsWith("image/")) {
-            throw new IllegalArgumentException("Only image files are allowed.");
-        }
-
-        // 파일 크기 제한 (예: 5MB)
-        if (multipartFile.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException("File size exceeds the limit of 5MB.");
-        }
-
         // 파일 저장 경로 설정
         String filePath = uploadDir + "/" + multipartFile.getOriginalFilename();
         String fileUrl = "http://yourdomain.com/files/" + multipartFile.getOriginalFilename();
