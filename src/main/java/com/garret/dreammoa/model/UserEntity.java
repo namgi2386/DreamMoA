@@ -36,6 +36,9 @@ public class UserEntity {
     @Column(nullable = false)
     private Role role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private FileEntity profileImage;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = (this.createdAt == null) ? LocalDateTime.now() : this.createdAt;
