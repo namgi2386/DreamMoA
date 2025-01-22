@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 public class CustomUserDetails implements UserDetails {
 
+    private final Long id; // 사용자 ID 추가
     private final String email;
     private final String password;
     private final String name;
@@ -20,6 +21,7 @@ public class CustomUserDetails implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(UserEntity user) {
+        this.id = user.getId(); // 사용자 ID 설정
         this.email = user.getEmail();
         this.password = user.getPassword();
         this.name = user.getName();
@@ -44,6 +46,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     // 계정 만료, 잠금, 자격 증명 만료, 활성화 상태에 대한 메서드

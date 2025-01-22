@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FileService {
@@ -24,7 +25,20 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
+    
+    //파일 저장
     public FileEntity saveFile(MultipartFile multipartFile, Long relatedId, FileEntity.RelatedType relatedType) throws Exception {
+
+        // 파일 유효성 검사
+        if (!multipartFile.getContentType().startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+
+        // 파일 크기 제한 (예: 5MB)
+        if (multipartFile.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds the limit of 5MB.");
+        }
+
         // 파일 저장 경로 설정
         String filePath = uploadDir + "/" + multipartFile.getOriginalFilename();
         String fileUrl = "http://yourdomain.com/files/" + multipartFile.getOriginalFilename();
@@ -55,6 +69,8 @@ public class FileService {
         return fileRepository.findByRelatedIdAndRelatedType(relatedId, relatedType);
     }
 
+    
+    // 파일 삭제
     public void deleteFile(Long fileId) {
         FileEntity fileEntity = fileRepository.findById(fileId)
                 .orElseThrow(() -> new RuntimeException("File not found"));
@@ -67,5 +83,11 @@ public class FileService {
 
         // 데이터베이스에서 파일 삭제
         fileRepository.delete(fileEntity);
+    }
+
+    //프로필 사진 조회
+    public Optional<FileEntity> getProfilePicture(Long userId) {
+        return fileRepository.findByRelatedIdAndRelatedType(userId, RelatedType.PROFILE)
+                .stream().findFirst();
     }
 }
