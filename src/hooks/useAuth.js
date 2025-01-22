@@ -1,11 +1,33 @@
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { authState } from '../recoil/atoms/authState';
 import { authApi } from '../services/api/authApi';
+import { authLoadingState } from '../recoil/atoms/authLoadingState';
 
 const useAuth = () => {
   const [auth, setAuth] = useRecoilState(authState);
+  const [isLoading, setIsLoading] = useRecoilState(authLoadingState);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const storedToken = localStorage.getItem('accessToken');
+        if (storedToken && !auth.isAuthenticated) {
+          setAuth({
+            isAuthenticated: true,
+            accessToken: storedToken
+          });
+        }
+      } finally {
+        setIsLoading(false);  // 인증 상태 확인 완료
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
 
   // 로그인 함수
   const login = async (credentials) => {
@@ -49,6 +71,11 @@ const useAuth = () => {
 
   // 인증 상태 확인 함수
   const checkAuth = () => {
+    console.log("check this out");
+    console.log(auth.isAuthenticated);
+    console.log(auth.accessToken);
+    
+    
     return auth.isAuthenticated && auth.accessToken;
   };
 

@@ -79,9 +79,12 @@ export const authApi = {
       console.log(credentials); // {email: 'namgi@ssafy.com', password: '1234'} 잘들어있음
       
       const response = await api.post('/login', credentials);
-      console.log("로그인 test2"); // 출력되지 못하고 CORS 에러발생
+      console.log("로그인 test2"); 
+      console.log(response); 
       
       if (response.data && response.data.accessToken) {
+        console.log(" acc");
+        
         localStorage.setItem('accessToken', response.data.accessToken);
         return response.data;
       }
