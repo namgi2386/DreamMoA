@@ -24,9 +24,19 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    // console.log("login test 01");
+    // console.log(formData); 완료
+    
+    
 
     try {
+      console.log("response test");
       const response = await authApi.login(formData);
+      console.log("response success"); 
+      
+      console.log(response);
+      
+      
       setAuth({
         isAuthenticated: true,
         accessToken: response.accessToken

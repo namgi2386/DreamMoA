@@ -14,7 +14,13 @@ const api = axios.create({
 // 요청 인터셉터 - 모든 요청에 AccessToken 포함
 api.interceptors.request.use(
   (config) => {
+    console.log("너 혹시 인터셉트 당했니?");
+    
     const accessToken = localStorage.getItem('accessToken');
+    console.log(accessToken);
+    console.log("access토큰 아직있음");
+    
+    
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -33,11 +39,16 @@ api.interceptors.response.use(
 
     // AccessToken 만료 에러 && 아직 재시도하지 않은 요청
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log("access 만료인듯");
+      
       originalRequest._retry = true;
 
       try {
         // RefreshToken으로 새로운 AccessToken 발급 요청
+        console.log("리프레쉬 발급요청");
+        
         const response = await api.post('/auth/refresh');
+        console.log("리프레쉬 발급 받아옴");
         const newAccessToken = response.data.accessToken;
         
         // 새로운 AccessToken 저장
@@ -61,8 +72,15 @@ api.interceptors.response.use(
 export const authApi = {
   // 로그인
   login: async (credentials) => {
+    // console.log("login inner 01");
+    
     try {
+      // console.log("로그인 test1");
+      console.log(credentials); // {email: 'namgi@ssafy.com', password: '1234'} 잘들어있음
+      
       const response = await api.post('/login', credentials);
+      console.log("로그인 test2"); // 출력되지 못하고 CORS 에러발생
+      
       if (response.data && response.data.accessToken) {
         localStorage.setItem('accessToken', response.data.accessToken);
         return response.data;

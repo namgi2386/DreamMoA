@@ -2,6 +2,7 @@ import Counter from "../components/test/Counter";
 import CounterList from "../components/test/CounterList";
 import { getTestImage } from "../utils/get-test-image";
 import { useNavigate  } from 'react-router-dom';
+import { authState } from "../recoil/atoms/authState";
 
 export default function TestPage() {
   const nav = useNavigate();
@@ -36,6 +37,7 @@ export default function TestPage() {
     <div className="border bg-gray-200  dark:bg-gray-700 text-gray-700 dark:text-red-400">
       check
     </div>
+    <div>{authState.isAuthenticated}</div>
     </>
   );
 };
