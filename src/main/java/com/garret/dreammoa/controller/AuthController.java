@@ -1,5 +1,7 @@
 package com.garret.dreammoa.controller;
 
+
+import com.garret.dreammoa.dto.CustomUserDetails;
 import com.garret.dreammoa.dto.reponsedto.TokenResponse;
 import com.garret.dreammoa.dto.requestdto.LoginRequest;
 import com.garret.dreammoa.jwt.TokenProvider;
@@ -15,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
-@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -32,8 +33,15 @@ public class AuthController {
         // 인증 수행
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        // JWT 생성
-        String accessToken = tokenProvider.createAccessToken(request.getEmail());
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+
+        // 인증 성공 시 JWT 생성
+        String accessToken = tokenProvider.createAccessToken(
+                userDetails.getUsername(),
+                userDetails.getName(),
+                userDetails.getNickname()
+        );
         String refreshToken = tokenProvider.createRefreshToken(request.getEmail());
 
         // 쿠키에 토큰 저장

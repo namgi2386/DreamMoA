@@ -8,22 +8,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
 public class CustomUserDetails implements UserDetails {
 
-    private final Long id; // 사용자 고유 ID
-    private final String email; // 사용자 이메일 (아이디 역할)
-    private final String password; // 암호화된 비밀번호
-    private final Collection<? extends GrantedAuthority> authorities; // 사용자 권한 정보
+    private final String email;
+    private final String password;
+    private final String name;
+    private final String nickname;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-
-    public CustomUserDetails(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
+    public CustomUserDetails(UserEntity user) {
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.nickname = user.getNickname();
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     public static CustomUserDetails fromEntity(Optional<UserEntity> user) {
@@ -40,22 +42,22 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
+    public String getUsername() {
+        return email;
     }
 
-    // 계정 상태 관련 메서드들: 현재는 모두 true로 처리
+    // 계정 만료, 잠금, 자격 증명 만료, 활성화 상태에 대한 메서드
     @Override
     public boolean isAccountNonExpired() {
         return true;

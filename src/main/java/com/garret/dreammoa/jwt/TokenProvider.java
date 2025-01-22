@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -16,8 +17,6 @@ public class TokenProvider {
 
     // 현재 상수지만 나중에 변경해야함
     private static final String JWT_SECRET = "SECRET-TOO-LONG-FOR-DEMO-PLEASE-USE-REAL-KEY-----123456789";
-
-    // 액세스 토큰과 리프레시 토큰 만료 시간
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7; // 1주
 
@@ -38,17 +37,21 @@ public class TokenProvider {
         Date validity = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
         return Jwts.builder()
-                .setSubject(email) // 이메일을 토큰 주제로 설정
-                .setIssuedAt(now) // 토큰 발행 시간
-                .setExpiration(validity) // 토큰 만료 시간
-                .signWith(key, SignatureAlgorithm.HS256) // HMAC SHA-256으로 서명
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .addClaims(Map.of(
+                        "name", name,
+                        "nickname", nickname
+                ))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
 
-    public String createRefreshToken(String email) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+     public String createRefreshToken(String email) {
+         Date now = new Date();
+         Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
         String refreshToken = Jwts.builder()
                 .setSubject(email) // 이메일을 토큰 주제로 설정
@@ -72,11 +75,41 @@ public class TokenProvider {
                     .getBody()
                     .getSubject(); // 주제(이메일) 반환
         } catch (JwtException e) {
-            log.error("Invalid JWT token", e);
+            log.error("유효하지 않은 JWT 토큰", e);
             return null;
         }
     }
 
+
+    // 토큰에서 이름 추출
+    public String getNameFromToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("name", String.class);
+        } catch (JwtException e) {
+            log.error("유효하지 않은 JWT 토큰", e);
+            return null;
+        }
+    }
+
+    // 토큰에서 닉네임 추출
+    public String getNicknameFromToken(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("nickname", String.class);
+        } catch (JwtException e) {
+            log.error("유효하지 않은 JWT 토큰", e);
+            return null;
+        }
+    }
 
     public boolean validateToken(String token) {
         try {
@@ -86,13 +119,13 @@ public class TokenProvider {
                     .parseClaimsJws(token); // 토큰 검증
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.error("Invalid JWT signature.");
+            log.error("유효하지 않은 JWT 서명.");
         } catch (ExpiredJwtException e) {
-            log.error("Expired JWT token.");
+            log.error("만료된 JWT 토큰.");
         } catch (UnsupportedJwtException e) {
-            log.error("Unsupported JWT token.");
+            log.error("지원되지 않는 JWT 토큰.");
         } catch (IllegalArgumentException e) {
-            log.error("JWT claims string is empty.");
+            log.error("JWT 클레임 문자열이 비어있습니다.");
         }
         return false;
     }

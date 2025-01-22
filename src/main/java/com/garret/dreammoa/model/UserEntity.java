@@ -47,6 +47,8 @@ public class UserEntity {
         this.createdAt = (this.createdAt == null) ? LocalDateTime.now() : this.createdAt;
     }
 
+
+
     public enum Role {
         USER, ADMIN
     }

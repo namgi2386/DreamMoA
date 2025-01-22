@@ -7,6 +7,7 @@ import com.garret.dreammoa.config.oauth.OAuth2UserCustomService;
 import com.garret.dreammoa.jwt.JwtFilter;
 import com.garret.dreammoa.jwt.TokenProvider;
 import com.garret.dreammoa.repository.UserRepository;
+import com.garret.dreammoa.model.UserEntity;
 import com.garret.dreammoa.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -41,6 +41,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = customUserDetails.getEmail();
+        String name = customUserDetails.getName();
+        String nickname = customUserDetails.getNickname();
 
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -49,7 +51,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
         // Access Token & Refresh Token 생성
-        String accessToken = tokenProvider.createAccessToken(email);
+        String accessToken = tokenProvider.createAccessToken(email, name, nickname);
         String refreshToken = tokenProvider.createRefreshToken(email);
 
         // Response 헤더에 토큰 추가
