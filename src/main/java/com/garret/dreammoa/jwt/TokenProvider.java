@@ -32,7 +32,7 @@ public class TokenProvider {
     }
 
 
-    public String createAccessToken(String email) {
+    public String createAccessToken(String email, String name, String nickname) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 

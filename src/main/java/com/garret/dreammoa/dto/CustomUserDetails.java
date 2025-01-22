@@ -29,16 +29,8 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public static CustomUserDetails fromEntity(Optional<UserEntity> user) {
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("UserEntity cannot be empty");
-        }
-
-        return new CustomUserDetails(
-                user.get().getId(),
-                user.get().getEmail(),
-                user.get().getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.get().getRole().name()))
-        );
+        return user.map(CustomUserDetails::new)
+                .orElseThrow(() -> new IllegalArgumentException("UserEntity cannot be empty"));
     }
 
     @Override

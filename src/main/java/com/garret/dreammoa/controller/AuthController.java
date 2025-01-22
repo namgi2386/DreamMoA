@@ -61,10 +61,12 @@ public class AuthController {
         // 리프레시 토큰 검증 및 액세스 토큰 갱신
         if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
             String email = tokenProvider.getEmailFromToken(refreshToken);
+            String name = tokenProvider.getNameFromToken(refreshToken);
+            String nickname = tokenProvider.getNicknameFromToken(refreshToken);
 
             if (tokenProvider.isRefreshTokenValid(email, refreshToken)) {
                 // 새로운 액세스 토큰 생성
-                String newAccessToken = tokenProvider.createAccessToken(email);
+                String newAccessToken = tokenProvider.createAccessToken(email, name, nickname);
 
                 // 쿠키에 저장
                 CookieUtil.addHttpOnlyCookie(response, "access_token", newAccessToken, (int) tokenProvider.getAccessTokenExpirationTime());

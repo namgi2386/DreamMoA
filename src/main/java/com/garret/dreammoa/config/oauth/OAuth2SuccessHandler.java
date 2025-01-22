@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         // JWT 토큰 생성
-        String accessToken = tokenProvider.createAccessToken(user.getEmail());
+        String accessToken = tokenProvider.createAccessToken(user.getEmail(), user.getName(), user.getNickname());
         String refreshToken = tokenProvider.createRefreshToken(user.getEmail()); // Redis에 저장됨
 
         // 쿠키에 토큰 저장
