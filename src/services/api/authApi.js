@@ -32,41 +32,43 @@ api.interceptors.request.use(
 );
 
 // 응답 인터셉터 - 토큰 만료 처리
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+// api.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
+//     console.log("인터셉트 2번째");
+    
 
-    // AccessToken 만료 에러 && 아직 재시도하지 않은 요청
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log("access 만료인듯");
+//     // AccessToken 만료 에러 && 아직 재시도하지 않은 요청
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+//       console.log("access 만료인듯");
       
-      originalRequest._retry = true;
+//       originalRequest._retry = true;
 
-      try {
-        // RefreshToken으로 새로운 AccessToken 발급 요청
-        console.log("리프레쉬 발급요청");
+//       try {
+//         // RefreshToken으로 새로운 AccessToken 발급 요청
+//         console.log("리프레쉬 발급요청");
         
-        const response = await api.post('/auth/refresh');
-        console.log("리프레쉬 발급 받아옴");
-        const newAccessToken = response.data.accessToken;
+//         const response = await api.post('/auth/refresh');
+//         console.log("리프레쉬 발급 받아옴");
+//         const newAccessToken = response.data.accessToken;
         
-        // 새로운 AccessToken 저장
-        localStorage.setItem('accessToken', newAccessToken);
+//         // 새로운 AccessToken 저장
+//         localStorage.setItem('accessToken', newAccessToken);
         
-        // 새로운 AccessToken으로 원래 요청 재시도
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        // RefreshToken도 만료된 경우
-        localStorage.removeItem('accessToken');
-        window.location.href = '/login';  // 로그인 페이지로 리다이렉트
-        return Promise.reject(refreshError);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+//         // 새로운 AccessToken으로 원래 요청 재시도
+//         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+//         return api(originalRequest);
+//       } catch (refreshError) {
+//         // RefreshToken도 만료된 경우
+//         localStorage.removeItem('accessToken');
+//         window.location.href = '/login';  // 로그인 페이지로 리다이렉트
+//         return Promise.reject(refreshError);
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 // API 함수들
 export const authApi = {
@@ -105,4 +107,8 @@ export const authApi = {
     }
   },
 
+};
+
+export const socialLogin = (provider) => {
+  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
 };

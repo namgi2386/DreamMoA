@@ -12,13 +12,20 @@ const useAuth = () => {
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // console.log("initialize");
+      
       try {
         const storedToken = localStorage.getItem('accessToken');
         if (storedToken && !auth.isAuthenticated) {
+          // console.log("find accessToken");
+          
           setAuth({
             isAuthenticated: true,
             accessToken: storedToken
           });
+          // console.log(auth.isAuthenticated);
+          // console.log(auth.accessToken);
+          
         }
       } finally {
         setIsLoading(false);  // 인증 상태 확인 완료
@@ -26,7 +33,11 @@ const useAuth = () => {
     };
 
     initializeAuth();
-  }, []);
+  }, [auth]);
+
+  useEffect(() => {
+    // console.log('Updated auth state:', auth);
+  }, [auth]);
 
 
   // 로그인 함수
@@ -71,9 +82,9 @@ const useAuth = () => {
 
   // 인증 상태 확인 함수
   const checkAuth = () => {
-    console.log("check this out");
-    console.log(auth.isAuthenticated);
-    console.log(auth.accessToken);
+    console.log("인증상태체크");
+    // console.log(auth.isAuthenticated);
+    // console.log(auth.accessToken);
     
     
     return auth.isAuthenticated && auth.accessToken;

@@ -1,10 +1,12 @@
 // src/components/Counter.jsx
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { counterState, doubleCountState } from '../../recoil/test/counterAtom';
+import { authState } from '../../recoil/atoms/authState';
 
 function Counter() {
   const [count, setCount] = useRecoilState(counterState);
   const doubleCount = useRecoilValue(doubleCountState);
+  const authTemp = useRecoilValue(authState)
 
   return (
     <div className="text-center">
@@ -23,7 +25,7 @@ function Counter() {
         >
           감소
         </button>
-        
+        <div>{authTemp.isAuthenticated ? "3" : "e"}</div>
     </div>
   );
 }
