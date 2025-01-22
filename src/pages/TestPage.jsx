@@ -3,12 +3,17 @@ import CounterList from "../components/test/CounterList";
 import { getTestImage } from "../utils/get-test-image";
 import { useNavigate  } from 'react-router-dom';
 import { authState } from "../recoil/atoms/authState";
+import ToggleButton from "../components/common/ToggleButton";
 
 export default function TestPage() {
   const nav = useNavigate();
 
   const onClickMyButton = () => {
     nav("/new");
+  }
+  const onClickToggleButton = () => {
+    console.log("on");
+    
   }
 
   return (
@@ -26,6 +31,11 @@ export default function TestPage() {
     <div className="flex">
       <img src={getTestImage(1)}/>
       <img src={getTestImage(2)}/>
+    </div>
+    <hr />
+    <h3 className="text-2xl">공통컴포넌트 테스트</h3>
+    <div>
+      <ToggleButton onToggle={(state) => console.log("ok!",state)}/>
     </div>
     <hr />
     <h3 className="text-2xl">5. navigater 테스트</h3>
