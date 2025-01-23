@@ -85,8 +85,6 @@ const useAuth = () => {
     console.log("인증상태체크");
     // console.log(auth.isAuthenticated);
     // console.log(auth.accessToken);
-    
-    
     return auth.isAuthenticated && auth.accessToken;
   };
 
