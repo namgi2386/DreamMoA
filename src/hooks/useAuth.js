@@ -83,10 +83,19 @@ const useAuth = () => {
   // 인증 상태 확인 함수
   const checkAuth = () => {
     console.log("인증상태체크");
-    // console.log(auth.isAuthenticated);
-    // console.log(auth.accessToken);
-    return auth.isAuthenticated && auth.accessToken;
-  };
+    
+    // 쿠키를 객체로 변환
+    const cookies = Object.fromEntries(
+      document.cookie.split(';')
+        .map(cookie => {
+          const [name, value] = cookie.trim().split('=');
+          return [name, value];
+        })
+    );
+    
+    // console.log("Cookies:", cookies);
+    return (auth.isAuthenticated && auth.accessToken) || cookies.access_token;
+   };
 
   // 로그인 상태에서 접근 불가능한 페이지 처리 (예: 로그인 페이지)
   const redirectIfAuthenticated = (path = '/') => {
