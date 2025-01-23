@@ -1,6 +1,6 @@
 package com.garret.dreammoa.utils;
 
-import com.garret.dreammoa.model.UserEntity;
+import com.garret.dreammoa.domain.model.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;

@@ -1,8 +1,8 @@
 package com.garret.dreammoa.config.oauth;
 
-import com.garret.dreammoa.jwt.TokenProvider;
-import com.garret.dreammoa.model.UserEntity;
-import com.garret.dreammoa.repository.UserRepository;
+import com.garret.dreammoa.utils.JwtUtil;
+import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.UserRepository;
 import com.garret.dreammoa.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final TokenProvider tokenProvider; // JWT 생성 및 검증 클래스
+    private final JwtUtil jwtUtil; // JWT 생성 및 검증 클래스
     private final UserRepository userRepository; // 사용자 데이터베이스 관리
 
     @Override
@@ -50,12 +50,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         }
 
         // JWT 토큰 생성
-        String accessToken = tokenProvider.createAccessToken(user.getEmail(), user.getName(), user.getNickname());
-        String refreshToken = tokenProvider.createRefreshToken(user); // Redis에 저장됨
+        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getName(), user.getNickname());
+        String refreshToken = jwtUtil.createRefreshToken(user); // Redis에 저장됨
 
         // 쿠키에 토큰 저장
-        CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) tokenProvider.getAccessTokenExpirationTime());
-        CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) tokenProvider.getRefreshTokenExpirationTime());
+        CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) jwtUtil.getAccessTokenExpirationTime());
+        CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) jwtUtil.getRefreshTokenExpirationTime());
 
         // 성공 메시지 전송
         response.setContentType("application/json");

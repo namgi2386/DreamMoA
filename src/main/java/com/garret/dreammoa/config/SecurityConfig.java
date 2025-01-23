@@ -4,11 +4,10 @@ package com.garret.dreammoa.config;
 import com.garret.dreammoa.config.oauth.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.garret.dreammoa.config.oauth.OAuth2SuccessHandler;
 import com.garret.dreammoa.config.oauth.OAuth2UserCustomService;
-import com.garret.dreammoa.jwt.JwtFilter;
-import com.garret.dreammoa.jwt.TokenProvider;
-import com.garret.dreammoa.repository.UserRepository;
-import com.garret.dreammoa.model.UserEntity;
-import com.garret.dreammoa.service.CustomUserDetailsService;
+import com.garret.dreammoa.filter.JwtFilter;
+import com.garret.dreammoa.utils.JwtUtil;
+import com.garret.dreammoa.domain.repository.UserRepository;
+import com.garret.dreammoa.domain.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
@@ -39,13 +37,13 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-    private final TokenProvider tokenProvider;
+    private final JwtUtil jwtUtil;
     private final OAuth2UserCustomService oAuth2UserCustomService; // 의존성 추가
     private final UserRepository userRepository;
 
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        return new OAuth2SuccessHandler(tokenProvider, userRepository);
+        return new OAuth2SuccessHandler(jwtUtil, userRepository);
     }
 
     @Bean
@@ -106,7 +104,7 @@ public class SecurityConfig {
                         .successHandler(oAuth2SuccessHandler())
                 )
                 // JWT 필터
-                .addFilterBefore(new JwtFilter(tokenProvider, userDetailsService),
+                .addFilterBefore(new JwtFilter(jwtUtil, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class)
                 // 세션 사용 안 함(STATELESS)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

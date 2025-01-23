@@ -1,7 +1,7 @@
 package com.garret.dreammoa.config.oauth;
 
-import com.garret.dreammoa.model.UserEntity;
-import com.garret.dreammoa.repository.UserRepository;
+import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
