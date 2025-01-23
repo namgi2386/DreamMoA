@@ -1,4 +1,4 @@
-package com.garret.dreammoa.controller;
+package com.garret.dreammoa.controller.user;
 
 
 import com.garret.dreammoa.dto.CustomUserDetails;
