@@ -39,7 +39,10 @@ public class UserEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; // 사용자 역할 (USER, ADMIN)
+    private Role role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private FileEntity profileImage;
 
     // JPA의 @PrePersist를 통해 persist 전에 실행
     @PrePersist

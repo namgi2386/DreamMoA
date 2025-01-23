@@ -54,6 +54,10 @@ public class CustomUserDetails implements UserDetails {
         return email;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     // 계정 만료, 잠금, 자격 증명 만료, 활성화 상태에 대한 메서드
     @Override
     public boolean isAccountNonExpired() {

@@ -8,6 +8,7 @@ public class DreamMoaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DreamMoaApplication.class, args);
+
 	}
 
 }
