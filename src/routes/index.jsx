@@ -5,21 +5,26 @@ import { Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import Notfound from "../pages/Notfound";
 import Loading from "../components/common/Loading";
-import LoginPage from "../pages/User/LoginPage";
 import PrivateRoute from "../components/common/PrivateRoute";
+
+import LoginPage from "../pages/User/LoginPage";
 import JoinPage from "../pages/User/JoinPage";
-import MyPage from "../pages/User/MyPage";
 import FindidPage from "../pages/User/FindidPage";
 import FindpwPage from "../pages/User/FindpwPage";
-import DashBoardPage from "../pages/User/DashBoardPage";
-import CommunityListPage from "../pages/Community/CommunityListPage";
-import CommunityDetailPage from "../pages/Community/CommunityDetailPage";
-import ChallengeListPage from "../pages/Challenge/ChallengeListPage";
-import ChallengeDetailPage from "../pages/Challenge/ChallengeDetailPage";
-import ChallengeCreatePage from "../pages/Challenge/ChallengeCreatePage";
-import ChallengeMeetPage from "../pages/Challenge/ChallengeMeetPage";
 
-// lazy 로드 컴포넌트
+const ChallengeListPage = lazy(() => import("../pages/Challenge/ChallengeListPage"));
+const ChallengeDetailPage = lazy(() => import("../pages/Challenge/ChallengeDetailPage"));
+const ChallengeCreatePage = lazy(() => import("../pages/Challenge/ChallengeCreatePage"));
+const ChallengeMeetPage = lazy(() => import("../pages/Challenge/ChallengeMeetPage"));
+
+const CommunityListPage = lazy(() => import("../pages/Community/CommunityListPage"));
+const CommunityDetailPage = lazy(() => import("../pages/Community/CommunityDetailPage")); 
+const CommunityWritePage = lazy(() => import("../pages/Community/CommunityWritePage"));
+const CommunityEditPage = lazy(() => import("../pages/Community/CommunityEditPage"));
+
+const MyPage = lazy(() => import("../pages/User/MyPage"));
+const DashBoardPage = lazy(() => import("../pages/User/DashBoardPage"));
+
 const TestPage = lazy(() => import("../pages/TestPage"));
 
 export default function AppRoutes() {
@@ -37,7 +42,9 @@ export default function AppRoutes() {
       <Route path="/dashboard" element={<DashBoardPage />} /> {/*대시보드 */}
       {/* 게시판 */}
       <Route path="/community/list" element={<CommunityListPage />} />
-      <Route path="/community/:id" element={<CommunityDetailPage />} />
+      <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
+      <Route path="/community/write" element={<CommunityWritePage />} />
+      <Route path="/community/edit/:id" element={<CommunityEditPage />} />
       {/* 챌린지 */}
       <Route path="/challenge/list" element={<ChallengeListPage />} />
       <Route path="/challenge/detail/:id" element={<ChallengeDetailPage />} />
