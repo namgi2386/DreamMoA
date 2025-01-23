@@ -1,12 +1,12 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 export const themeState = atom({
-  key: 'themeState',
-  default: localStorage.getItem('theme') || 'light',
+  key: "themeState",
+  default: localStorage.getItem("theme") || "light",
   effects: [
-    ({onSet}) => {
+    ({ onSet }) => {
       onSet((newTheme) => {
-        localStorage.setItem('theme', newTheme);
+        localStorage.setItem("theme", newTheme);
       });
     },
   ],
