@@ -13,7 +13,7 @@ export const validatePassword = (password, email = "") => {
   const isEmailPart = emailPrefix && password.includes(emailPrefix); // 이메일 vs 비밀번호
 
   if (!passwordRegex.test(password)) {
-    return "비밀번호는 영문, 숫자, 특수문자를 포함해 8~12자로 작성해주세요";
+    return "비밀번호는 영문, 숫자, 특수문자를 포함해 8~16자로 작성해주세요";
   }
   if (containsKorean.test(password)) {
     return "비밀번호에 한글은 포함될 수 없습니다";
@@ -36,20 +36,19 @@ export const validateName = (name) => {
     if (name.length < 2) {
       return "이름은 최소 2글자 이상이어야 합니다.";
     }
-  } 
+  }
   // 영어인 경우
   else if (fullEnglishRegex.test(name)) {
     if (name.length < 2) {
       return "이름은 최소 2글자 이상이어야 합니다.";
     }
-  } 
+  }
   // 한글이나 영어가 아닌 경우
   else {
     return "이름은 완전한 한글 또는 영어로 입력해야 합니다.";
   }
   return "";
 };
-
 
 // 닉네임 유효성 검사(영어, 한글만 포함 2~12자)
 export const validateNickname = (nickname) => {
