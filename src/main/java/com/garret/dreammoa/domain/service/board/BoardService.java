@@ -1,4 +1,4 @@
-package com.garret.dreammoa.board.service;
+package com.garret.dreammoa.domain.service.board;
 
 import com.garret.dreammoa.board.dto.requestdto.BoardRequestDto;
 import com.garret.dreammoa.board.dto.responsedto.BoardResponseDto;

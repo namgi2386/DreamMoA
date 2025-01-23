@@ -1,4 +1,4 @@
-package com.garret.dreammoa.board.config;
+package com.garret.dreammoa.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;

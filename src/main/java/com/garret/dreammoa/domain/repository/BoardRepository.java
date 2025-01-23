@@ -1,4 +1,4 @@
-package com.garret.dreammoa.board.repository;
+package com.garret.dreammoa.domain.repository;
 
 import com.garret.dreammoa.board.model.BoardEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.garret.dreammoa.board.dto.requestdto;
+package com.garret.dreammoa.domain.dto.board.requestdto;
 
 import lombok.Getter;
 import lombok.Setter;
