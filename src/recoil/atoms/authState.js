@@ -7,3 +7,8 @@ export const authState = atom({
     accessToken: null,
   }
 });
+
+export const userState = atom({
+  key: 'userState',
+  default: null,
+});
