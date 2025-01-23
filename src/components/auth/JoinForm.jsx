@@ -10,6 +10,7 @@ const JoinForm = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmpassword: "",
     name: "",
     nickname: "",
   });
@@ -21,7 +22,6 @@ const JoinForm = () => {
       ...prev,
       [name]: value,
     }));
-    // 실시간 에러 초기화
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -38,6 +38,9 @@ const JoinForm = () => {
     }
     if (!validatePassword(formData.password)) {
       newErrors.password = "비밀번호는 8자 이상이어야 합니다";
+    }
+    if (formData.password !== formData.confirmpassword) {
+      newErrors.confirmpassword = "비밀번호가 일치하지 않습니다";
     }
     if (!formData.name.trim()) {
       newErrors.name = "이름을 입력해주세요";
@@ -92,6 +95,15 @@ const JoinForm = () => {
         onChange={handleChange}
         error={errors.password}
         placeholder="8자 이상 입력해주세요"
+      />
+      <AuthInput
+        label="비밀번호 확인"
+        name="confirmpassword"
+        type="password"
+        value={formData.confirmpassword}
+        onChange={handleChange}
+        error={errors.confirmpassword}
+        placeholder="비밀번호를 다시 입력해주세요"
       />
       <AuthInput
         label="이름"
