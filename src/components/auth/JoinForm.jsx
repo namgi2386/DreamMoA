@@ -1,7 +1,7 @@
 // components/auth/JoinForm.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { join } from "../../services/api/auth";
+import { authApi } from "../../services/api/authApi";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import AuthInput from "./AuthInput.jsx";
 
@@ -57,7 +57,7 @@ const JoinForm = () => {
 
     try {
       const { email, password, name, nickname } = formData;
-      await join(email, password, name, nickname);
+      await authApi.join(email, password, name, nickname);
       // navigate("/login");
     } catch (error) {
       setErrors((prev) => ({
