@@ -3,6 +3,8 @@ import CounterList from "../components/test/CounterList";
 import { getTestImage } from "../utils/get-test-image";
 import { useNavigate  } from 'react-router-dom';
 import { authState } from "../recoil/atoms/authState";
+import ToggleButton from "../components/common/ToggleButton";
+import VolumeControl from "../components/common/VolumeControl";
 
 export default function TestPage() {
   const nav = useNavigate();
@@ -26,6 +28,14 @@ export default function TestPage() {
     <div className="flex">
       <img src={getTestImage(1)}/>
       <img src={getTestImage(2)}/>
+    </div>
+    <hr />
+    <h3 className="text-2xl">공통컴포넌트 테스트</h3>
+    <div>
+      <ToggleButton onToggle={(state) => console.log("ok!",state)}/>
+    </div>
+    <div>
+      <VolumeControl onChange={(value) => console.log('Volume:', value)}/>
     </div>
     <hr />
     <h3 className="text-2xl">5. navigater 테스트</h3>

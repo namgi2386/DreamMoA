@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../../services/api/authApi';
-import { useSetRecoilState } from 'recoil';
-import { authState } from '../../recoil/atoms/authState';
+import useAuth from '../../hooks/useAuth';
+
+// import { authApi } from '../../services/api/authApi';
+// import { useSetRecoilState } from 'recoil';
+// import { authState } from '../../recoil/atoms/authState';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const setAuth = useSetRecoilState(authState);
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,26 +26,12 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    // console.log("login test 01");
-    // console.log(formData); 완료
-    
-    
 
-    try {
-      console.log("response test");
-      const response = await authApi.login(formData);
-      console.log("response success"); 
-      
-      console.log(response);
-      
-      
-      setAuth({
-        isAuthenticated: true,
-        accessToken: response.accessToken
-      });
+    const result = await login(formData);
+    if (result.success) {
       navigate('/'); // 로그인 성공 후 메인 페이지로 이동
-    } catch (err) {
-      setError(err.response?.data?.message || '로그인에 실패했습니다.');
+    } else {
+      setError(result.error);
     }
   };
 
