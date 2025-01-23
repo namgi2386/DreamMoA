@@ -5,8 +5,11 @@ import com.garret.dreammoa.dto.CustomUserDetails;
 import com.garret.dreammoa.dto.reponsedto.TokenResponse;
 import com.garret.dreammoa.dto.requestdto.LoginRequest;
 import com.garret.dreammoa.jwt.TokenProvider;
+import com.garret.dreammoa.model.FileEntity;
 import com.garret.dreammoa.model.UserEntity;
 import com.garret.dreammoa.repository.UserRepository;
+import com.garret.dreammoa.service.FileService;
+import com.garret.dreammoa.service.JoinService;
 import com.garret.dreammoa.utils.CookieUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Optional;
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,6 +31,9 @@ public class AuthController {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserRepository userRepository;
+    private final FileService fileService;
+    private final JoinService joinService;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         // 이메일과 비밀번호로 인증 객체 생성
@@ -47,13 +55,18 @@ public class AuthController {
                 userDetails.getNickname()
         );
         String refreshToken = tokenProvider.createRefreshToken(userEntity);
+        Long userId = userDetails.getId();
+        Optional<FileEntity> profilePicture = fileService.getProfilePicture(userId);
+        String profilePictureUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+
+        joinService.updateLastLogin(userId);
 
         // 쿠키에 토큰 저장
         CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) tokenProvider.getAccessTokenExpirationTime());
         CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) tokenProvider.getRefreshTokenExpirationTime());
 
         // 응답 본문으로도 토큰 반환
-        return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken));
+        return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken, profilePictureUrl));
     }
 
 
@@ -74,7 +87,7 @@ public class AuthController {
 
                 // 쿠키에 저장
                 CookieUtil.addHttpOnlyCookie(response, "access_token", newAccessToken, (int) tokenProvider.getAccessTokenExpirationTime());
-                return ResponseEntity.ok(new TokenResponse(newAccessToken, null));
+                return ResponseEntity.ok(new TokenResponse(newAccessToken, null, null));
             }
         }
 

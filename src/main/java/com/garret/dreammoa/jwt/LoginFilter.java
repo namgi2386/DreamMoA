@@ -57,7 +57,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 customUserDetails.getPassword(),
                 customUserDetails.getCreatedAt(),
                 customUserDetails.getLastLogin(),
-                role
+
+                role,
+                null
         );
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

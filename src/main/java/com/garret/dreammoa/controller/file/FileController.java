@@ -1,6 +1,9 @@
 package com.garret.dreammoa.controller.file;
 
 
+import com.garret.dreammoa.model.FileEntity;
+import com.garret.dreammoa.model.FileEntity.RelatedType;
+import com.garret.dreammoa.service.FileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
