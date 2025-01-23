@@ -19,7 +19,8 @@ api.interceptors.request.use(
     console.log(accessToken);
     console.log("access토큰 아직있음");
 
-    if (accessToken) {
+    // 회원가입 요청에는 Authorization 헤더를 추가하지 않음
+    if (accessToken && !config.url.includes("/auth/join")) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
