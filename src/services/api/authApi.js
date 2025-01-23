@@ -49,7 +49,7 @@ export const authApi = {
         formData.append("profilePicture", new Blob([]));
       }
 
-      const response = await api.post("/auth/join", formData, {
+      const response = await api.post("/join", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -57,6 +57,11 @@ export const authApi = {
 
       return response.data;
     } catch (error) {
+      console.error("Join error:", {
+        message: error.message,
+        response: error.response,
+        data: error.response?.data,
+      });
       throw new Error(
         error.response?.data?.message || "회원가입 처리 중 오류가 발생했습니다."
       );

@@ -55,15 +55,21 @@ const JoinForm = () => {
 
     if (!validateForm()) return;
 
+    // setIsLoading(true);
+
     try {
       const { email, password, name, nickname } = formData;
-      await authApi.join(email, password, name, nickname);
-      // navigate("/login");
+      // profilePicture를 null로
+      await authApi.join(email, password, name, nickname, null);
+
+      navigate("/login");
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
-        submit: error.message,
+        submit: error.message || "회원가입 처리 중 오류가 발생했습니다.",
       }));
+    } finally {
+      // setIsLoading(false);
     }
   };
 
