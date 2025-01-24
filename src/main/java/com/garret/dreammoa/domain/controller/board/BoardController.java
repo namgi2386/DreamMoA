@@ -1,8 +1,8 @@
 package com.garret.dreammoa.domain.controller.board;
 
-import com.garret.dreammoa.board.dto.requestdto.BoardRequestDto;
-import com.garret.dreammoa.board.dto.responsedto.BoardResponseDto;
-import com.garret.dreammoa.board.service.BoardService;
+import com.garret.dreammoa.domain.dto.board.requestdto.BoardRequestDto;
+import com.garret.dreammoa.domain.dto.board.responsedto.BoardResponseDto;
+import com.garret.dreammoa.domain.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,12 +12,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173") // 프론트엔드 도메인
 public class BoardController {
 
     private final BoardService boardService;
 
     /**
-     * CREATE
+     * 게시글 생성
      * POST /boards
      */
     @PostMapping
@@ -28,7 +29,7 @@ public class BoardController {
 
     /**
      * READ 단건
-     * GET /api/boards/{postId}
+     * GET /boards/{postId}
      */
     @GetMapping("/{postId}")
     public ResponseEntity<BoardResponseDto> getBoard(@PathVariable Long postId) {
@@ -65,6 +66,7 @@ public class BoardController {
      */
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deleteBoard(@PathVariable Long postId) {
+
         boardService.deleteBoard(postId);
         return ResponseEntity.ok().build();
     }

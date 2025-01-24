@@ -1,6 +1,5 @@
 package com.garret.dreammoa.domain.model;
 
-import com.garret.dreammoa.model.UserEntity; // 기존의 UserEntity import
 import jakarta.persistence.*;
 import lombok.*;
 

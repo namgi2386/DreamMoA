@@ -1,7 +1,7 @@
 package com.garret.dreammoa.domain.service.board;
 
-import com.garret.dreammoa.board.dto.requestdto.BoardRequestDto;
-import com.garret.dreammoa.board.dto.responsedto.BoardResponseDto;
+import com.garret.dreammoa.domain.dto.board.requestdto.BoardRequestDto;
+import com.garret.dreammoa.domain.dto.board.responsedto.BoardResponseDto;
 
 import java.util.List;
 

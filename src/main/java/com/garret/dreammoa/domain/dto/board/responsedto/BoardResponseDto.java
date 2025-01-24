@@ -1,6 +1,7 @@
 package com.garret.dreammoa.domain.dto.board.responsedto;
 
-import com.garret.dreammoa.board.model.BoardEntity;
+import com.garret.dreammoa.domain.model.BoardEntity;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

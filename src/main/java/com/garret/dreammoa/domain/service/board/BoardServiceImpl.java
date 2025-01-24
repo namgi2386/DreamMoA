@@ -1,12 +1,12 @@
 package com.garret.dreammoa.domain.service.board;
 
-import com.garret.dreammoa.board.dto.requestdto.BoardRequestDto;
-import com.garret.dreammoa.board.dto.responsedto.BoardResponseDto;
-import com.garret.dreammoa.board.model.BoardEntity;
-import com.garret.dreammoa.board.repository.BoardRepository;
-import com.garret.dreammoa.dto.CustomUserDetails;
-import com.garret.dreammoa.model.UserEntity;
-import com.garret.dreammoa.repository.UserRepository;
+import com.garret.dreammoa.domain.dto.board.requestdto.BoardRequestDto;
+import com.garret.dreammoa.domain.dto.board.responsedto.BoardResponseDto;
+import com.garret.dreammoa.domain.dto.user.CustomUserDetails;
+import com.garret.dreammoa.domain.model.BoardEntity;
+import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.BoardRepository;
+import com.garret.dreammoa.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
