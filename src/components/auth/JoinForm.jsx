@@ -21,6 +21,7 @@ const JoinForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isNicknameValid, setIsNicknameValid] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +29,11 @@ const JoinForm = () => {
       ...prev,
       [name]: value,
     }));
+
+    //닉네임 변경 시 중복 확인 초기화
+    if (name === "nickname") {
+      setIsNicknameValid(false);
+    }
 
     // 입력값 변경에 따른 실시간 유효성 검사
     validateField(name, value);
@@ -62,6 +68,31 @@ const JoinForm = () => {
     }));
   };
 
+  const handleCheckNickname = async () => {
+    // 닉네임 중복 확인 API 호출 부분
+    try {
+      const isAvailable = await authApi.checkNickname(formData.nickname);
+      if (isAvailable) {
+        Swal.fire({
+          icon: "success",
+          text: "사용 가능한 닉네임입니다.",
+        });
+        setIsNicknameValid(true);
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: "이미 사용 중인 닉네임입니다.",
+        });
+        setIsNicknameValid(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "닉네임 중복 확인 중 오류가 발생했습니다.",
+      });
+    }
+  };
+
   useEffect(() => {
     // 모든 필드 유효성 검사
     const isValid =
@@ -74,10 +105,11 @@ const JoinForm = () => {
       !errors.password &&
       !errors.confirmpassword &&
       !errors.name &&
-      !errors.nickname;
+      !errors.nickname &&
+      isNicknameValid;
 
     setIsFormValid(isValid);
-  }, [formData, errors]);
+  }, [formData, errors, isNicknameValid]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,7 +135,7 @@ const JoinForm = () => {
 
       Swal.fire({
         icon: "error",
-        title: "오류 발생",
+        title: "오류",
         text: error.message || "회원가입 처리 중 오류가 발생했습니다.",
         confirmButtonText: "확인",
       });
@@ -128,7 +160,7 @@ const JoinForm = () => {
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
-        placeholder="8-16자로 입력해주세요"
+        placeholder="8~16자로 입력해주세요"
       />
       <AuthInput
         label="비밀번호 확인"
@@ -148,15 +180,26 @@ const JoinForm = () => {
         error={errors.name}
         placeholder="이름을 입력해주세요"
       />
-      <AuthInput
-        label="닉네임"
-        name="nickname"
-        type="text"
-        value={formData.nickname}
-        onChange={handleChange}
-        error={errors.nickname}
-        placeholder="닉네임을 입력해주세요"
-      />
+      <div className="flex items-center space-x-2">
+        <div className="flex-1">
+          <AuthInput
+            label="닉네임"
+            name="nickname"
+            type="text"
+            value={formData.nickname}
+            onChange={handleChange}
+            error={errors.nickname}
+            placeholder="닉네임을 입력해주세요"
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleCheckNickname}
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none"
+        >
+          닉네임 중복 확인
+        </button>
+      </div>
 
       {errors.submit && (
         <div className="text-red-500 text-sm text-center">{errors.submit}</div>
