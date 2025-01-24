@@ -8,6 +8,7 @@ import {
   validateNickname,
 } from "../../utils/validation";
 import AuthInput from "./AuthInput.jsx";
+import Swal from "sweetalert2";
 
 const JoinForm = () => {
   const navigate = useNavigate();
@@ -21,12 +22,21 @@ const JoinForm = () => {
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // #### 닉네임 이 부분 주석 제거거
+  // const [isNicknameValid, setIsNicknameValid] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // #### 닉네임 아래 주석 풀기 ####
+    //닉네임 변경 시 중복 확인 초기화
+    // if (name === "nickname") {
+    //   setIsNicknameValid(false);
+    // }
 
     // 입력값 변경에 따른 실시간 유효성 검사
     validateField(name, value);
@@ -42,11 +52,22 @@ const JoinForm = () => {
         break;
       case "password":
         errorMessage = validatePassword(value, formData.email);
+        
+        if (formData.confirmpassword && value !== formData.confirmpassword) {
+          setErrors((prev) => ({
+            ...prev,
+            confirmpassword: "비밀번호가 일치하지 않습니다"
+          }));
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            confirmpassword: ""
+          }));
+        }
         break;
       case "confirmpassword":
-        errorMessage = value !== formData.password 
-          ? "비밀번호가 일치하지 않습니다" 
-          : "";
+        errorMessage =
+          value !== formData.password ? "비밀번호가 일치하지 않습니다" : "";
         break;
       case "name":
         errorMessage = validateName(value);
@@ -62,6 +83,32 @@ const JoinForm = () => {
     }));
   };
 
+  // #### 닉네임 중복 확인 ####
+  // const handleCheckNickname = async () => {
+  //   // 닉네임 중복 확인 API 호출 부분
+  //   try {
+  //     const isAvailable = await authApi.checkNickname(formData.nickname);
+  //     if (isAvailable) {
+  //       Swal.fire({
+  //         icon: "success",
+  //         text: "사용 가능한 닉네임입니다.",
+  //       });
+  //       setIsNicknameValid(true);
+  //     } else {
+  //       Swal.fire({
+  //         icon: "error",
+  //         text: "이미 사용 중인 닉네임입니다.",
+  //       });
+  //       setIsNicknameValid(false);
+  //     }
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       text: "닉네임 중복 확인 중 오류가 발생했습니다.",
+  //     });
+  //   }
+  // };
+
   useEffect(() => {
     // 모든 필드 유효성 검사
     const isValid =
@@ -76,6 +123,11 @@ const JoinForm = () => {
       !errors.name &&
       !errors.nickname;
 
+    // #### 닉네임 중복 확인 아래 3줄 주석 풀고 밑에 두 줄 지우기 ###
+    // isNicknameValid;
+    //   setIsFormValid(isValid);
+    // }, [formData, errors, isNicknameValid]);
+
     setIsFormValid(isValid);
   }, [formData, errors]);
 
@@ -87,12 +139,26 @@ const JoinForm = () => {
     try {
       const { email, password, name, nickname } = formData;
       await authApi.join(email, password, name, nickname, null);
+
+      await Swal.fire({
+        icon: "success",
+        title: "회원가입 완료",
+        text: "회원가입이 정상적으로 완료되었습니다.",
+        confirmButtonText: "로그인 페이지로 이동",
+      });
       navigate("/login");
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
         submit: error.message || "회원가입 처리 중 오류가 발생했습니다.",
       }));
+
+      Swal.fire({
+        icon: "error",
+        title: "오류",
+        text: error.message || "회원가입 처리 중 오류가 발생했습니다.",
+        confirmButtonText: "확인",
+      });
     }
   };
 
@@ -114,7 +180,7 @@ const JoinForm = () => {
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
-        placeholder="8-16자로 입력해주세요"
+        placeholder="8~16자로 입력해주세요"
       />
       <AuthInput
         label="비밀번호 확인"
@@ -134,15 +200,28 @@ const JoinForm = () => {
         error={errors.name}
         placeholder="이름을 입력해주세요"
       />
-      <AuthInput
-        label="닉네임"
-        name="nickname"
-        type="text"
-        value={formData.nickname}
-        onChange={handleChange}
-        error={errors.nickname}
-        placeholder="닉네임을 입력해주세요"
-      />
+      <div className="flex items-center space-x-2">
+        <div className="flex-1">
+          <AuthInput
+            label="닉네임"
+            name="nickname"
+            type="text"
+            value={formData.nickname}
+            onChange={handleChange}
+            error={errors.nickname}
+            placeholder="닉네임을 입력해주세요"
+          />
+        </div>
+
+        {/* ##### 닉네임 중복 확인 #### */}
+        {/* <button
+          type="button"
+          onClick={handleCheckNickname}
+          className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none"
+        >
+          닉네임 중복 확인
+        </button> */}
+      </div>
 
       {errors.submit && (
         <div className="text-red-500 text-sm text-center">{errors.submit}</div>

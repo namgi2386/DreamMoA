@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @font-face {
   font-family: "CookieRun";
-  src: url("/public/fonts/CookieRun-Regular.ttf" ) format("truetype");
+  src: url("/public/fonts/CookieRun-Regular.ttf") format("truetype");
   font-display: swap;
 }
 
@@ -17,3 +16,5 @@
 body * {
   font-family: "CookieRun";
 }
+
+@import "sweetalert2/dist/sweetalert2.min.css";
