@@ -21,7 +21,9 @@ const JoinForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
-  const [isNicknameValid, setIsNicknameValid] = useState(false);
+
+  // #### 닉네임 이 부분 주석 제거거
+  // const [isNicknameValid, setIsNicknameValid] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,14 +32,18 @@ const JoinForm = () => {
       [name]: value,
     }));
 
+
+    // #### 닉네임 아래 주석 풀기 ####
     //닉네임 변경 시 중복 확인 초기화
-    if (name === "nickname") {
-      setIsNicknameValid(false);
-    }
+    // if (name === "nickname") {
+    //   setIsNicknameValid(false);
+    // }
 
     // 입력값 변경에 따른 실시간 유효성 검사
     validateField(name, value);
   };
+
+
 
   const validateField = (name, value) => {
     let errorMessage = "";
@@ -68,30 +74,34 @@ const JoinForm = () => {
     }));
   };
 
-  const handleCheckNickname = async () => {
-    // 닉네임 중복 확인 API 호출 부분
-    try {
-      const isAvailable = await authApi.checkNickname(formData.nickname);
-      if (isAvailable) {
-        Swal.fire({
-          icon: "success",
-          text: "사용 가능한 닉네임입니다.",
-        });
-        setIsNicknameValid(true);
-      } else {
-        Swal.fire({
-          icon: "error",
-          text: "이미 사용 중인 닉네임입니다.",
-        });
-        setIsNicknameValid(false);
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "닉네임 중복 확인 중 오류가 발생했습니다.",
-      });
-    }
-  };
+
+  // #### 닉네임 중복 확인 ####
+  // const handleCheckNickname = async () => {
+  //   // 닉네임 중복 확인 API 호출 부분
+  //   try {
+  //     const isAvailable = await authApi.checkNickname(formData.nickname);
+  //     if (isAvailable) {
+  //       Swal.fire({
+  //         icon: "success",
+  //         text: "사용 가능한 닉네임입니다.",
+  //       });
+  //       setIsNicknameValid(true);
+  //     } else {
+  //       Swal.fire({
+  //         icon: "error",
+  //         text: "이미 사용 중인 닉네임입니다.",
+  //       });
+  //       setIsNicknameValid(false);
+  //     }
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       text: "닉네임 중복 확인 중 오류가 발생했습니다.",
+  //     });
+  //   }
+  // };
+
+
 
   useEffect(() => {
     // 모든 필드 유효성 검사
@@ -105,11 +115,15 @@ const JoinForm = () => {
       !errors.password &&
       !errors.confirmpassword &&
       !errors.name &&
-      !errors.nickname &&
-      isNicknameValid;
+      !errors.nickname;
 
-    setIsFormValid(isValid);
-  }, [formData, errors, isNicknameValid]);
+      // #### 닉네임 중복 확인 아래 3줄 주석 풀고 밑에 두 줄 지우기 ###
+      // isNicknameValid;
+  //   setIsFormValid(isValid);
+  // }, [formData, errors, isNicknameValid]);
+
+      setIsFormValid(isValid);
+  }, [formData, errors]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -192,13 +206,18 @@ const JoinForm = () => {
             placeholder="닉네임을 입력해주세요"
           />
         </div>
-        <button
+
+
+        {/* ##### 닉네임 중복 확인 #### */}
+        {/* <button
           type="button"
           onClick={handleCheckNickname}
           className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded focus:outline-none"
         >
           닉네임 중복 확인
-        </button>
+        </button> */}
+
+
       </div>
 
       {errors.submit && (
