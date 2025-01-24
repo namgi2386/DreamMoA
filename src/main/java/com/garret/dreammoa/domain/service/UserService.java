@@ -1,9 +1,11 @@
 package com.garret.dreammoa.domain.service;
 
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
+import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.model.FileEntity;
 import com.garret.dreammoa.domain.model.UserEntity;
 import com.garret.dreammoa.domain.repository.UserRepository;
+import com.garret.dreammoa.utils.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileService fileService;
+    private final JwtUtil jwtUtil;
 
-
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileService fileService){
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileService fileService, JwtUtil jwtUtil,
+                       UserService userService){
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.fileService = fileService;
+        this.jwtUtil = jwtUtil;
     }
     // 여기서 초기화
 
@@ -71,6 +75,25 @@ public class UserService {
                 throw new RuntimeException("프로필 사진 저장에 실패했습니다.");
             }
         }
+    }
+
+    public UserResponse extractUserInfo(String accessToken) {
+        // JWT 토큰 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new RuntimeException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 유저 정보 추출
+        String email = jwtUtil.getEmailFromToken(accessToken);
+        String name = jwtUtil.getNameFromToken(accessToken);
+        String nickname = jwtUtil.getNicknameFromToken(accessToken);
+
+        if (email == null || name == null || nickname == null) {
+            throw new RuntimeException("토큰에서 유저 정보를 가져올 수 없습니다.");
+        }
+
+        // 유저 정보 반환
+        return new UserResponse(email, name, nickname);
     }
 }
 
