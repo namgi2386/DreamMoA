@@ -11,6 +11,7 @@ import LoginPage from "../pages/User/LoginPage";
 import JoinPage from "../pages/User/JoinPage";
 import FindidPage from "../pages/User/FindidPage";
 import FindpwPage from "../pages/User/FindpwPage";
+import SideNavbar from "../components/common/SideNavbar";
 
 const ChallengeListPage = lazy(() => import("../pages/Challenge/ChallengeListPage"));
 const ChallengeDetailPage = lazy(() => import("../pages/Challenge/ChallengeDetailPage"));
@@ -31,7 +32,9 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* 메인 페이지 */}
-      <Route path="/" element={<HomePage />} />
+      <Route element={<SideNavbar/>}>
+        <Route path="/" element={<HomePage />} />
+      </Route>
       {/* 회원 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
