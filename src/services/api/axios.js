@@ -29,6 +29,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+export default api;
 // export default api;
 
 // 응답 인터셉터 - 토큰 만료 처리
@@ -69,4 +70,4 @@ api.interceptors.request.use(
 //   }
 // );
 
-export default api;
+

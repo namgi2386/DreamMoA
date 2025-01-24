@@ -12,7 +12,11 @@ export default function CommunityListPage() {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      console.log("커뮤니티 api 요청 보내기");
+      
       const response = await communityApi.getList();
+      console.log("응답도착" + response);
+      
       setPosts(response.data);
     };
     fetchPosts();

@@ -43,7 +43,7 @@ export default function AppRoutes() {
       {/* 게시판 */}
       <Route path="/community/list" element={<CommunityListPage />} />
       <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
-      <Route path="/community/write" element={<CommunityWritePage />} />
+      <Route path="/community/write" element={<PrivateRoute><CommunityWritePage /></PrivateRoute>} />
       <Route path="/community/edit/:id" element={<CommunityEditPage />} />
       {/* 챌린지 */}
       <Route path="/challenge/list" element={<ChallengeListPage />} />
