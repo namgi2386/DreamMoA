@@ -111,6 +111,9 @@ const ConstellationFooter = () => {
               style={{
                 opacity: activeDream ? 1 : 0,
                 transform: activeDream ? "translateY(0)" : "translateY(20px)",
+                overflow: "hidden", // 내용 잘릴 경우 숨김
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis", // 초과 텍스트 '...'
               }}
             >
               {activeDream.text}
