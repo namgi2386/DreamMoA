@@ -87,6 +87,7 @@ const JoinForm = () => {
     try {
       const { email, password, name, nickname } = formData;
       await authApi.join(email, password, name, nickname, null);
+      alert("회원가입이 완료되었습니다")
       navigate("/login");
     } catch (error) {
       setErrors((prev) => ({
