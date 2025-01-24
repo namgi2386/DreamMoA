@@ -5,6 +5,7 @@ import com.garret.dreammoa.config.oauth.OAuth2AuthorizationRequestBasedOnCookieR
 import com.garret.dreammoa.config.oauth.OAuth2SuccessHandler;
 import com.garret.dreammoa.config.oauth.OAuth2UserCustomService;
 import com.garret.dreammoa.domain.repository.FileRepository;
+import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.filter.JwtFilter;
 import com.garret.dreammoa.utils.JwtUtil;
 import com.garret.dreammoa.domain.repository.UserRepository;
@@ -48,6 +49,7 @@ public class SecurityConfig {
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
         return new OAuth2SuccessHandler(jwtUtil, userRepository, fileRepository, fileProperties);
     }
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -93,7 +95,7 @@ public class SecurityConfig {
                 )
                 // 인증/인가 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/", "/join", "/userInfo").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/userInfo", "send-verification-code").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")

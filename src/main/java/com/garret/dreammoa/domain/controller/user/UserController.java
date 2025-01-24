@@ -3,6 +3,8 @@ package com.garret.dreammoa.domain.controller.user;
 import com.garret.dreammoa.domain.dto.common.ErrorResponse;
 import com.garret.dreammoa.domain.dto.common.SuccessResponse;
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
+import com.garret.dreammoa.domain.dto.user.request.SendVerificationCodeRequest;
+import com.garret.dreammoa.domain.service.EmailService;
 import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
@@ -25,14 +27,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    public UserController(UserService userService, JwtUtil jwtUtil) {
-        this.userService = userService;
-        this.jwtUtil = jwtUtil;
-    }
+    private final EmailService emailService;
+
 
     @PostMapping("/join")
     public ResponseEntity<?> joinProcess(@Valid @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
@@ -46,6 +47,25 @@ public class UserController {
 
         userService.joinProcess(joinRequest);
         return ResponseEntity.ok(new SuccessResponse("회원가입이 완료되었습니다."));
+    }
+
+    @PostMapping("/send-verification-code")
+    public ResponseEntity<?> sendVerificationCode(@Valid @RequestBody SendVerificationCodeRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(errorMessage));
+        }
+
+        try {
+            emailService.sendVerificationCode(request.getEmail());
+            return ResponseEntity.ok(new SuccessResponse("인증 코드가 이메일로 전송되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
     }
 
     @PostMapping("/userInfo")
