@@ -54,12 +54,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String refreshToken = jwtUtil.createRefreshToken(user); // Redis에 저장됨
 
         // 쿠키에 토큰 저장
-        CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) jwtUtil.getAccessTokenExpirationTime());
+        CookieUtil.addCookie(response, "access_token", accessToken, (int) jwtUtil.getAccessTokenExpirationTime());
         CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) jwtUtil.getRefreshTokenExpirationTime());
 
         // 성공 메시지 전송
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"message\": \"Authentication successful\"}");
+        response.sendRedirect("http://localhost:5173/");
     }
 }
