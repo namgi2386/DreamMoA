@@ -8,6 +8,7 @@ import {
   validateNickname,
 } from "../../utils/validation";
 import AuthInput from "./AuthInput.jsx";
+import Swal from "sweetalert2";
 
 const JoinForm = () => {
   const navigate = useNavigate();
@@ -44,9 +45,8 @@ const JoinForm = () => {
         errorMessage = validatePassword(value, formData.email);
         break;
       case "confirmpassword":
-        errorMessage = value !== formData.password 
-          ? "비밀번호가 일치하지 않습니다" 
-          : "";
+        errorMessage =
+          value !== formData.password ? "비밀번호가 일치하지 않습니다" : "";
         break;
       case "name":
         errorMessage = validateName(value);
@@ -87,13 +87,26 @@ const JoinForm = () => {
     try {
       const { email, password, name, nickname } = formData;
       await authApi.join(email, password, name, nickname, null);
-      alert("회원가입이 완료되었습니다")
+
+      await Swal.fire({
+        icon: "success",
+        title: "회원가입 완료",
+        text: "회원가입이 정상적으로 완료되었습니다.",
+        confirmButtonText: "로그인 페이지로 이동",
+      });
       navigate("/login");
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
         submit: error.message || "회원가입 처리 중 오류가 발생했습니다.",
       }));
+
+      Swal.fire({
+        icon: "error",
+        title: "오류 발생",
+        text: error.message || "회원가입 처리 중 오류가 발생했습니다.",
+        confirmButtonText: "확인",
+      });
     }
   };
 
