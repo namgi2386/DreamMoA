@@ -5,26 +5,20 @@ import com.garret.dreammoa.domain.model.FileEntity;
 import com.garret.dreammoa.domain.model.UserEntity;
 import com.garret.dreammoa.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final FileService fileService;
 
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileService fileService){
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.fileService = fileService;
-    }
-    // 여기서 초기화
 
     @Transactional
     public void updateLastLogin(Long userId) {
@@ -34,43 +28,40 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void joinProcess(JoinRequest joinRequest){
         String email = joinRequest.getEmail();
         String password = joinRequest.getPassword();
         String name = joinRequest.getName();
         String nickname = joinRequest.getNickname();
 
-        System.out.println("email = " + email);
-        System.out.println("password = " + password);
-        System.out.println("name = " + name);
-        System.out.println("nickname = " + nickname);
-
-
-        Boolean isExist = userRepository.existsByEmail(email);
-
-        if(isExist){
+        // 이메일 중복 체크
+        if(userRepository.existsByEmail(email)){
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
 
+        // 닉네임 중복 체크
+        if(userRepository.existsByNickname(nickname)){
+            throw new RuntimeException("이미 존재하는 닉네임입니다.");
+        }
+
+        // 비밀번호에 이메일 로컬 파트 포함 여부 검증
+        String emailLocalPart = email.split("@")[0].toLowerCase();
+        String passwordLower = password.toLowerCase();
+        if(passwordLower.contains(emailLocalPart)){
+            throw new RuntimeException("비밀번호에 이메일의 로컬 파트가 포함될 수 없습니다.");
+        }
+
+        // 사용자 엔티티 생성
         UserEntity user = UserEntity.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
                 .name(name)
                 .nickname(nickname)
-                .role(UserEntity.Role.USER) // 기본은 USER
+                .role(UserEntity.Role.USER) // 기본 역할 USER
                 .build();
 
         userRepository.save(user);
-
-        MultipartFile profilePicture = joinRequest.getProfilePicture();
-        if (profilePicture != null && !profilePicture.isEmpty()) {
-            try {
-                fileService.saveFile(profilePicture, user.getId(), FileEntity.RelatedType.PROFILE);
-            } catch (Exception e) {
-                System.out.println("프로필 사진 저장 중 오류 발생: " + e.getMessage());
-                throw new RuntimeException("프로필 사진 저장에 실패했습니다.");
-            }
-        }
     }
-}
 
+}

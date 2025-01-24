@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Optional;
 
+
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -50,6 +51,7 @@ public class AuthController {
 
         // 인증 성공 시 JWT 생성
         String accessToken = jwtUtil.createAccessToken(
+                userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getName(),
                 userDetails.getNickname()
@@ -77,13 +79,14 @@ public class AuthController {
 
         // 리프레시 토큰 검증 및 액세스 토큰 갱신
         if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
+            Long userId = Long.valueOf(jwtUtil.getUserIdFromToken(refreshToken));
             String email = jwtUtil.getEmailFromToken(refreshToken);
             String name = jwtUtil.getNameFromToken(refreshToken);
             String nickname = jwtUtil.getNicknameFromToken(refreshToken);
 
-            if (jwtUtil.isRefreshTokenValid(email, refreshToken)) {
+            if (jwtUtil.isRefreshTokenValid(userId, refreshToken)) {
                 // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtUtil.createAccessToken(email, name, nickname);
+                String newAccessToken = jwtUtil.createAccessToken(userId, email, name, nickname);
 
                 // 쿠키에 저장
                 CookieUtil.addHttpOnlyCookie(response, "access_token", newAccessToken, (int) jwtUtil.getAccessTokenExpirationTime());
