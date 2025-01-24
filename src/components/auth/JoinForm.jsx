@@ -32,7 +32,6 @@ const JoinForm = () => {
       [name]: value,
     }));
 
-
     // #### 닉네임 아래 주석 풀기 ####
     //닉네임 변경 시 중복 확인 초기화
     // if (name === "nickname") {
@@ -42,8 +41,6 @@ const JoinForm = () => {
     // 입력값 변경에 따른 실시간 유효성 검사
     validateField(name, value);
   };
-
-
 
   const validateField = (name, value) => {
     let errorMessage = "";
@@ -55,6 +52,18 @@ const JoinForm = () => {
         break;
       case "password":
         errorMessage = validatePassword(value, formData.email);
+        
+        if (formData.confirmpassword && value !== formData.confirmpassword) {
+          setErrors((prev) => ({
+            ...prev,
+            confirmpassword: "비밀번호가 일치하지 않습니다"
+          }));
+        } else {
+          setErrors((prev) => ({
+            ...prev,
+            confirmpassword: ""
+          }));
+        }
         break;
       case "confirmpassword":
         errorMessage =
@@ -73,7 +82,6 @@ const JoinForm = () => {
       [name]: errorMessage,
     }));
   };
-
 
   // #### 닉네임 중복 확인 ####
   // const handleCheckNickname = async () => {
@@ -101,8 +109,6 @@ const JoinForm = () => {
   //   }
   // };
 
-
-
   useEffect(() => {
     // 모든 필드 유효성 검사
     const isValid =
@@ -117,12 +123,12 @@ const JoinForm = () => {
       !errors.name &&
       !errors.nickname;
 
-      // #### 닉네임 중복 확인 아래 3줄 주석 풀고 밑에 두 줄 지우기 ###
-      // isNicknameValid;
-  //   setIsFormValid(isValid);
-  // }, [formData, errors, isNicknameValid]);
+    // #### 닉네임 중복 확인 아래 3줄 주석 풀고 밑에 두 줄 지우기 ###
+    // isNicknameValid;
+    //   setIsFormValid(isValid);
+    // }, [formData, errors, isNicknameValid]);
 
-      setIsFormValid(isValid);
+    setIsFormValid(isValid);
   }, [formData, errors]);
 
   const handleSubmit = async (e) => {
@@ -207,7 +213,6 @@ const JoinForm = () => {
           />
         </div>
 
-
         {/* ##### 닉네임 중복 확인 #### */}
         {/* <button
           type="button"
@@ -216,8 +221,6 @@ const JoinForm = () => {
         >
           닉네임 중복 확인
         </button> */}
-
-
       </div>
 
       {errors.submit && (
