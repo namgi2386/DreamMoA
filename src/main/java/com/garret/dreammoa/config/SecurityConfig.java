@@ -93,7 +93,7 @@ public class SecurityConfig {
                 )
                 // 인증/인가 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/userInfo").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
