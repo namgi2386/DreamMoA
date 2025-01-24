@@ -22,13 +22,6 @@ public class UserService {
     private final FileService fileService;
     private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileService fileService, JwtUtil jwtUtil,
-                       UserService userService){
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.fileService = fileService;
-        this.jwtUtil = jwtUtil;
-    }
     // 여기서 초기화
 
     @Transactional
@@ -93,5 +86,12 @@ public class UserService {
 
         // 유저 정보 반환
         return new UserResponse(email, name, nickname);
+    }
+
+    public String findByEmailByNicknameAndName(String nickname, String name) {
+        UserEntity user = userRepository.findByNicknameAndName(nickname, name)
+                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+
+        return user.getEmail();
     }
 }
