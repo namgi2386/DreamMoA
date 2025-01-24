@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import communityApi from '../../services/api/communityApi';
 
 export default function CommunityForm({ initialData, mode = 'create' }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState(initialData || {
-    userId : 1,
+    userId : 5,
     category : '자유',
     title: '',
     content: ''
   });
+
+  useEffect(() => {
+    if (mode === 'edit' && initialData) {
+      setFormData(initialData);
+    }
+  }, [mode, initialData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,13 +23,15 @@ export default function CommunityForm({ initialData, mode = 'create' }) {
       if (mode === 'create') {
         await communityApi.create(formData);
       } else {
-        await communityApi.update(initialData.id, formData);
+        await communityApi.update(initialData.postId, formData);
       }
       navigate('/community/list');
     } catch (error) {
       console.error(error);
     }
   };
+
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

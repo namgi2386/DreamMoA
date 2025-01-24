@@ -11,6 +11,7 @@ export default function TestLayoutPage() {
         <Link to={"/TestPage"}>TestPage</Link>
         <ThemeToggle/>
         <Link to={"/loadingtest"}>LoadingTest</Link>
+        <Link to={"/community/list"}>커뮤</Link>
         <button onClick={logout} className="border">Logout</button>
       </div>
     </>

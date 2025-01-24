@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil'; // useRecoilValue에서 변경
-import { communityDetailState } from '../recoil/atoms/communityState';
-import CommunityForm from '../components/community/CommunityForm';
-import communityApi from '../services/api/communityApi';
+import { communityDetailState } from '../../recoil/atoms/communityState';
+import CommunityForm from '../../components/community/CommunityForm';
+import communityApi from '../../services/api/communityApi';
 
 export default function CommunityEditPage() {
   const { id } = useParams();
