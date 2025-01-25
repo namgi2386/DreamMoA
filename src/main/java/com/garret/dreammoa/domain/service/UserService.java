@@ -71,6 +71,16 @@ public class UserService {
     }
 
     /**
+     * 이메일 중복 여부를 확인하는 메서드
+     *
+     * @param email 사용자 이메일
+     * @return 이메일이 사용 가능하면 true, 아니면 false
+     */
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
+    /**
      * 이메일 인증 코드 검증 메서드
      * @param email 사용자 이메일
      * @param inputCode 사용자가 입력한 인증 코드

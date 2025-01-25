@@ -2,9 +2,11 @@ package com.garret.dreammoa.domain.controller.user;
 
 import com.garret.dreammoa.domain.dto.common.ErrorResponse;
 import com.garret.dreammoa.domain.dto.common.SuccessResponse;
+import com.garret.dreammoa.domain.dto.user.request.CheckEmailRequest;
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
 import com.garret.dreammoa.domain.dto.user.request.SendVerificationCodeRequest;
 import com.garret.dreammoa.domain.dto.user.request.VerifyCodeRequest;
+import com.garret.dreammoa.domain.dto.user.response.EmailCheckResponse;
 import com.garret.dreammoa.domain.service.EmailService;
 import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.utils.JwtUtil;
@@ -51,6 +53,32 @@ public class UserController {
         return ResponseEntity.ok(new SuccessResponse("회원가입이 완료되었습니다."));
     }
 
+    /**
+     * 이메일 중복 확인 엔드포인트
+     *
+     * @param request 이메일 중복 확인 요청
+     * @param bindingResult 검증 결과
+     * @return 이메일 사용 가능 여부
+     */
+    @PostMapping("/check-email")
+    public ResponseEntity<?> checkEmail(@Valid @RequestBody CheckEmailRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(errorMessage));
+        }
+
+        try {
+            boolean available = userService.isEmailAvailable(request.getEmail());
+            return ResponseEntity.ok(new EmailCheckResponse(available));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     @PostMapping("/send-verification-code")
     public ResponseEntity<?> sendVerificationCode(@Valid @RequestBody SendVerificationCodeRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -91,6 +119,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
         }
     }
+
 
     @PostMapping("/userInfo")
     public ResponseEntity<?> userInfo(HttpServletRequest request, HttpServletResponse response) {
