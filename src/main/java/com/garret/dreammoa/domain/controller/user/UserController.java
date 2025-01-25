@@ -4,6 +4,7 @@ import com.garret.dreammoa.domain.dto.common.ErrorResponse;
 import com.garret.dreammoa.domain.dto.common.SuccessResponse;
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
 import com.garret.dreammoa.domain.dto.user.request.SendVerificationCodeRequest;
+import com.garret.dreammoa.domain.dto.user.request.VerifyCodeRequest;
 import com.garret.dreammoa.domain.service.EmailService;
 import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.utils.JwtUtil;
@@ -37,6 +38,7 @@ public class UserController {
 
     @PostMapping("/join")
     public ResponseEntity<?> joinProcess(@Valid @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -65,6 +67,28 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-email-code")
+    public ResponseEntity<?> verifyEmailCode(@Valid @RequestBody VerifyCodeRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(errorMessage));
+        }
+
+        try {
+            boolean isValid = userService.verifyEmailCode(request.getEmail(), request.getCode());
+            if (isValid) {
+                return ResponseEntity.ok(new SuccessResponse("인증 코드가 일치합니다."));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("인증 코드가 일치하지 않습니다."));
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
         }
     }
 

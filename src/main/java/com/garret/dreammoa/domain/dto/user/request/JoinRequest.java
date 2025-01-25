@@ -1,9 +1,6 @@
 package com.garret.dreammoa.domain.dto.user.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +35,7 @@ public class JoinRequest {
     )
     private String nickname;
 
-    @NotEmpty(message = "인증 코드는 필수입니다.")
-    private String code;
+    @AssertTrue(message = "이메일 인증이 필요합니다.")
+    private boolean verifyEmail;
+
 }
