@@ -11,7 +11,7 @@ import LoginPage from "../pages/User/LoginPage";
 import JoinPage from "../pages/User/JoinPage";
 import FindidPage from "../pages/User/FindidPage";
 import FindpwPage from "../pages/User/FindpwPage";
-import SideNavbar from "../components/common/SideNavbar";
+import DocumentsPage from "../pages/User/DocumentsPage";
 
 const ChallengeListPage = lazy(() => import("../pages/Challenge/ChallengeListPage"));
 const ChallengeDetailPage = lazy(() => import("../pages/Challenge/ChallengeDetailPage"));
@@ -32,9 +32,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* 메인 페이지 */}
-      <Route element={<SideNavbar/>}>
-        <Route path="/" element={<HomePage />} />
-      </Route>
+      <Route path="/" element={<HomePage />} />
       {/* 회원 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
@@ -43,6 +41,7 @@ export default function AppRoutes() {
       <Route path="/findid" element={<FindidPage />} /> {/* 아이디 찾기 */}
       <Route path="/findpw" element={<FindpwPage />} /> {/* 비밀번호 찾기 */}
       <Route path="/dashboard" element={<DashBoardPage />} /> {/*대시보드 */}
+      <Route path="/documents" element={<DocumentsPage />} /> {/*나의 문서 */}
       {/* 게시판 */}
       <Route path="/community/list" element={<CommunityListPage />} />
       <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
