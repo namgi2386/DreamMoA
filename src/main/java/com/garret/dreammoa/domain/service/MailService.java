@@ -1,9 +1,11 @@
 package com.garret.dreammoa.domain.service;
 
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +25,15 @@ public class MailService {
      * @param text    이메일 내용
      */
     public void sendEmail(String toEmail, String title, String text) {
-        SimpleMailMessage message = createEmailForm(toEmail, title, text);
+        MimeMessage message = emailSender.createMimeMessage();
         try {
+
+            // MimeMessageHelper를 사용하여 HTML 콘텐츠 설정
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setTo(toEmail);
+            helper.setSubject(title);
+            helper.setText(text, true); // 두 번째 파라미터 `true`로 HTML 지원
+
             emailSender.send(message);
             log.info("이메일 전송 성공: to={}, subject={}", toEmail, title); // 추가
         } catch (Exception e) {
