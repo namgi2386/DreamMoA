@@ -112,7 +112,7 @@ public class EmailService {
                        </div>
                                     <p>이 인증 코드는 <strong>30분</strong> 동안만 유효합니다.</p>
                                     <p>DreamMoa와 함께 소중한 꿈을 이루세요!</p>
-                                    <p><a href="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FS0OG0%2Fbtr94wPnHrH%2F6Xs62d6SsmEmHgNqBeFKQk%2Fimg.jpg" class="button">인증 페이지로 이동</a></p>
+                                    <p><a href="https://file3.instiz.net/data/cached_img/upload/2020/01/19/4/764fe596bd92b8096180b4a0b4047360.jpg" class="button">인증 페이지로 이동</a></p>
                                 </div>
                                 <div class="footer">
                                     <p>본 이메일은 발신 전용입니다. 문의가 필요하시면 <a href="mailto:eunspear0216@gmail.com">support@dreammoa.com</a>으로 연락주세요.</p>
