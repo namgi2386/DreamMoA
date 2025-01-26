@@ -3,11 +3,14 @@ package com.garret.dreammoa.domain.controller.user;
 import com.garret.dreammoa.domain.dto.common.ErrorResponse;
 import com.garret.dreammoa.domain.dto.common.SuccessResponse;
 import com.garret.dreammoa.domain.dto.user.request.CheckEmailRequest;
+import com.garret.dreammoa.domain.dto.user.request.EmailFindRequest;
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
+import com.garret.dreammoa.domain.dto.user.request.PwFindRequest;
 import com.garret.dreammoa.domain.dto.user.request.SendVerificationCodeRequest;
 import com.garret.dreammoa.domain.dto.user.request.VerifyCodeRequest;
 import com.garret.dreammoa.domain.dto.user.response.EmailCheckResponse;
 import com.garret.dreammoa.domain.service.EmailService;
+import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
@@ -19,10 +22,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.CookieStore;
 import java.util.Arrays;
@@ -122,14 +122,9 @@ public class UserController {
 
 
     @PostMapping("/userInfo")
-    public ResponseEntity<?> userInfo(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> userInfo(HttpServletRequest request) {
         // 1. 쿠키에서 accessToken 가져오기
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return ResponseEntity.badRequest().body("쿠키가 없습니다.");
-        }
-
-        String accessToken = Arrays.stream(cookies)
+        String accessToken = Arrays.stream(request.getCookies())
                 .filter(cookie -> "access_token".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
@@ -139,26 +134,55 @@ public class UserController {
             return ResponseEntity.badRequest().body("Access Token이 없습니다.");
         }
 
-        // 2. JWT에서 유저 정보 추출
-        if (!jwtUtil.validateToken(accessToken)) {
-            return ResponseEntity.status(401).body("유효하지 않은 Access Token입니다.");
+        try {
+            // 2. Service를 통해 UserResponse DTO 추출
+            UserResponse userInfo = userService.extractUserInfo(accessToken);
+
+            // 3. 유저 정보 반환
+            return ResponseEntity.ok(userInfo);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/emailFind")
+    public ResponseEntity<?> emailFind(@RequestBody EmailFindRequest request) {
+        try {
+            String email = userService.findByEmailByNicknameAndName(request.getNickname(), request.getName());
+            return ResponseEntity.ok(email);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // 이메일 인증 코드 발송
+    @PostMapping("/pwFind")
+    public ResponseEntity<?> pwFind(@Valid @RequestBody SendVerificationCodeRequest request) {
+        String email = request.getEmail();
+
+        try {
+            emailService.sendVerificationCode(email);
+            return ResponseEntity.ok("인증 코드가 이메일로 전송되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("이메일 인증 전송 실패, 다시 시도해주세요.");
+        }
+    }
+
+    @PostMapping("/verifyCode")
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+
+
+        boolean isVerified = emailService.verifyCode(email, code);
+        if (email == null || code == null || email.isEmpty() || code.isEmpty()) {
+            return ResponseEntity.badRequest().body("이메일과 인증 코드를 모두 입력해주세요.");
         }
 
-        String email = jwtUtil.getEmailFromToken(accessToken);
-        String name = jwtUtil.getNameFromToken(accessToken);
-        String nickname = jwtUtil.getNicknameFromToken(accessToken);
-
-        if (email == null || name == null || nickname == null) {
-            return ResponseEntity.status(401).body("토큰에서 유저 정보를 가져올 수 없습니다.");
+        if (isVerified) {
+            return ResponseEntity.ok("인증 성공! 비밀번호 재설정 페이지로 이동하세요.");
+        } else {
+            return ResponseEntity.badRequest().body("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
-
-        // 3. 유저 정보 반환
-        Map<String, String> userInfo = Map.of(
-                "email", email,
-                "name", name,
-                "nickname", nickname
-        );
-
-        return ResponseEntity.ok(userInfo);
     }
 }
