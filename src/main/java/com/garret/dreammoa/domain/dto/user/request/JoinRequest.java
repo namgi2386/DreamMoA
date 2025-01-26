@@ -38,6 +38,6 @@ public class JoinRequest {
     )
     private String nickname;
 
-    @NotEmpty(message = "인증 코드는 필수입니다.")
-    private String code;
+//    @NotEmpty(message = "인증 코드는 필수입니다.")
+//    private String code;
 }
