@@ -113,7 +113,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
 
-                        .requestMatchers("/login", "/", "/join", "/userInfo", "send-verification-code", "/pwFind").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/userInfo", "/send-verification-code", "/verify-email-code", "/check-email", "/pwFind").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
@@ -149,6 +149,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 적용
         return source;
     }
+
 
 
 }

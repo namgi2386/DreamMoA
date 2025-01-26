@@ -21,6 +21,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileService fileService;
     private final JwtUtil jwtUtil;
+    private final EmailService emailService;
 
     // 여기서 초기화
 
@@ -38,6 +39,11 @@ public class UserService {
         String password = joinRequest.getPassword();
         String name = joinRequest.getName();
         String nickname = joinRequest.getNickname();
+        boolean verityEmail = joinRequest.isVerifyEmail();
+
+        if(!verityEmail){
+            throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
+        }
 
         // 이메일 중복 체크
         if(userRepository.existsByEmail(email)){
@@ -53,7 +59,7 @@ public class UserService {
         String emailLocalPart = email.split("@")[0].toLowerCase();
         String passwordLower = password.toLowerCase();
         if(passwordLower.contains(emailLocalPart)){
-            throw new RuntimeException("비밀번호에 이메일의 로컬 파트가 포함될 수 없습니다.");
+            throw new RuntimeException("비밀번호에 이메일 이름이 포함될 수 없습니다.");
         }
 
         // 사용자 엔티티 생성
@@ -66,6 +72,26 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+    }
+
+    /**
+     * 이메일 중복 여부를 확인하는 메서드
+     *
+     * @param email 사용자 이메일
+     * @return 이메일이 사용 가능하면 true, 아니면 false
+     */
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
+    /**
+     * 이메일 인증 코드 검증 메서드
+     * @param email 사용자 이메일
+     * @param inputCode 사용자가 입력한 인증 코드
+     * @return 인증 코드가 일치하면 true, 아니면 false
+     */
+    public boolean verifyEmailCode(String email, String inputCode) {
+        return emailService.verifyCode(email, inputCode);
     }
 
 

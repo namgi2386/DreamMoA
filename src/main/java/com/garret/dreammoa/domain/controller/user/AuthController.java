@@ -11,16 +11,20 @@ import com.garret.dreammoa.domain.model.UserEntity;
 import com.garret.dreammoa.domain.repository.UserRepository;
 import com.garret.dreammoa.domain.service.FileService;
 import com.garret.dreammoa.utils.CookieUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.redis.core.RedisTemplate;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -36,7 +40,15 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,  BindingResult  bindingResult, HttpServletResponse response) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage())
+            );
+            return ResponseEntity.badRequest().body(errors); // 400 에러와 함께 에러 메시지 반환
+        }
+
         // 이메일과 비밀번호로 인증 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
