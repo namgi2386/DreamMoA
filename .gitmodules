@@ -1,0 +1,3 @@
+[submodule "dreammoa-config"]
+	path = dreammoa-config
+	url = https://github.com/DreamMoA/dreammoa-config.git
