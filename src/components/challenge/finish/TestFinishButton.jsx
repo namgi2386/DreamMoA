@@ -41,7 +41,7 @@ const TestFinishButton = () => {
             setTimeout(() => {
             setIsRunStar(false);
             }, 2300); 
-            // delay(1.7초) duration(0.3초) + 우선 1초 
+            // delay(1.7초) duration(0.3초) + 우선 0.3초 
           }} 
         >
           Finish
