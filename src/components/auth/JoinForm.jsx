@@ -191,7 +191,7 @@ const JoinForm = () => {
 
     try {
       const { email, password, name, nickname } = formData;
-      await authApi.join(email, password, name, nickname,);
+      await authApi.join(email, password, name, nickname, isEmailVerified);
 
       await Swal.fire({
         icon: "success",

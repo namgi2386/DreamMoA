@@ -39,19 +39,20 @@ export const authApi = {
   },
 
   // 회원가입
-  join: async (email, password, name, nickname, profilePicture = null) => {
+  join: async (email, password, name, nickname, verifyEmail) => {
     try {
       const formData = new FormData();
       formData.append("email", email);
       formData.append("password", password);
       formData.append("name", name);
       formData.append("nickname", nickname);
+      formData.append("verifyEmail", verifyEmail);
 
-      if (profilePicture) {
-        formData.append("profilePicture", profilePicture);
-      } else {
-        formData.append("profilePicture", new Blob([]));
-      }
+      // if (profilePicture) {
+      //   formData.append("profilePicture", profilePicture);
+      // } else {
+      //   formData.append("profilePicture", new Blob([]));
+      // }
 
       const response = await api.post("/join", formData, {
         headers: {
