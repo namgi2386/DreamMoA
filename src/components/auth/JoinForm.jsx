@@ -346,7 +346,7 @@ const JoinForm = () => {
         disabled={!isFormValid}
         className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
           isFormValid
-            ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+            ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
             : "bg-gray-400 text-gray-200 cursor-not-allowed"
         }`}
       >
