@@ -25,13 +25,19 @@ const JoinForm = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isEmailButtonDisabled, setIsEmailButtonDisabled] = useState(false);
+  const [isNicknameVerified, setIsNicknameVerified] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
+
     // 이메일이 인증되었다면 수정 불가
     if (name === "email" && isEmailVerified) {
       return;
+    }
+
+    // 닉네임이 변경되면 인증 상태 초기화
+    if (name === "nickname") {
+      setIsNicknameVerified(false);
     }
 
     setFormData((prev) => ({
@@ -52,16 +58,16 @@ const JoinForm = () => {
         break;
       case "password":
         errorMessage = validatePassword(value, formData.email);
-        
+
         if (formData.confirmpassword && value !== formData.confirmpassword) {
           setErrors((prev) => ({
             ...prev,
-            confirmpassword: "비밀번호가 일치하지 않습니다"
+            confirmpassword: "비밀번호가 일치하지 않습니다",
           }));
         } else {
           setErrors((prev) => ({
             ...prev,
-            confirmpassword: ""
+            confirmpassword: "",
           }));
         }
         break;
@@ -88,7 +94,7 @@ const JoinForm = () => {
     try {
       // 이메일 중복 확인
       const isAvailable = await authApi.checkEmail(formData.email);
-      
+
       if (!isAvailable) {
         Swal.fire({
           icon: "error",
@@ -99,14 +105,14 @@ const JoinForm = () => {
 
       // 인증번호 발송
       await authApi.sendVerificationCode(formData.email);
-      
+
       Swal.fire({
         icon: "success",
         text: "인증메일을 발송했습니다.",
       });
-      
+
       setIsCodeSent(true);
-      setIsEmailButtonDisabled(true);  // 인증번호 받기 버튼 비활성화
+      setIsEmailButtonDisabled(true); // 인증번호 받기 버튼 비활성화
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -119,17 +125,43 @@ const JoinForm = () => {
   const handleVerifyCode = async () => {
     try {
       await authApi.verifyEmailCode(formData.email, formData.verificationCode);
-      
+
       Swal.fire({
         icon: "success",
         text: "인증코드가 일치합니다.",
       });
-      
+
       setIsEmailVerified(true);
     } catch (error) {
       Swal.fire({
         icon: "error",
         text: "인증코드가 일치하지 않습니다.",
+      });
+    }
+  };
+
+  // 닉네임 중복 확인
+  const handleCheckNickname = async () => {
+    try {
+      const isAvailable = await authApi.checkNickname(formData.nickname);
+
+      if (isAvailable) {
+        Swal.fire({
+          icon: "success",
+          text: "사용 가능한 닉네임입니다.",
+        });
+        setIsNicknameVerified(true);
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: "이미 사용 중인 닉네임입니다.",
+        });
+        setIsNicknameVerified(false);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: error.message,
       });
     }
   };
@@ -142,6 +174,7 @@ const JoinForm = () => {
       formData.name.trim() !== "" &&
       formData.nickname.trim() !== "" &&
       isEmailVerified &&
+      isNicknameVerified &&
       !errors.email &&
       !errors.password &&
       !errors.confirmpassword &&
@@ -149,7 +182,7 @@ const JoinForm = () => {
       !errors.nickname;
 
     setIsFormValid(isValid);
-  }, [formData, errors, isEmailVerified]);
+  }, [formData, errors, isEmailVerified, isNicknameVerified]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,7 +191,7 @@ const JoinForm = () => {
 
     try {
       const { email, password, name, nickname } = formData;
-      await authApi.join(email, password, name, nickname, null);
+      await authApi.join(email, password, name, nickname,);
 
       await Swal.fire({
         icon: "success",
@@ -195,7 +228,11 @@ const JoinForm = () => {
               onChange={handleChange}
               error={errors.email}
               placeholder="example@email.com"
-              className={isEmailVerified ? "bg-gray-400 text-gray-200 cursor-not-allowed" : ""}
+              className={
+                isEmailVerified
+                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  : ""
+              }
               disabled={isEmailVerified}
             />
           </div>
@@ -212,7 +249,7 @@ const JoinForm = () => {
             인증번호 받기
           </button>
         </div>
-        
+
         {isCodeSent && (
           <div className="flex items-center space-x-2">
             <div className="flex-1">
@@ -268,15 +305,37 @@ const JoinForm = () => {
         error={errors.name}
         placeholder="이름을 입력해주세요"
       />
-      <AuthInput
-        label="닉네임"
-        name="nickname"
-        type="text"
-        value={formData.nickname}
-        onChange={handleChange}
-        error={errors.nickname}
-        placeholder="닉네임을 입력해주세요"
-      />
+      <div className="flex items-center space-x-2">
+        <div className="flex-1">
+          <AuthInput
+            label="닉네임"
+            name="nickname"
+            type="text"
+            value={formData.nickname}
+            onChange={handleChange}
+            error={errors.nickname}
+            placeholder="닉네임을 입력해주세요"
+            className={
+              isNicknameVerified
+                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : ""
+            }
+            disabled={isNicknameVerified}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleCheckNickname}
+          disabled={!formData.nickname || isNicknameVerified}
+          className={`h-10 px-4 rounded focus:outline-none ${
+            formData.nickname && !isNicknameVerified
+              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+          }`}
+        >
+          중복 확인
+        </button>
+      </div>
 
       {errors.submit && (
         <div className="text-red-500 text-sm text-center">{errors.submit}</div>

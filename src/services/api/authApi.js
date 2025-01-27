@@ -120,6 +120,20 @@ export const authApi = {
       );
     }
   },
+
+  // 닉네임 중복 확인 추가
+  checkNickname: async (nickname) => {
+    try {
+      const response = await api.post("/check-nickname", { nickname });
+      return response.data.available; // true/false 반환
+    } catch (error) {
+      console.error("Nickname check error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+          "닉네임 중복 확인 중 오류가 발생했습니다."
+      );
+    }
+  },
 };
 
 export const socialLogin = (provider) => {
