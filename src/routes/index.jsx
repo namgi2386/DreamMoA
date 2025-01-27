@@ -37,7 +37,7 @@ export default function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
       <Route path="/TestPage" element={<TestPage />} />
-      <Route path="/mypage" element={<MyPage />} /> {/* /user-Info */}
+      <Route path="/mypage" element={<PrivateRoute><MyPage /></PrivateRoute>} /> {/* /user-Info */}
       <Route path="/findid" element={<FindidPage />} /> {/* 아이디 찾기 */}
       <Route path="/findpw" element={<FindpwPage />} /> {/* 비밀번호 찾기 */}
       <Route path="/dashboard" element={<DashBoardPage />} /> {/*대시보드 */}

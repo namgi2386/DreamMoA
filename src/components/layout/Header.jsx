@@ -1,20 +1,37 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useRecoilValue, useResetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { authState, userState } from "../../recoil/atoms/authState";
 import testlogo from "../../assets/logo/testlogo.png";
+import useAuth from "../../hooks/useAuth";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useRecoilValue(authState);
-  const resetAuthState = useResetRecoilState(authState);
-  const resetUserState = useResetRecoilState(userState);
+  // const resetAuthState = useResetRecoilState(authState);
+  // const resetUserState = useResetRecoilState(userState);
 
-  const handleAuthAction = () => {
+  const { logout } = useAuth();
+  const [UserInfo , setUserInfo] = useRecoilState(userState);
+
+  // const handleAuthAction = () => {
+  //   if (isAuthenticated) {
+  //     resetAuthState();
+  //     resetUserState();
+  //     navigate("/login");
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // };
+  const handleLogout = async () => {
     if (isAuthenticated) {
-      resetAuthState();
-      resetUserState();
-      navigate("/login");
+      try {
+        await logout();
+        setUserInfo(null);
+        navigate("/login");
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
     } else {
       navigate("/login");
     }
@@ -35,10 +52,10 @@ const Header = () => {
       </div>
       <div>
         <button
-          onClick={handleAuthAction}
+          onClick={handleLogout}
           className="text-white px-4 py-2 rounded"
         >
-          {isAuthenticated ? "로그아웃" : "로그인"}
+          {UserInfo ? "로그아웃" : "로그인"}
         </button>
       </div>
     </header>
