@@ -35,6 +35,6 @@ public class JoinRequest {
     )
     private String nickname;
 
-//    @NotEmpty(message = "인증 코드는 필수입니다.")
-//    private String code;
+    @AssertTrue(message = "이메일 인증이 필요합니다.")
+    private boolean verifyEmail;
 }
