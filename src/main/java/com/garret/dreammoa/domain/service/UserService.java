@@ -4,6 +4,7 @@ import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
 import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.model.FileEntity;
 import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.FileRepository;
 import com.garret.dreammoa.domain.repository.UserRepository;
 import com.garret.dreammoa.utils.JwtUtil;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -22,6 +25,8 @@ public class UserService {
     private final FileService fileService;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
+    private final FileRepository fileRepository;
+
 
     // 여기서 초기화
 
@@ -113,16 +118,22 @@ public class UserService {
         }
 
         // 토큰에서 유저 정보 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
         String email = jwtUtil.getEmailFromToken(accessToken);
         String name = jwtUtil.getNameFromToken(accessToken);
         String nickname = jwtUtil.getNicknameFromToken(accessToken);
 
-        if (email == null || name == null || nickname == null) {
+        if (email == null || name == null || nickname == null || userId == null) {
             throw new RuntimeException("토큰에서 유저 정보를 가져올 수 없습니다.");
         }
 
+        // 사용자 ID로 프로필 URL 가져오기
+        Optional<FileEntity> profilePicture = fileRepository.findByRelatedIdAndRelatedType(userId, FileEntity.RelatedType.PROFILE)
+                .stream().findFirst();
+        String profileUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+
         // 유저 정보 반환
-        return new UserResponse(email, name, nickname);
+        return new UserResponse(email, name, nickname, profileUrl);
     }
 
     public String findByEmailByNicknameAndName(String nickname, String name) {

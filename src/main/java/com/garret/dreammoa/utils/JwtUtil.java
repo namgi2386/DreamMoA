@@ -44,7 +44,7 @@ public class JwtUtil {
                 .addClaims(Map.of(
                         "name", name,
                         "nickname", nickname,
-                        "userId", userId
+                        "userId", String.valueOf(userId)
                 ))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -148,14 +148,18 @@ public class JwtUtil {
         return REFRESH_TOKEN_EXPIRE_TIME / 1000; // 초 단위 반환
     }
 
-    public String getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         try {
-            return Jwts.parserBuilder()
+            // 토큰에서 클레임 추출
+            String userIdStr = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .get("userId", String.class); // 클레임에서 userId 추출
+                    .get("userId", String.class); // userId를 String 타입으로 추출
+
+            // String을 Long으로 변환
+            return Long.parseLong(userIdStr);
         } catch (JwtException e) {
             log.error("유효하지 않은 JWT 토큰", e);
             return null;
