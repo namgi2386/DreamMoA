@@ -25,6 +25,8 @@ export const authApi = {
       throw error;
     }
   },
+
+  // 로그아웃
   logout: async () => {
     try {
       await api.post("/logout");
@@ -35,6 +37,8 @@ export const authApi = {
       throw error;
     }
   },
+
+  // 회원가입
   join: async (email, password, name, nickname, profilePicture = null) => {
     try {
       const formData = new FormData();
@@ -64,6 +68,55 @@ export const authApi = {
       });
       throw new Error(
         error.response?.data?.message || "회원가입 처리 중 오류가 발생했습니다."
+      );
+    }
+  },
+
+  // 이메일 중복 확인
+  checkEmail: async (email) => {
+    try {
+      const response = await api.post("/check-email", { email });
+      return response.data; // true 또는 false 반환
+    } catch (error) {
+      console.error("Email check error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+          "이메일 중복 확인 중 오류가 발생했습니다."
+      );
+    }
+  },
+
+  // 이메일 인증번호 발송
+  sendVerificationCode: async (email) => {
+    try {
+      const response = await api.post("/send-verification-code", { email });
+      if (response.data.message !== "인증 코드가 이메일로 전송되었습니다.") {
+        throw new Error("인증메일 발송에 실패했습니다.");
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Verification code send error:", error);
+      throw new Error(
+        error.response?.data?.message || "인증메일 발송 중 오류가 발생했습니다."
+      );
+    }
+  },
+
+  // 이메일 인증번호 확인
+  verifyEmailCode: async (email, code) => {
+    try {
+      const response = await api.post("/verify-email-code", {
+        email,
+        code,
+      });
+      if (response.data.message !== "인증 코드가 일치합니다.") {
+        throw new Error("인증 코드가 일치하지 않습니다.");
+      }
+      return response.data;
+    } catch (error) {
+      console.error("Verification code check error:", error);
+      throw new Error(
+        error.response?.data?.message || "인증코드 확인 중 오류가 발생했습니다."
       );
     }
   },

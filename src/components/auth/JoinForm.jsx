@@ -21,12 +21,20 @@ const JoinForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isVerificationSent, setIsVerificationSent] = useState(false);
 
-  // #### 닉네임 이 부분 주석 제거거
+  // #### 닉네임 이 부분 주석 제거
   // const [isNicknameValid, setIsNicknameValid] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // 이메일이 인증되었다면 수정 불가
+    if (name === "email" && isEmailVerified) {
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -52,16 +60,16 @@ const JoinForm = () => {
         break;
       case "password":
         errorMessage = validatePassword(value, formData.email);
-        
+
         if (formData.confirmpassword && value !== formData.confirmpassword) {
           setErrors((prev) => ({
             ...prev,
-            confirmpassword: "비밀번호가 일치하지 않습니다"
+            confirmpassword: "비밀번호가 일치하지 않습니다",
           }));
         } else {
           setErrors((prev) => ({
             ...prev,
-            confirmpassword: ""
+            confirmpassword: "",
           }));
         }
         break;
@@ -81,6 +89,56 @@ const JoinForm = () => {
       ...prev,
       [name]: errorMessage,
     }));
+  };
+
+  // 이메일 인증번호 받기
+  const handleGetVerification = async () => {
+    try {
+      // 이메일 중복 확인
+      const isAvailable = await authApi.checkEmail(formData.email);
+
+      if (!isAvailable) {
+        Swal.fire({
+          icon: "error",
+          text: "이미 사용 중인 이메일입니다.",
+        });
+        return;
+      }
+
+      // 인증번호 발송
+      await authApi.sendVerificationCode(formData.email);
+
+      Swal.fire({
+        icon: "success",
+        text: "인증메일을 발송했습니다.",
+      });
+
+      setIsVerificationSent(true);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "인증메일 발송 중 오류가 발생했습니다.",
+      });
+    }
+  };
+
+  // 인증번호 확인
+  const handleVerifyCode = async () => {
+    try {
+      await authApi.verifyEmailCode(formData.email, formData.verificationCode);
+
+      Swal.fire({
+        icon: "success",
+        text: "인증코드가 일치합니다.",
+      });
+
+      setIsEmailVerified(true);
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        text: "인증코드가 일치하지 않습니다.",
+      });
+    }
   };
 
   // #### 닉네임 중복 확인 ####
@@ -117,6 +175,7 @@ const JoinForm = () => {
       formData.confirmpassword.trim() !== "" &&
       formData.name.trim() !== "" &&
       formData.nickname.trim() !== "" &&
+      isEmailVerified &&
       !errors.email &&
       !errors.password &&
       !errors.confirmpassword &&
@@ -129,7 +188,7 @@ const JoinForm = () => {
     // }, [formData, errors, isNicknameValid]);
 
     setIsFormValid(isValid);
-  }, [formData, errors]);
+  }, [formData, errors, isEmailVerified]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -164,15 +223,66 @@ const JoinForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <AuthInput
-        label="이메일"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        error={errors.email}
-        placeholder="example@email.com"
-      />
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <div className="flex-1">
+            <AuthInput
+              label="이메일"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              error={errors.email}
+              placeholder="example@email.com"
+              className={
+                isEmailVerified
+                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  : ""
+              }
+              disabled={isEmailVerified}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleGetVerification}
+            disabled={!validateEmail(formData.email) || isEmailVerified}
+            className={`h-10 px-4 rounded focus:outline-none ${
+              validateEmail(formData.email) && !isEmailVerified
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+            }`}
+          >
+            인증번호 받기
+          </button>
+        </div>
+
+        {isVerificationSent && (
+          <div className="flex items-center space-x-2">
+            <div className="flex-1">
+              <AuthInput
+                name="verificationCode"
+                type="text"
+                value={formData.verificationCode}
+                onChange={handleChange}
+                placeholder="인증번호 입력"
+                disabled={isEmailVerified}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleVerifyCode}
+              disabled={!formData.verificationCode || isEmailVerified}
+              className={`h-10 px-4 rounded focus:outline-none ${
+                formData.verificationCode && !isEmailVerified
+                  ? "bg-blue-500 hover:bg-blue-600 text-white"
+                  : "bg-gray-400 text-gray-200 cursor-not-allowed"
+              }`}
+            >
+              인증번호 확인
+            </button>
+          </div>
+        )}
+      </div>
       <AuthInput
         label="비밀번호"
         name="password"
