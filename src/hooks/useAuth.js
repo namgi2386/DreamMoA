@@ -1,18 +1,20 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { authState } from '../recoil/atoms/authState';
+import { authState, userState } from '../recoil/atoms/authState';
 import { authApi } from '../services/api/authApi';
 import { authLoadingState } from '../recoil/atoms/authLoadingState';
+import getUserApi from '../services/api/getUserApi';
 
 const useAuth = () => {
   const [auth, setAuth] = useRecoilState(authState);
   const [isLoading, setIsLoading] = useRecoilState(authLoadingState);
   const navigate = useNavigate();
+  const setUserInfo = useSetRecoilState(userState);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      // console.log("initialize");
+      console.log("initialize");
       
       try {
         const storedToken = localStorage.getItem('accessToken');
@@ -43,15 +45,30 @@ const useAuth = () => {
   // 로그인 함수
   const login = async (credentials) => {
     try {
-      const response = await authApi.login(credentials);
-      if (response && response.accessToken) {
-        setAuth({
-          isAuthenticated: true,
-          accessToken: response.accessToken
-        });
-        return { success: true };
+      // 로그인 응답
+      const loginResponse = await authApi.login(credentials);
+      if (!loginResponse?.accessToken) {
+        return { success: false, error: '로그인에 실패했습니다.' };
       }
-      return { success: false, error: '로그인에 실패했습니다.' };
+  
+      // 로그인 성공 시 토큰 저장
+      setAuth({
+        isAuthenticated: true,
+        accessToken: loginResponse.accessToken
+      });
+  
+      try {
+        // 유저 정보 가져오기
+        const userResponse = await getUserApi.getUserInfo();
+        setUserInfo(userResponse.data);
+        return { success: true };
+      } catch (userError) {
+        // 유저 정보 가져오기 실패 시 처리
+        return {
+          success: false,
+          error: '사용자 정보를 가져오는데 실패했습니다.'
+        };
+      }
     } catch (error) {
       return {
         success: false,
@@ -64,18 +81,14 @@ const useAuth = () => {
   const logout = async () => {
     try {
       await authApi.logout();
-      setAuth({
-        isAuthenticated: false,
-        accessToken: null
-      });
-      navigate('/login');
     } catch (error) {
-      console.error('Logout failed:', error);
-      // 에러가 발생하더라도 로컬의 인증 상태는 초기화
+      console.error('로그아웃 안됨' , error)
+    } finally {
       setAuth({
         isAuthenticated: false,
         accessToken: null
       });
+      setUserInfo(null)
       navigate('/login');
     }
   };
@@ -95,7 +108,7 @@ const useAuth = () => {
     
     // console.log("Cookies:", cookies);
     return (auth.isAuthenticated && auth.accessToken) || cookies.access_token;
-   };
+  }; 
 
   // 로그인 상태에서 접근 불가능한 페이지 처리 (예: 로그인 페이지)
   const redirectIfAuthenticated = (path = '/') => {

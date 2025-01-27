@@ -1,8 +1,8 @@
 import { useRecoilValue } from 'recoil';
-import { userInfoState } from "../../recoil/atoms/authState";
+import { userState } from "../../recoil/atoms/authState";
 
 export default function MyPage() {
-  const userInfo = useRecoilValue(userInfoState);
+  const userInfo = useRecoilValue(userState);
 
   return (
     <div className="min-h-screen w-full bg-gray-100">
