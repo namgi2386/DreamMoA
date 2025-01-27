@@ -3,10 +3,10 @@ const AIFeatureSection = () => {
     <div className="bg-[#DBF2FF] py-20 px-10 flex items-center">
       <div className="w-1/2 space-y-6">
         <h2 className="text-4xl font-bold text-[#003458]">
-          AI 학습 혁신
+          AI 학습습
         </h2>
         <p className="text-xl text-[#3F628A]">
-          최첨단 기술로 개인화된 학습 경험을 제공합니다.
+          AI 기술로 개인화된 학습 경험을 제공합니다.
         </p>
         <ul className="space-y-3 text-[#003458]">
           <li>• 실시간 학습 집중도 분석</li>
