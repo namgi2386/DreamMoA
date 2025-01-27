@@ -5,6 +5,7 @@ import com.garret.dreammoa.domain.dto.common.SuccessResponse;
 import com.garret.dreammoa.domain.dto.user.request.*;
 import com.garret.dreammoa.domain.dto.user.response.EmailCheckResponse;
 import com.garret.dreammoa.domain.dto.user.response.NicknameCheckResponse;
+import com.garret.dreammoa.domain.dto.user.response.ProfilePictureResponse;
 import com.garret.dreammoa.domain.service.EmailService;
 import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.service.UserService;
@@ -119,6 +120,29 @@ public class UserController {
                     .body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    @PostMapping("/profile-picture")
+    public ResponseEntity<?> getUserProfile(HttpServletRequest request) {
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body("Access Token이 없습니다.");
+        }
+
+        try {
+            // 2. Service를 통해 UserResponse DTO 추출
+            UserResponse userInfo = userService.extractUserInfo(accessToken);
+
+            // 3. 유저 사진 반환
+            return ResponseEntity.ok(new ProfilePictureResponse(userInfo.getProfilePictureUrl()));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    } // 이거 없으면 null 처리하도록 설정해야됨
 
     @PostMapping("/verify-email-code")
     public ResponseEntity<?> verifyEmailCode(@Valid @RequestBody VerifyCodeRequest request, BindingResult bindingResult) {

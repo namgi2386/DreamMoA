@@ -44,9 +44,9 @@ public class UserService {
         String password = joinRequest.getPassword();
         String name = joinRequest.getName();
         String nickname = joinRequest.getNickname();
-        boolean verityEmail = joinRequest.isVerifyEmail();
+        boolean verifyEmail = joinRequest.isVerifyEmail();
 
-        if(!verityEmail){
+        if(!verifyEmail){
             throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
         }
 
@@ -142,4 +142,5 @@ public class UserService {
 
         return user.getEmail();
     }
+
 }
