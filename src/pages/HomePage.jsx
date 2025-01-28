@@ -1,12 +1,13 @@
-import EndButton from '../components/challenge/finish/EndButton';
+import MainHero from '../components/home/MainHero';
+import ServiceHighlight from '../components/home/ServiceHighlight';
+import AIFeatureSection from '../components/home/AIFeatureSection';
 
 export default function HomePage() {
   return (
-    <>
-      <EndButton/>
-      <div className="min-h-screen w-full bg-gray-800 flex items-center justify-center">
-        <div className="text-2xl font-bold">HomePage</div>
-      </div>
-    </>
+    <div className="min-h-screen w-full">
+      <MainHero />
+      <ServiceHighlight />
+      <AIFeatureSection />
+    </div>
   );
-};
+}
