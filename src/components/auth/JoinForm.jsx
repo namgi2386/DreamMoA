@@ -226,9 +226,12 @@ const JoinForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2">
+    <form onSubmit={handleSubmit} className="space-y-0">
+      <div className="space-y-0">
+        {/* 이메일 입력 칸 */}
+        <div className="flex items-center space-x-2 mb-0">
+          {" "}
+          {/* mb-1로 간격 조정 */}
           <div className="flex-1">
             <AuthInput
               label="이메일"
@@ -242,16 +245,20 @@ const JoinForm = () => {
               placeholder="example@email.com"
               disabled={isEmailVerified}
               className={`
-                ${isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
-                ${focusedField === 'email' ? "bg-my-blue-5 text-black" : "bg-white"}
-              `}
+            ${
+              isEmailVerified
+                ? "bg-gray-200 text-my-blue cursor-not-allowed"
+                : ""
+            }
+            ${focusedField === "email" ? "bg-my-blue-5 text-black" : "bg-white"}
+          `}
             />
           </div>
           <button
             type="button"
             onClick={handleGetVerification}
             disabled={!validateEmail(formData.email) || isEmailButtonDisabled}
-            className={`h-10 px-4 rounded focus:outline-none mt-3 ${
+            className={`h-10 px-4 rounded focus:outline-none mt-11 ${
               validateEmail(formData.email) && !isEmailButtonDisabled
                 ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
                 : "bg-gray-300 text-gray-50 cursor-not-allowed"
@@ -261,6 +268,7 @@ const JoinForm = () => {
           </button>
         </div>
 
+        {/* 인증번호 입력 칸 */}
         {isCodeSent && (
           <div className="flex items-center space-x-2">
             <div className="flex-1">
@@ -274,16 +282,24 @@ const JoinForm = () => {
                 placeholder="인증번호 6자리를 입력해주세요"
                 disabled={isEmailVerified}
                 className={`
-                  ${isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
-                  ${focusedField === 'verificationCode' ? "bg-my-blue-5 text-black" : "bg-white"}
-                `}
+              ${
+                isEmailVerified
+                  ? "bg-gray-200 text-my-blue cursor-not-allowed"
+                  : ""
+              }
+              ${
+                focusedField === "verificationCode"
+                  ? "bg-my-blue-5 text-black"
+                  : "bg-white"
+              }
+            `}
               />
             </div>
             <button
               type="button"
               onClick={handleVerifyCode}
               disabled={!formData.verificationCode || isEmailVerified}
-              className={`h-10 px-4 rounded focus:outline-none mb-2 ${
+              className={`h-10 px-4 rounded focus:outline-none mt-4 ${
                 formData.verificationCode && !isEmailVerified
                   ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
                   : "bg-gray-300 text-gray-50 cursor-not-allowed"
@@ -305,7 +321,9 @@ const JoinForm = () => {
         onBlur={handleBlur}
         error={errors.password}
         placeholder="8~16자로 입력해주세요"
-        className={focusedField === 'password' ? "bg-my-blue-5 text-black" : "bg-white"}
+        className={
+          focusedField === "password" ? "bg-my-blue-5 text-black" : "bg-white"
+        }
       />
       <AuthInput
         label="비밀번호 확인"
@@ -317,7 +335,11 @@ const JoinForm = () => {
         onBlur={handleBlur}
         error={errors.confirmpassword}
         placeholder="비밀번호를 다시 입력해주세요"
-        className={focusedField === 'confirmpassword' ? "bg-my-blue-5 text-black" : "bg-white"}
+        className={
+          focusedField === "confirmpassword"
+            ? "bg-my-blue-5 text-black"
+            : "bg-white"
+        }
       />
       <AuthInput
         label="이름"
@@ -329,7 +351,9 @@ const JoinForm = () => {
         onBlur={handleBlur}
         error={errors.name}
         placeholder="이름을 입력해주세요"
-        className={focusedField === 'name' ? "bg-my-blue-5 text-black" : "bg-white"}
+        className={
+          focusedField === "name" ? "bg-my-blue-5 text-black" : "bg-white"
+        }
       />
       <div className="flex items-center space-x-2">
         <div className="flex-1">
@@ -344,7 +368,11 @@ const JoinForm = () => {
             error={errors.nickname}
             placeholder="닉네임을 입력해주세요"
             disabled={isNicknameVerified}
-            className={focusedField === 'nickname' ? "bg-my-blue-5 text-black" : "bg-white"}
+            className={
+              focusedField === "nickname"
+                ? "bg-my-blue-5 text-black"
+                : "bg-white"
+            }
             // className={
             //   isNicknameVerified
             //     ? "bg-gray-200 text-gray-50 cursor-not-allowed"
@@ -356,17 +384,17 @@ const JoinForm = () => {
           type="button"
           onClick={handleCheckNickname}
           disabled={!formData.nickname || errors.nickname}
-          className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
+          className={`h-10 w-32 px-4 rounded focus:outline-none mt-11 ${
             formData.nickname && !errors.nickname
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+              : "bg-gray-300 text-gray-50 cursor-not-allowed"
           }`}
           // disabled={!formData.nickname || isNicknameVerified}
           // className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
-            //   formData.nickname && !isNicknameVerified
-            //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-            //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
-            // }`}
+          //   formData.nickname && !isNicknameVerified
+          //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+          //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
+          // }`}
         >
           중복 확인
         </button>
@@ -379,7 +407,7 @@ const JoinForm = () => {
       <button
         type="submit"
         disabled={!isFormValid}
-        className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+        className={`!mt-5 w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
           isFormValid
             ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
             : "bg-gray-400 text-gray-200 cursor-not-allowed"

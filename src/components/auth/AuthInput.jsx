@@ -12,28 +12,36 @@ const AuthInput = ({
   className
 }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-2">
       <label
-        className="block text-gray-700 text-sm font-bold mb-2"
+        className="block text-gray-700 text-sm font-bold mt-6 mb-2"
         htmlFor={name}
       >
         {label}
       </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-          error ? "border-red-500" : ""
-        } ${className || ""}`}
-      />
-      {error && <p className="text-red-500 text-xs italic mt-1">{error}</p>}
+      <div className="relative">
+        <input
+          id={name}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+            error ? "border-red-500" : ""
+          } ${className || ""}`}
+        />
+        <p
+          className={`absolute left-0 top-full text-red-500 text-xs mt-0.5 transition-all ${
+            error ? "opacity-100 visible" : "opacity-0 invisible"
+          }`}
+        >
+          {error}
+        </p>
+      </div>
     </div>
   );
 };
