@@ -12,4 +12,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Boolean existsByEmail(String email);
 
     Optional<UserEntity> findByEmail(String email);// 값이 없을 때 안정적 처리 지원
+
+//    Optional<UserEntity> findByName(String name);
+
+//    Optional<UserEntity> findCurrentUser();
 }

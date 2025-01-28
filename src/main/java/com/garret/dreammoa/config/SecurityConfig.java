@@ -111,6 +111,8 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
 
+                        .requestMatchers("/api/comments/**").authenticated()  // 댓글 관련 요청 인증 필요
+
                         .requestMatchers("/login", "/", "/join").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
