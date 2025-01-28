@@ -105,13 +105,23 @@ const JoinForm = () => {
   const handleGetVerification = async () => {
     try {
       // 이메일 중복 확인
-      const isAvailable = await authApi.checkEmail(formData.email);
+      const response =await authApi.checkEmail(formData.email);
+      const isAvailable = response.available;
 
       if (!isAvailable) {
-        Swal.fire({
+        const result = await Swal.fire({
           icon: "error",
           text: "이미 사용 중인 이메일입니다.",
+          showCancelButton: true,
+          confirmButtonText: "로그인 페이지로 이동",
+          cancelButtonText: "취소",
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
         });
+      
+        if (result.isConfirmed) {
+          navigate("/login");
+        }
         return;
       }
 
