@@ -128,14 +128,14 @@ const JoinForm = () => {
 
       Swal.fire({
         icon: "success",
-        text: "인증코드가 일치합니다.",
+        text: "인증번호가 일치합니다.",
       });
 
       setIsEmailVerified(true);
     } catch (error) {
       Swal.fire({
         icon: "error",
-        text: "인증코드가 일치하지 않습니다.",
+        text: "인증번호가 일치하지 않습니다.",
       });
     }
   };
@@ -240,9 +240,9 @@ const JoinForm = () => {
             type="button"
             onClick={handleGetVerification}
             disabled={!validateEmail(formData.email) || isEmailButtonDisabled}
-            className={`h-10 px-4 rounded focus:outline-none ${
+            className={`h-10 px-4 rounded focus:outline-none mt-3 ${
               validateEmail(formData.email) && !isEmailButtonDisabled
-                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
                 : "bg-gray-400 text-gray-200 cursor-not-allowed"
             }`}
           >
@@ -266,9 +266,9 @@ const JoinForm = () => {
               type="button"
               onClick={handleVerifyCode}
               disabled={!formData.verificationCode || isEmailVerified}
-              className={`h-10 px-4 rounded focus:outline-none ${
+              className={`h-10 px-4 rounded focus:outline-none mb-2 ${
                 formData.verificationCode && !isEmailVerified
-                  ? "bg-blue-500 hover:bg-blue-600 text-white"
+                  ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
                   : "bg-gray-400 text-gray-200 cursor-not-allowed"
               }`}
             >
@@ -327,9 +327,9 @@ const JoinForm = () => {
           type="button"
           onClick={handleCheckNickname}
           disabled={!formData.nickname || isNicknameVerified}
-          className={`h-10 px-4 rounded focus:outline-none ${
+          className={`h-10 px-4 rounded focus:outline-none mt-3 ${
             formData.nickname && !isNicknameVerified
-              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
               : "bg-gray-400 text-gray-200 cursor-not-allowed"
           }`}
         >
@@ -338,6 +338,8 @@ const JoinForm = () => {
       </div>
 
       {errors.submit && (
+
+        
         <div className="text-red-500 text-sm text-center">{errors.submit}</div>
       )}
 
