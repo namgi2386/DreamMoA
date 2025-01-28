@@ -27,7 +27,7 @@ const JoinForm = () => {
   const [isEmailButtonDisabled, setIsEmailButtonDisabled] = useState(false);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
-  const [wasNicknameVerified, setWasNicknameVerified] = useState(false); // 닉네임이 한번이라도 인증되었는지 추적
+  const [wasNicknameChanged, setWasNicknameChanged] = useState(false); // 닉네임이 한번이라도 인증되었는지 추적
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,8 +38,11 @@ const JoinForm = () => {
     }
 
     // 닉네임이 변경되면 인증 상태 초기화
-    if (name === "nickname" && wasNicknameVerified) {
-      setIsNicknameVerified(false);
+    if (name === "nickname") {
+      if (isNicknameVerified) {
+        setIsNicknameVerified(false);
+        setWasNicknameChanged(true);
+      }
     }
 
     setFormData((prev) => ({
@@ -149,32 +152,32 @@ const JoinForm = () => {
     }
   };
 
-  // 닉네임 중복 확인
+ // 닉네임 중복 확인
   const handleCheckNickname = async () => {
-    try {
-      const isAvailable = await authApi.checkNickname(formData.nickname);
+  try {
+    const isAvailable = await authApi.checkNickname(formData.nickname);
 
-      if (isAvailable) {
-        Swal.fire({
-          icon: "success",
-          text: "사용 가능한 닉네임입니다.",
-        });
-        setIsNicknameVerified(true);
-        setWasNicknameVerified(true);
-      } else {
-        Swal.fire({
-          icon: "error",
-          text: "이미 사용 중인 닉네임입니다.",
-        });
-        setIsNicknameVerified(false);
-      }
-    } catch (error) {
+    if (isAvailable) {
+      Swal.fire({
+        icon: "success",
+        text: "사용 가능한 닉네임입니다.",
+      });
+      setIsNicknameVerified(true);
+      setWasNicknameChanged(false);
+    } else {
       Swal.fire({
         icon: "error",
-        text: error.message,
+        text: "이미 사용 중인 닉네임입니다.",
       });
+      setIsNicknameVerified(false);
     }
-  };
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      text: error.message,
+    });
+  }
+};
 
   useEffect(() => {
     const isValid =
@@ -230,8 +233,6 @@ const JoinForm = () => {
       <div className="space-y-0">
         {/* 이메일 입력 칸 */}
         <div className="flex items-center space-x-2 mb-0">
-          {" "}
-          {/* mb-1로 간격 조정 */}
           <div className="flex-1">
             <AuthInput
               label="이메일"
@@ -367,34 +368,22 @@ const JoinForm = () => {
             onBlur={handleBlur}
             error={errors.nickname}
             placeholder="닉네임을 입력해주세요"
-            disabled={isNicknameVerified}
             className={
               focusedField === "nickname"
                 ? "bg-my-blue-5 text-black"
                 : "bg-white"
             }
-            // className={
-            //   isNicknameVerified
-            //     ? "bg-gray-200 text-gray-50 cursor-not-allowed"
-            //     : ""
-            // }
           />
         </div>
         <button
           type="button"
           onClick={handleCheckNickname}
-          disabled={!formData.nickname || errors.nickname}
+          disabled={!formData.nickname || errors.nickname || (isNicknameVerified && !wasNicknameChanged)}
           className={`h-10 w-32 px-4 rounded focus:outline-none mt-11 ${
-            formData.nickname && !errors.nickname
+            formData.nickname && !errors.nickname && (!isNicknameVerified || wasNicknameChanged)
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
               : "bg-gray-300 text-gray-50 cursor-not-allowed"
           }`}
-          // disabled={!formData.nickname || isNicknameVerified}
-          // className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
-          //   formData.nickname && !isNicknameVerified
-          //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-          //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
-          // }`}
         >
           중복 확인
         </button>
@@ -412,11 +401,6 @@ const JoinForm = () => {
             ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
             : "bg-gray-400 text-gray-200 cursor-not-allowed"
         }`}
-        // className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-        //   isFormValid
-        //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-        //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
-        // }`}
       >
         회원가입
       </button>
