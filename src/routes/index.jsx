@@ -33,6 +33,10 @@ export default function AppRoutes() {
     <Routes>
       {/* 메인 페이지 */}
       <Route path="/" element={<HomePage />} />
+      {/* 메인 페이지 하이라이트 경로 */}
+      <Route path="/Challenge/ChallengeListPage" element={<ChallengeListPage />} />
+      <Route path="/User/DashBoardPage" element={<DashBoardPage />} />
+      <Route path="/Community/CommunityListPage" element={<CommunityListPage />} />
       {/* 회원 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
