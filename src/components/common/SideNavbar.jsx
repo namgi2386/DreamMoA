@@ -8,7 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 
 // 공통 스타일 상수화
-const commonStyles = "fixed left-0   dark:bg-gray-800 cursor-grab z-50 bg-my-blue-1 rounded-tr-xl rounded-br-xl bg-opacity-80 hover:bg-opacity-90";
+const commonStyles = "fixed left-0   dark:bg-gray-800 cursor-grab z-50 bg-my-blue-1 rounded-tr-xl rounded-br-xl bg-opacity-95 hover:bg-opacity-98";
 const buttonStyles = "w-full text-3xl hover:bg-hmy-blue-1 py-4 flex justify-center items-center text-opacity-70 hover:text-opacity-90";
 
 
