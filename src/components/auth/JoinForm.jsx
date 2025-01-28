@@ -327,7 +327,7 @@ const JoinForm = () => {
           type="button"
           onClick={handleCheckNickname}
           disabled={!formData.nickname || isNicknameVerified}
-          className={`h-10 px-4 rounded focus:outline-none mt-3 ${
+          className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
             formData.nickname && !isNicknameVerified
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
               : "bg-gray-400 text-gray-200 cursor-not-allowed"
@@ -338,8 +338,6 @@ const JoinForm = () => {
       </div>
 
       {errors.submit && (
-
-        
         <div className="text-red-500 text-sm text-center">{errors.submit}</div>
       )}
 
