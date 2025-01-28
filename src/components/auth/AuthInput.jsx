@@ -4,6 +4,8 @@ const AuthInput = ({
   type,
   value,
   onChange,
+  onFocus,
+  onBlur,
   error,
   placeholder,
   disabled,
@@ -23,6 +25,8 @@ const AuthInput = ({
         type={type}
         value={value}
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}
         className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${

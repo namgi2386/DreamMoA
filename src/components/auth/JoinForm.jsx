@@ -26,6 +26,8 @@ const JoinForm = () => {
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isEmailButtonDisabled, setIsEmailButtonDisabled] = useState(false);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
+  const [focusedField, setFocusedField] = useState(null);
+  const [wasNicknameVerified, setWasNicknameVerified] = useState(false); // 닉네임이 한번이라도 인증되었는지 추적
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +38,7 @@ const JoinForm = () => {
     }
 
     // 닉네임이 변경되면 인증 상태 초기화
-    if (name === "nickname") {
+    if (name === "nickname" && wasNicknameVerified) {
       setIsNicknameVerified(false);
     }
 
@@ -48,6 +50,13 @@ const JoinForm = () => {
     validateField(name, value);
   };
 
+  const handleFocus = (e) => {
+    setFocusedField(e.target.name);
+  };
+
+  const handleBlur = () => {
+    setFocusedField(null);
+  };
   const validateField = (name, value) => {
     let errorMessage = "";
     switch (name) {
@@ -151,6 +160,7 @@ const JoinForm = () => {
           text: "사용 가능한 닉네임입니다.",
         });
         setIsNicknameVerified(true);
+        setWasNicknameVerified(true);
       } else {
         Swal.fire({
           icon: "error",
@@ -226,10 +236,15 @@ const JoinForm = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
               error={errors.email}
               placeholder="example@email.com"
               disabled={isEmailVerified}
-              className={isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
+              className={`
+                ${isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
+                ${focusedField === 'email' ? "bg-my-blue-5 text-black" : "bg-white"}
+              `}
             />
           </div>
           <button
@@ -254,9 +269,14 @@ const JoinForm = () => {
                 type="text"
                 value={formData.verificationCode}
                 onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
                 placeholder="인증번호 6자리를 입력해주세요"
                 disabled={isEmailVerified}
-                className={isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
+                className={`
+                  ${isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
+                  ${focusedField === 'verificationCode' ? "bg-my-blue-5 text-black" : "bg-white"}
+                `}
               />
             </div>
             <button
@@ -281,8 +301,11 @@ const JoinForm = () => {
         type="password"
         value={formData.password}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         error={errors.password}
         placeholder="8~16자로 입력해주세요"
+        className={focusedField === 'password' ? "bg-my-blue-5 text-black" : "bg-white"}
       />
       <AuthInput
         label="비밀번호 확인"
@@ -290,8 +313,11 @@ const JoinForm = () => {
         type="password"
         value={formData.confirmpassword}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         error={errors.confirmpassword}
         placeholder="비밀번호를 다시 입력해주세요"
+        className={focusedField === 'confirmpassword' ? "bg-my-blue-5 text-black" : "bg-white"}
       />
       <AuthInput
         label="이름"
@@ -299,8 +325,11 @@ const JoinForm = () => {
         type="text"
         value={formData.name}
         onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         error={errors.name}
         placeholder="이름을 입력해주세요"
+        className={focusedField === 'name' ? "bg-my-blue-5 text-black" : "bg-white"}
       />
       <div className="flex items-center space-x-2">
         <div className="flex-1">
@@ -310,21 +339,34 @@ const JoinForm = () => {
             type="text"
             value={formData.nickname}
             onChange={handleChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
             error={errors.nickname}
             placeholder="닉네임을 입력해주세요"
             disabled={isNicknameVerified}
-            className={isNicknameVerified ? "bg-gray-200 text-gray-50 cursor-not-allowed" : ""}
+            className={focusedField === 'nickname' ? "bg-my-blue-5 text-black" : "bg-white"}
+            // className={
+            //   isNicknameVerified
+            //     ? "bg-gray-200 text-gray-50 cursor-not-allowed"
+            //     : ""
+            // }
           />
         </div>
         <button
           type="button"
           onClick={handleCheckNickname}
-          disabled={!formData.nickname || isNicknameVerified}
+          disabled={!formData.nickname || errors.nickname}
           className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
-            formData.nickname && !isNicknameVerified
+            formData.nickname && !errors.nickname
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-              : "bg-gray-300 text-gray-50 cursor-not-allowed"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
           }`}
+          // disabled={!formData.nickname || isNicknameVerified}
+          // className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
+            //   formData.nickname && !isNicknameVerified
+            //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+            //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
+            // }`}
         >
           중복 확인
         </button>
@@ -340,8 +382,13 @@ const JoinForm = () => {
         className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
           isFormValid
             ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-            : "bg-gray-300 text-gray-50 cursor-not-allowed"
+            : "bg-gray-400 text-gray-200 cursor-not-allowed"
         }`}
+        // className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+        //   isFormValid
+        //     ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+        //     : "bg-gray-300 text-gray-50 cursor-not-allowed"
+        // }`}
       >
         회원가입
       </button>
