@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.CookieStore;
 import java.util.Arrays;
@@ -260,9 +261,22 @@ public class UserController {
         }
     }
 
-    @PostMapping("/delete-social-account")
-    public ResponseEntity<?> deleteSocialAccount(@RequestBody SocialAccountDeleteRequest deleteRequest, HttpServletRequest request) {
-        // 쿠키에서 accessToken 추출
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestPart("profileData") @Valid UpdateProfileRequest updateProfileRequest,
+            BindingResult bindingResult,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+            HttpServletRequest request) {
+
+        // 유효성 검증 결과 처리
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        // Access Token 확인
         String accessToken = Arrays.stream(request.getCookies())
                 .filter(cookie -> "access_token".equals(cookie.getName()))
                 .map(Cookie::getValue)
@@ -274,18 +288,12 @@ public class UserController {
         }
 
         try {
-            // AccessToken과 소셜 계정 정보로 탈퇴 요청
-            userService.deleteSocialAccount(accessToken, deleteRequest.isGoogleAccount());
-            return ResponseEntity.ok("소셜 계정 회원 탈퇴가 완료되었습니다.");
-        } catch (IllegalArgumentException e) {
-            // 클라이언트 측 요청 오류 (잘못된 소셜 계정 정보 등)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (SecurityException e) {
-            // 인증 문제 (토큰 문제 등)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 유효하지 않습니다.");
-        } catch (Exception e) {
-            // 서버 내부 오류
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("소셜 계정 회원 탈퇴 처리 중 서버 오류가 발생했습니다.");
+            userService.updateUserProfile(accessToken, updateProfileRequest, profilePicture);
+            return ResponseEntity.ok(new SuccessResponse("회원 정보가 성공적으로 수정되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
+
+
 }

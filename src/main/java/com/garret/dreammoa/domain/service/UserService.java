@@ -1,6 +1,7 @@
 package com.garret.dreammoa.domain.service;
 
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
+import com.garret.dreammoa.domain.dto.user.request.UpdateProfileRequest;
 import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.model.FileEntity;
 import com.garret.dreammoa.domain.model.UserEntity;
@@ -171,29 +172,73 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteSocialAccount(String accessToken, boolean isGoogleAccount) {
-        // Access Token 유효성 검증
+    public void updateUserProfile(String accessToken, UpdateProfileRequest updateProfileRequest, MultipartFile profilePicture) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new IllegalArgumentException("유효하지 않은 Access Token입니다.");
         }
 
-        // 토큰에서 사용자 ID 추출
-        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+        String email = jwtUtil.getEmailFromToken(accessToken);
 
-        // 사용자 정보 조회
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        // 소셜 로그인 계정 여부 확인
-        if (isGoogleAccount && user.getPassword() != null) {
-            throw new IllegalArgumentException("이 계정은 Google 계정이 아닙니다.");
+        // 닉네임 중복 체크
+        String newNickname = updateProfileRequest.getNickname();
+        if (!user.getNickname().equals(newNickname) && userRepository.existsByNickname(newNickname)) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
-        // 프로필 이미지 파일 삭제
-        Optional<FileEntity> profileImage = fileService.getProfilePicture(user.getId());
-        profileImage.ifPresent(file -> fileService.deleteFile(file.getFileId()));
+        // 사용자 정보 업데이트
+        user.setName(updateProfileRequest.getName());
+        user.setNickname(newNickname);
 
-        // 사용자 데이터 삭제
-        userRepository.delete(user);
+        // 비밀번호 변경 (선택)
+        String newPassword = updateProfileRequest.getPassword();
+        if (newPassword != null && !newPassword.isEmpty()) {
+            validatePassword(newPassword, email);
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        }
+
+        // 프로필 사진 업데이트 (선택)
+        if (profilePicture != null) {
+            FileEntity oldProfileImage = user.getProfileImage();
+
+            try {
+                FileEntity newProfileImage = fileService.saveFile(profilePicture, user.getId(), FileEntity.RelatedType.PROFILE);
+                user.setProfileImage(newProfileImage);
+
+                if (oldProfileImage != null) {
+                    fileService.deleteFile(oldProfileImage.getFileId());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("프로필 사진 업로드 중 오류가 발생했습니다: " + e.getMessage());
+            }
+        }
+
+        userRepository.save(user);
     }
+
+
+    /**
+     * 비밀번호 유효성 검사 메서드
+     * @param password 새 비밀번호
+     * @param email 사용자 이메일
+     */
+    private void validatePassword(String password, String email) {
+        String emailLocalPart = email.split("@")[0].toLowerCase();
+        String passwordLower = password.toLowerCase();
+
+        // 비밀번호에 이메일 로컬 파트 포함 여부 검증
+        if (passwordLower.contains(emailLocalPart)) {
+            throw new RuntimeException("비밀번호에 이메일 이름이 포함될 수 없습니다.");
+        }
+
+        // 비밀번호 유효성 검사
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&]).{8,16}$")) {
+            throw new RuntimeException("비밀번호는 영어, 숫자, 특수문자를 모두 포함하여 8~16자여야 합니다.");
+        }
+    }
+
+
+
 }
