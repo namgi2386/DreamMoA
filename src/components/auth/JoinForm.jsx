@@ -8,7 +8,9 @@ import {
   validateNickname,
 } from "../../utils/validation";
 import AuthInput from "./AuthInput.jsx";
+import LoadingModal from "../common/modal/LoadingModal";
 import Swal from "sweetalert2";
+import { AnimatePresence } from "framer-motion";
 
 const JoinForm = () => {
   const navigate = useNavigate();
@@ -25,6 +27,7 @@ const JoinForm = () => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isEmailButtonDisabled, setIsEmailButtonDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [wasNicknameChanged, setWasNicknameChanged] = useState(false); // 닉네임이 한번이라도 인증되었는지 추적
@@ -103,12 +106,14 @@ const JoinForm = () => {
 
   // 이메일 인증번호 받기
   const handleGetVerification = async () => {
+    setIsLoading(true);
     try {
       // 이메일 중복 확인
       const response = await authApi.checkEmail(formData.email);
       const isAvailable = response.available;
 
       if (!isAvailable) {
+        setIsLoading(false);
         const result = await Swal.fire({
           icon: "warning",
           text: "이미 사용 중인 이메일입니다.",
@@ -127,6 +132,7 @@ const JoinForm = () => {
 
       // 인증번호 발송
       await authApi.sendVerificationCode(formData.email);
+      setIsLoading(false);
 
       Swal.fire({
         icon: "success",
@@ -136,6 +142,7 @@ const JoinForm = () => {
       setIsCodeSent(true);
       setIsEmailButtonDisabled(true); // 인증번호 받기 버튼 비활성화
     } catch (error) {
+      setIsLoading(false);
       Swal.fire({
         icon: "error",
         text: "인증메일 발송 중 오류가 발생했습니다.",
@@ -239,23 +246,28 @@ const JoinForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-0">
-      <div className="space-y-0">
-        {/* 이메일 입력 칸 */}
-        <div className="flex items-center space-x-2 mb-0">
-          <div className="flex-1">
-            <AuthInput
-              label="이메일"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              error={errors.email}
-              placeholder="example@email.com"
-              disabled={isEmailVerified}
-              className={`
+    <>
+    <AnimatePresence>
+      {isLoading && <LoadingModal />}
+    </AnimatePresence>
+    
+      <form onSubmit={handleSubmit} className="space-y-0">
+        <div className="space-y-0">
+          {/* 이메일 입력 칸 */}
+          <div className="flex items-center space-x-2 mb-0">
+            <div className="flex-1">
+              <AuthInput
+                label="이메일"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                error={errors.email}
+                placeholder="example@email.com"
+                disabled={isEmailVerified}
+                className={`
             ${
               isEmailVerified
                 ? "bg-gray-200 text-my-blue cursor-not-allowed"
@@ -263,36 +275,36 @@ const JoinForm = () => {
             }
             ${focusedField === "email" ? "bg-my-blue-5 text-black" : "bg-white"}
           `}
-            />
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleGetVerification}
+              disabled={!validateEmail(formData.email) || isEmailButtonDisabled}
+              className={`h-10 px-4 rounded focus:outline-none mt-11 ${
+                validateEmail(formData.email) && !isEmailButtonDisabled
+                  ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+                  : "bg-gray-300 text-gray-50 cursor-not-allowed"
+              }`}
+            >
+              인증번호 받기
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleGetVerification}
-            disabled={!validateEmail(formData.email) || isEmailButtonDisabled}
-            className={`h-10 px-4 rounded focus:outline-none mt-11 ${
-              validateEmail(formData.email) && !isEmailButtonDisabled
-                ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-                : "bg-gray-300 text-gray-50 cursor-not-allowed"
-            }`}
-          >
-            인증번호 받기
-          </button>
-        </div>
 
-        {/* 인증번호 입력 칸 */}
-        {isCodeSent && (
-          <div className="flex items-center space-x-2">
-            <div className="flex-1">
-              <AuthInput
-                name="verificationCode"
-                type="text"
-                value={formData.verificationCode}
-                onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                placeholder="인증번호 6자리를 입력해주세요"
-                disabled={isEmailVerified}
-                className={`
+          {/* 인증번호 입력 칸 */}
+          {isCodeSent && (
+            <div className="flex items-center space-x-2">
+              <div className="flex-1">
+                <AuthInput
+                  name="verificationCode"
+                  type="text"
+                  value={formData.verificationCode}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  placeholder="인증번호 6자리를 입력해주세요"
+                  disabled={isEmailVerified}
+                  className={`
               ${
                 isEmailVerified
                   ? "bg-gray-200 text-my-blue cursor-not-allowed"
@@ -304,123 +316,126 @@ const JoinForm = () => {
                   : "bg-white"
               }
             `}
-              />
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleVerifyCode}
+                disabled={!formData.verificationCode || isEmailVerified}
+                className={`h-10 px-4 rounded focus:outline-none mt-4 ${
+                  formData.verificationCode && !isEmailVerified
+                    ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+                    : "bg-gray-300 text-gray-50 cursor-not-allowed"
+                }`}
+              >
+                인증번호 확인
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleVerifyCode}
-              disabled={!formData.verificationCode || isEmailVerified}
-              className={`h-10 px-4 rounded focus:outline-none mt-4 ${
-                formData.verificationCode && !isEmailVerified
-                  ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-                  : "bg-gray-300 text-gray-50 cursor-not-allowed"
-              }`}
-            >
-              인증번호 확인
-            </button>
+          )}
+        </div>
+
+        <AuthInput
+          label="비밀번호"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          error={errors.password}
+          placeholder="8~16자로 입력해주세요"
+          className={
+            focusedField === "password" ? "bg-my-blue-5 text-black" : "bg-white"
+          }
+        />
+        <AuthInput
+          label="비밀번호 확인"
+          name="confirmpassword"
+          type="password"
+          value={formData.confirmpassword}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          error={errors.confirmpassword}
+          placeholder="비밀번호를 다시 입력해주세요"
+          className={
+            focusedField === "confirmpassword"
+              ? "bg-my-blue-5 text-black"
+              : "bg-white"
+          }
+        />
+        <AuthInput
+          label="이름"
+          name="name"
+          type="text"
+          value={formData.name}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          error={errors.name}
+          placeholder="이름을 입력해주세요"
+          className={
+            focusedField === "name" ? "bg-my-blue-5 text-black" : "bg-white"
+          }
+        />
+        <div className="flex items-center space-x-2">
+          <div className="flex-1">
+            <AuthInput
+              label="닉네임"
+              name="nickname"
+              type="text"
+              value={formData.nickname}
+              onChange={handleChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              error={errors.nickname}
+              placeholder="닉네임을 입력해주세요"
+              className={
+                focusedField === "nickname"
+                  ? "bg-my-blue-5 text-black"
+                  : "bg-white"
+              }
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleCheckNickname}
+            disabled={
+              !formData.nickname ||
+              errors.nickname ||
+              (isNicknameVerified && !wasNicknameChanged)
+            }
+            className={`h-10 w-32 px-4 rounded focus:outline-none mt-11 ${
+              formData.nickname &&
+              !errors.nickname &&
+              (!isNicknameVerified || wasNicknameChanged)
+                ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
+                : "bg-gray-300 text-gray-50 cursor-not-allowed"
+            }`}
+          >
+            중복 확인
+          </button>
+        </div>
+
+        {errors.submit && (
+          <div className="text-red-500 text-sm text-center">
+            {errors.submit}
           </div>
         )}
-      </div>
 
-      <AuthInput
-        label="비밀번호"
-        name="password"
-        type="password"
-        value={formData.password}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        error={errors.password}
-        placeholder="8~16자로 입력해주세요"
-        className={
-          focusedField === "password" ? "bg-my-blue-5 text-black" : "bg-white"
-        }
-      />
-      <AuthInput
-        label="비밀번호 확인"
-        name="confirmpassword"
-        type="password"
-        value={formData.confirmpassword}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        error={errors.confirmpassword}
-        placeholder="비밀번호를 다시 입력해주세요"
-        className={
-          focusedField === "confirmpassword"
-            ? "bg-my-blue-5 text-black"
-            : "bg-white"
-        }
-      />
-      <AuthInput
-        label="이름"
-        name="name"
-        type="text"
-        value={formData.name}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        error={errors.name}
-        placeholder="이름을 입력해주세요"
-        className={
-          focusedField === "name" ? "bg-my-blue-5 text-black" : "bg-white"
-        }
-      />
-      <div className="flex items-center space-x-2">
-        <div className="flex-1">
-          <AuthInput
-            label="닉네임"
-            name="nickname"
-            type="text"
-            value={formData.nickname}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            error={errors.nickname}
-            placeholder="닉네임을 입력해주세요"
-            className={
-              focusedField === "nickname"
-                ? "bg-my-blue-5 text-black"
-                : "bg-white"
-            }
-          />
-        </div>
         <button
-          type="button"
-          onClick={handleCheckNickname}
-          disabled={
-            !formData.nickname ||
-            errors.nickname ||
-            (isNicknameVerified && !wasNicknameChanged)
-          }
-          className={`h-10 w-32 px-4 rounded focus:outline-none mt-11 ${
-            formData.nickname &&
-            !errors.nickname &&
-            (!isNicknameVerified || wasNicknameChanged)
+          type="submit"
+          disabled={!isFormValid}
+          className={`!mt-5 w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
+            isFormValid
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-              : "bg-gray-300 text-gray-50 cursor-not-allowed"
+              : "bg-gray-400 text-gray-200 cursor-not-allowed"
           }`}
         >
-          중복 확인
+          회원가입
         </button>
-      </div>
-
-      {errors.submit && (
-        <div className="text-red-500 text-sm text-center">{errors.submit}</div>
-      )}
-
-      <button
-        type="submit"
-        disabled={!isFormValid}
-        className={`!mt-5 w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-          isFormValid
-            ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-            : "bg-gray-400 text-gray-200 cursor-not-allowed"
-        }`}
-      >
-        회원가입
-      </button>
-    </form>
+      </form>
+    </>
   );
 };
 
