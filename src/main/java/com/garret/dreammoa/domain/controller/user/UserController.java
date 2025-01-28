@@ -231,4 +231,61 @@ public class UserController {
             return ResponseEntity.badRequest().body("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
     }
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request ) {
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body("Access Token이 없습니다.");
+        }
+
+        try {
+            // Authorization 헤더에서 accessToken을 추출하고 탈퇴 처리 요청
+            userService.deleteAccount(accessToken, loginRequest.getPassword());
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 비밀번호 불일치 또는 기타 잘못된 입력 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (SecurityException e) {
+            // 인증 또는 권한 문제 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 유효하지 않습니다.");
+        } catch (Exception e) {
+            // 서버 내부 오류 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 탈퇴 처리 중 서버 오류가 발생했습니다.");
+        }
+    }
+
+    @PostMapping("/delete-social-account")
+    public ResponseEntity<?> deleteSocialAccount(@RequestBody SocialAccountDeleteRequest deleteRequest, HttpServletRequest request) {
+        // 쿠키에서 accessToken 추출
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body("Access Token이 없습니다.");
+        }
+
+        try {
+            // AccessToken과 소셜 계정 정보로 탈퇴 요청
+            userService.deleteSocialAccount(accessToken, deleteRequest.isGoogleAccount());
+            return ResponseEntity.ok("소셜 계정 회원 탈퇴가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 클라이언트 측 요청 오류 (잘못된 소셜 계정 정보 등)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (SecurityException e) {
+            // 인증 문제 (토큰 문제 등)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 유효하지 않습니다.");
+        } catch (Exception e) {
+            // 서버 내부 오류
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("소셜 계정 회원 탈퇴 처리 중 서버 오류가 발생했습니다.");
+        }
+    }
 }

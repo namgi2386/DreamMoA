@@ -159,6 +159,8 @@ public class JwtUtil {
                     .get("userId", String.class); // userId를 String 타입으로 추출
 
             // String을 Long으로 변환
+
+            System.out.println("userIdStr = " + userIdStr);
             return Long.parseLong(userIdStr);
         } catch (JwtException e) {
             log.error("유효하지 않은 JWT 토큰", e);

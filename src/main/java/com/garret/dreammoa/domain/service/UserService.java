@@ -143,4 +143,57 @@ public class UserService {
         return user.getEmail();
     }
 
+    @Transactional
+    public void deleteAccount(String accessToken, String inputPassword) {
+        // Access Token 유효성 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new SecurityException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 사용자 ID 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+
+        // 사용자 정보 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(inputPassword, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // 프로필 이미지 삭제
+        Optional<FileEntity> profileImage = fileService.getProfilePicture(user.getId());
+        profileImage.ifPresent(file -> fileService.deleteFile(file.getFileId()));
+
+        // 사용자 데이터 삭제
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void deleteSocialAccount(String accessToken, boolean isGoogleAccount) {
+        // Access Token 유효성 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new IllegalArgumentException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 사용자 ID 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+
+        // 사용자 정보 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 소셜 로그인 계정 여부 확인
+        if (isGoogleAccount && user.getPassword() != null) {
+            throw new IllegalArgumentException("이 계정은 Google 계정이 아닙니다.");
+        }
+
+        // 프로필 이미지 파일 삭제
+        Optional<FileEntity> profileImage = fileService.getProfilePicture(user.getId());
+        profileImage.ifPresent(file -> fileService.deleteFile(file.getFileId()));
+
+        // 사용자 데이터 삭제
+        userRepository.delete(user);
+    }
 }
