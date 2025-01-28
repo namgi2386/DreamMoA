@@ -105,20 +105,20 @@ const JoinForm = () => {
   const handleGetVerification = async () => {
     try {
       // 이메일 중복 확인
-      const response =await authApi.checkEmail(formData.email);
+      const response = await authApi.checkEmail(formData.email);
       const isAvailable = response.available;
 
       if (!isAvailable) {
         const result = await Swal.fire({
-          icon: "error",
+          icon: "warning",
           text: "이미 사용 중인 이메일입니다.",
           showCancelButton: true,
           confirmButtonText: "로그인 페이지로 이동",
           cancelButtonText: "취소",
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
+          confirmButtonColor: "#88A9D5",
+          cancelButtonColor: "#B9CFDA",
         });
-      
+
         if (result.isConfirmed) {
           navigate("/login");
         }
@@ -162,32 +162,32 @@ const JoinForm = () => {
     }
   };
 
- // 닉네임 중복 확인
+  // 닉네임 중복 확인
   const handleCheckNickname = async () => {
-  try {
-    const isAvailable = await authApi.checkNickname(formData.nickname);
+    try {
+      const isAvailable = await authApi.checkNickname(formData.nickname);
 
-    if (isAvailable) {
-      Swal.fire({
-        icon: "success",
-        text: "사용 가능한 닉네임입니다.",
-      });
-      setIsNicknameVerified(true);
-      setWasNicknameChanged(false);
-    } else {
+      if (isAvailable) {
+        Swal.fire({
+          icon: "success",
+          text: "사용 가능한 닉네임입니다.",
+        });
+        setIsNicknameVerified(true);
+        setWasNicknameChanged(false);
+      } else {
+        Swal.fire({
+          icon: "error",
+          text: "이미 사용 중인 닉네임입니다.",
+        });
+        setIsNicknameVerified(false);
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        text: "이미 사용 중인 닉네임입니다.",
+        text: error.message,
       });
-      setIsNicknameVerified(false);
     }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      text: error.message,
-    });
-  }
-};
+  };
 
   useEffect(() => {
     const isValid =
@@ -388,9 +388,15 @@ const JoinForm = () => {
         <button
           type="button"
           onClick={handleCheckNickname}
-          disabled={!formData.nickname || errors.nickname || (isNicknameVerified && !wasNicknameChanged)}
+          disabled={
+            !formData.nickname ||
+            errors.nickname ||
+            (isNicknameVerified && !wasNicknameChanged)
+          }
           className={`h-10 w-32 px-4 rounded focus:outline-none mt-11 ${
-            formData.nickname && !errors.nickname && (!isNicknameVerified || wasNicknameChanged)
+            formData.nickname &&
+            !errors.nickname &&
+            (!isNicknameVerified || wasNicknameChanged)
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
               : "bg-gray-300 text-gray-50 cursor-not-allowed"
           }`}
