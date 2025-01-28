@@ -33,7 +33,7 @@ public class JwtUtil {
     }
 
 
-    public String createAccessToken(String email, String name, String nickname) {
+    public String createAccessToken(Long userId, String email, String name, String nickname) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + ACCESS_TOKEN_EXPIRE_TIME);
 
@@ -43,7 +43,8 @@ public class JwtUtil {
                 .setExpiration(validity)
                 .addClaims(Map.of(
                         "name", name,
-                        "nickname", nickname
+                        "nickname", nickname,
+                        "userId", String.valueOf(userId)
                 ))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -134,8 +135,8 @@ public class JwtUtil {
         return false;
     }
 
-    public boolean isRefreshTokenValid(String email, String refreshToken) {
-        String storedToken = redisTemplate.opsForValue().get(email); // Redis에서 저장된 토큰 가져오기
+    public boolean isRefreshTokenValid(Long userId, String refreshToken) {
+        String storedToken = redisTemplate.opsForValue().get(userId); // Redis에서 저장된 토큰 가져오기
         return refreshToken.equals(storedToken); // 저장된 토큰과 비교
     }
 
@@ -145,5 +146,23 @@ public class JwtUtil {
 
     public long getRefreshTokenExpirationTime() {
         return REFRESH_TOKEN_EXPIRE_TIME / 1000; // 초 단위 반환
+    }
+
+    public Long getUserIdFromToken(String token) {
+        try {
+            // 토큰에서 클레임 추출
+            String userIdStr = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .get("userId", String.class); // userId를 String 타입으로 추출
+
+            // String을 Long으로 변환
+            return Long.parseLong(userIdStr);
+        } catch (JwtException e) {
+            log.error("유효하지 않은 JWT 토큰", e);
+            return null;
+        }
     }
 }

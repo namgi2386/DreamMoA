@@ -5,6 +5,7 @@ import com.garret.dreammoa.config.oauth.OAuth2AuthorizationRequestBasedOnCookieR
 import com.garret.dreammoa.config.oauth.OAuth2SuccessHandler;
 import com.garret.dreammoa.config.oauth.OAuth2UserCustomService;
 import com.garret.dreammoa.domain.repository.FileRepository;
+import com.garret.dreammoa.domain.service.UserService;
 import com.garret.dreammoa.filter.JwtFilter;
 import com.garret.dreammoa.utils.JwtUtil;
 import com.garret.dreammoa.domain.repository.UserRepository;
@@ -48,6 +49,7 @@ public class SecurityConfig {
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
         return new OAuth2SuccessHandler(jwtUtil, userRepository, fileRepository, fileProperties);
     }
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -110,10 +112,9 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
-
-                        .requestMatchers("/api/comments/**").authenticated()  // 댓글 관련 요청 인증 필요
-
-                        .requestMatchers("/login", "/", "/join").permitAll()
+                                .requestMatchers("/api/comments/**").authenticated()  // 댓글 관련 요청 인증 필요
+                        .requestMatchers("/login", "/", "/join", "/userInfo",
+                                "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname", "/pwFind").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
@@ -149,6 +150,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 적용
         return source;
     }
+
 
 
 }
