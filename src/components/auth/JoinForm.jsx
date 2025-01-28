@@ -228,12 +228,8 @@ const JoinForm = () => {
               onChange={handleChange}
               error={errors.email}
               placeholder="example@email.com"
-              className={
-                isEmailVerified
-                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : ""
-              }
               disabled={isEmailVerified}
+              className={isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
             />
           </div>
           <button
@@ -243,7 +239,7 @@ const JoinForm = () => {
             className={`h-10 px-4 rounded focus:outline-none mt-3 ${
               validateEmail(formData.email) && !isEmailButtonDisabled
                 ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-gray-300 text-gray-50 cursor-not-allowed"
             }`}
           >
             인증번호 받기
@@ -258,8 +254,9 @@ const JoinForm = () => {
                 type="text"
                 value={formData.verificationCode}
                 onChange={handleChange}
-                placeholder="인증번호 입력"
+                placeholder="인증번호 6자리를 입력해주세요"
                 disabled={isEmailVerified}
+                className={isEmailVerified ? "bg-gray-200 text-my-blue cursor-not-allowed" : ""}
               />
             </div>
             <button
@@ -269,7 +266,7 @@ const JoinForm = () => {
               className={`h-10 px-4 rounded focus:outline-none mb-2 ${
                 formData.verificationCode && !isEmailVerified
                   ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-                  : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                  : "bg-gray-300 text-gray-50 cursor-not-allowed"
               }`}
             >
               인증번호 확인
@@ -315,12 +312,8 @@ const JoinForm = () => {
             onChange={handleChange}
             error={errors.nickname}
             placeholder="닉네임을 입력해주세요"
-            className={
-              isNicknameVerified
-                ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                : ""
-            }
             disabled={isNicknameVerified}
+            className={isNicknameVerified ? "bg-gray-200 text-gray-50 cursor-not-allowed" : ""}
           />
         </div>
         <button
@@ -330,7 +323,7 @@ const JoinForm = () => {
           className={`h-10 w-32 px-4 rounded focus:outline-none mt-3 ${
             formData.nickname && !isNicknameVerified
               ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-              : "bg-gray-400 text-gray-200 cursor-not-allowed"
+              : "bg-gray-300 text-gray-50 cursor-not-allowed"
           }`}
         >
           중복 확인
@@ -347,7 +340,7 @@ const JoinForm = () => {
         className={`w-full font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
           isFormValid
             ? "bg-my-blue-1 hover:bg-hmy-blue-1 text-white"
-            : "bg-gray-400 text-gray-200 cursor-not-allowed"
+            : "bg-gray-300 text-gray-50 cursor-not-allowed"
         }`}
       >
         회원가입
