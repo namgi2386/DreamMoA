@@ -3,7 +3,8 @@ import axios from "axios";
 // axios 인스턴스 생성
 const api = axios.create({
   baseURL: "http://localhost:8080", // 실제 API URL로 변경 필요
-  withCredentials: true, // credentials 포함 설정 (쿠키 전송을 위해 필수)
+  withCredentials: true, 
+  // credentials 포함 설정 (쿠키 전송을 위해 필수)
   headers: {
     // 0129 회원정보(이미지) 수정과정에서 주석처리해버리기
     // "Content-Type": "application/json",
@@ -32,8 +33,6 @@ api.interceptors.request.use(
     // console.log("interceptor : 헤더에서 Authorization 제거 완료 ");
 
     if (!config.url.includes('update-profile')) {
-      // console.log("interceptor : update-profile 아닌 요청");
-      
       config.headers['Content-Type'] = 'application/json';
       // console.log(`interceptor : headers변경 : 헤더내용첨부 : ` , config.headers );
     }
@@ -47,6 +46,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+export default api;
 // 요청 인터셉터 - 모든 요청에 AccessToken 포함
 // api.interceptors.request.use(
 //   (config) => {
@@ -68,7 +68,7 @@ api.interceptors.request.use(
 //     return Promise.reject(error);
 //   }
 // );
-export default api;
+
 // export default api;
 
 // 응답 인터셉터 - 토큰 만료 처리
