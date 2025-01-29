@@ -15,11 +15,27 @@ const api = axios.create({
 // // 0129 회원정보(이미지) 수정과정에서수정함  
 api.interceptors.request.use(
   (config) => {
+    // 로그아웃 요청의 경우 별도 처리
+    if (config.url === '/logout') {
+      return {
+        ...config,
+        headers: {
+          ...config.headers,
+          'Content-Type': 'application/json'
+        }
+      };
+    }
     // 쿠키로 인증을 처리할 것이므로 Authorization 헤더는 제거
-    delete config.headers.Authorization;
+    // console.log("interceptor : 쿠키처리 인터셉트");
+    // console.log("interceptor : Authorization확인" ,config.headers.Authorization );
+    // delete config.headers.Authorization;
+    // console.log("interceptor : 헤더에서 Authorization 제거 완료 ");
 
     if (!config.url.includes('update-profile')) {
+      // console.log("interceptor : update-profile 아닌 요청");
+      
       config.headers['Content-Type'] = 'application/json';
+      // console.log(`interceptor : headers변경 : 헤더내용첨부 : ` , config.headers );
     }
     
     // if (!config.headers['Content-Type']) {
