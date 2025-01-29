@@ -42,7 +42,8 @@ const Header = () => {
 
   return (
     <header
-      className="flex justify-between items-center p-4"
+      // className="flex justify-between items-center p-4"
+      className="fixed top-0 left-0 right-0 flex justify-between items-center p-4"
       style={{ backgroundColor: "#003458" }}
     >
       <div>
