@@ -18,6 +18,8 @@ Thumbs.db
 .env.*
 application.properties
 
+C:/SSAFY/uploads
+
 # 컴파일 산출물
 bin/
 out/
