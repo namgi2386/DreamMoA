@@ -18,15 +18,15 @@ export default function App() {
 
   return (
     <RecoilRoot>
-      <div className="min-h-screen bg-gray-300 dark:bg-gray-800">
+      <div className="h-screen w-screen bg-gray-300 dark:bg-gray-800 relative">  {/* 남기 확인 요망 */}
         <Header />
         {!shouldHideSideNavbar && <SideNavbar />}
-        <main className="flex-grow">
+        <main className="flex-grow pt-20">
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
         </main>
-        {!shouldHideFooter && <Footer />} {/* 조건부로 Footer 렌더링 */}
+        {!shouldHideFooter && <Footer />}
       </div>
     </RecoilRoot>
   );

@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", //src 모든파일에 tailwind 적용해줌줌
+    "./src/**/*.{js,ts,jsx,tsx}", //src 모든파일에 tailwind 적용해줌
   ],
   darkMode: 'class',  // 다크모드 활성화 방식
   theme: {
@@ -13,6 +13,7 @@ export default {
           2: '#3F628A',
           3: '#DBF2FF',
           4: '#88A9D5',
+          5: '#E8F0FE',
         },
         'hmy-blue': {
           1: '#002B48',
