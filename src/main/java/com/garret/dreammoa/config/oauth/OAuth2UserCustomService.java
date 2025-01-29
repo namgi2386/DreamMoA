@@ -34,6 +34,7 @@ public class OAuth2UserCustomService implements OAuth2UserService<OAuth2UserRequ
                             .email(email)
                             .name(name)
                             .nickname(name)
+                            .password("GooglePassWord123!")
                             .role(UserEntity.Role.USER)
                             .build();
                     return userRepository.save(newUser);
