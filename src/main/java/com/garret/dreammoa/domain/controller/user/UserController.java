@@ -283,6 +283,8 @@ public class UserController {
                 .findFirst()
                 .orElse(null);
 
+        System.out.println("accessToken = " + accessToken);
+
         if (accessToken == null) {
             return ResponseEntity.badRequest().body("Access Token이 없습니다.");
         }
@@ -292,6 +294,55 @@ public class UserController {
             return ResponseEntity.ok(new SuccessResponse("회원 정보가 성공적으로 수정되었습니다."));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        }
+
+    }
+        @PostMapping("/check-password")
+    public ResponseEntity<?> checkPassword(@Valid @RequestBody CheckPasswordRequest request,
+                                           HttpServletRequest httpRequest) {
+        // Access Token 확인
+        String accessToken = Arrays.stream(httpRequest.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
+        }
+
+        try {
+            userService.validatePassword(request.getPassword(),jwtUtil.getEmailFromToken(accessToken));
+            //@ 있는지 벨리데이션 함 해줌
+            boolean isMatch = userService.checkPassword(accessToken, request.getPassword());
+            if (isMatch) {
+                return ResponseEntity.ok(new SuccessResponse("비밀번호가 일치합니다."));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("비밀번호가 일치하지 않습니다."));
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordRequest request,
+                                            HttpServletRequest httpRequest) {
+        String accessToken = Arrays.stream(httpRequest.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
+        }
+
+        try {
+            userService.updatePassword(accessToken, request.getCurrentPassword(), request.getNewPassword(), request.getConfirmPassword());
+            return ResponseEntity.ok(new SuccessResponse("비밀번호가 성공적으로 변경되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
         }
     }
 

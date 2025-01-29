@@ -224,7 +224,7 @@ public class UserService {
      * @param password 새 비밀번호
      * @param email 사용자 이메일
      */
-    private void validatePassword(String password, String email) {
+    public void validatePassword(String password, String email) {
         String emailLocalPart = email.split("@")[0].toLowerCase();
         String passwordLower = password.toLowerCase();
 
@@ -239,6 +239,49 @@ public class UserService {
         }
     }
 
+    public boolean checkPassword(String accessToken, String inputPassword) {
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new IllegalArgumentException("유효하지 않은 Access Token입니다.");
+        }
+
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return bCryptPasswordEncoder.matches(inputPassword, user.getPassword());
+    }
 
 
+    @Transactional
+    public void updatePassword(String accessToken, String currentPassword, String newPassword, String confirmPassword) {
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new IllegalArgumentException("유효하지 않은 Access Token입니다.");
+        }
+
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 현재 비밀번호 검증
+        if (!bCryptPasswordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호와 현재 비밀번호가 동일한지 검증
+        if (bCryptPasswordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("새 비밀번호는 기존 비밀번호와 다르게 설정해야 합니다.");
+        }
+
+        // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        }
+
+        // 새 비밀번호 유효성 검증
+        validatePassword(newPassword, user.getEmail());
+
+        // 비밀번호 변경
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }

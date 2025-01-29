@@ -30,26 +30,22 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
 
-        // 요청에서 JWT 토큰 추출
         String jwt = resolveToken(request);
 
-        // JWT가 유효한 경우 사용자 인증 정보 설정
         if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
-            String email = jwtUtil.getEmailFromToken(jwt); // 토큰에서 이메일 추출
+            String email = jwtUtil.getEmailFromToken(jwt);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email); // 사용자 정보 로드
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            // Spring Security 컨텍스트에 인증 정보 설정
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
+                            userDetails, null, userDetails.getAuthorities()
                     );
             SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            System.out.println("JWT false");
         }
 
-        // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
 
