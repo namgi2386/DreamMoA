@@ -5,11 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-
-    Boolean existsByEmail(String email);
-
-    Optional<UserEntity> findByEmail(String email);// 값이 없을 때 안정적 처리 지원
+    boolean existsByEmail(String email);
+    boolean existsByNickname(String nickname);
+    Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByNicknameAndName(String nickname, String name);
 }

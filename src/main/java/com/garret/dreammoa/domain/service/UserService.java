@@ -1,29 +1,34 @@
 package com.garret.dreammoa.domain.service;
 
 import com.garret.dreammoa.domain.dto.user.request.JoinRequest;
+import com.garret.dreammoa.domain.dto.user.request.UpdateProfileRequest;
+import com.garret.dreammoa.domain.dto.user.response.UserResponse;
 import com.garret.dreammoa.domain.model.FileEntity;
 import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.FileRepository;
 import com.garret.dreammoa.domain.repository.UserRepository;
+import com.garret.dreammoa.utils.JwtUtil;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final FileService fileService;
+    private final JwtUtil jwtUtil;
+    private final EmailService emailService;
+    private final FileRepository fileRepository;
 
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileService fileService){
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.fileService = fileService;
-    }
     // 여기서 초기화
 
     @Transactional
@@ -34,43 +39,206 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void joinProcess(JoinRequest joinRequest){
         String email = joinRequest.getEmail();
         String password = joinRequest.getPassword();
         String name = joinRequest.getName();
         String nickname = joinRequest.getNickname();
+        boolean verifyEmail = joinRequest.isVerifyEmail();
 
-        System.out.println("email = " + email);
-        System.out.println("password = " + password);
-        System.out.println("name = " + name);
-        System.out.println("nickname = " + nickname);
+        if(!verifyEmail){
+            throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
+        }
 
-
-        Boolean isExist = userRepository.existsByEmail(email);
-
-        if(isExist){
+        // 이메일 중복 체크
+        if(userRepository.existsByEmail(email)){
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
 
+        // 닉네임 중복 체크
+        if(userRepository.existsByNickname(nickname)){
+            throw new RuntimeException("이미 존재하는 닉네임입니다.");
+        }
+
+        // 비밀번호에 이메일 로컬 파트 포함 여부 검증
+        String emailLocalPart = email.split("@")[0].toLowerCase();
+        String passwordLower = password.toLowerCase();
+        if(passwordLower.contains(emailLocalPart)){
+            throw new RuntimeException("비밀번호에 이메일 이름이 포함될 수 없습니다.");
+        }
+
+        // 사용자 엔티티 생성
         UserEntity user = UserEntity.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
                 .name(name)
                 .nickname(nickname)
-                .role(UserEntity.Role.USER) // 기본은 USER
+                .role(UserEntity.Role.USER) // 기본 역할 USER
                 .build();
 
         userRepository.save(user);
+    }
 
-        MultipartFile profilePicture = joinRequest.getProfilePicture();
-        if (profilePicture != null && !profilePicture.isEmpty()) {
+    /**
+     * 이메일 중복 여부를 확인하는 메서드
+     *
+     * @param email 사용자 이메일
+     * @return 이메일이 사용 가능하면 true, 아니면 false
+     */
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
+    /**
+     * 이메일 인증 코드 검증 메서드
+     * @param email 사용자 이메일
+     * @param inputCode 사용자가 입력한 인증 코드
+     * @return 인증 코드가 일치하면 true, 아니면 false
+     */
+    public boolean verifyEmailCode(String email, String inputCode) {
+        return emailService.verifyCode(email, inputCode);
+    }
+
+    /**
+     * 닉네임 중복 여부를 확인하는 메서드
+     *
+     * @param nickname 사용자 닉네임
+     * @return 닉네임이 사용 가능하면 true, 아니면 false
+     */
+    public boolean isNicknameAvailable(String nickname) {
+        return !userRepository.existsByNickname(nickname);
+    }
+
+
+
+    public UserResponse extractUserInfo(String accessToken) {
+        // JWT 토큰 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new RuntimeException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 유저 정보 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+        String email = jwtUtil.getEmailFromToken(accessToken);
+        String name = jwtUtil.getNameFromToken(accessToken);
+        String nickname = jwtUtil.getNicknameFromToken(accessToken);
+
+        if (email == null || name == null || nickname == null || userId == null) {
+            throw new RuntimeException("토큰에서 유저 정보를 가져올 수 없습니다.");
+        }
+
+        // 사용자 ID로 프로필 URL 가져오기
+        Optional<FileEntity> profilePicture = fileRepository.findByRelatedIdAndRelatedType(userId, FileEntity.RelatedType.PROFILE)
+                .stream().findFirst();
+        String profileUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+
+        // 유저 정보 반환
+        return new UserResponse(email, name, nickname, profileUrl);
+    }
+
+    public String findByEmailByNicknameAndName(String nickname, String name) {
+        UserEntity user = userRepository.findByNicknameAndName(nickname, name)
+                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+
+        return user.getEmail();
+    }
+
+    @Transactional
+    public void deleteAccount(String accessToken, String inputPassword) {
+        // Access Token 유효성 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new SecurityException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 사용자 ID 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+
+        // 사용자 정보 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 비밀번호 확인
+        if (!bCryptPasswordEncoder.matches(inputPassword, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+
+        // 프로필 이미지 삭제
+        Optional<FileEntity> profileImage = fileService.getProfilePicture(user.getId());
+        profileImage.ifPresent(file -> fileService.deleteFile(file.getFileId()));
+
+        // 사용자 데이터 삭제
+        userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updateUserProfile(String accessToken, UpdateProfileRequest updateProfileRequest, MultipartFile profilePicture) {
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new IllegalArgumentException("유효하지 않은 Access Token입니다.");
+        }
+
+        String email = jwtUtil.getEmailFromToken(accessToken);
+
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 닉네임 중복 체크
+        String newNickname = updateProfileRequest.getNickname();
+        if (!user.getNickname().equals(newNickname) && userRepository.existsByNickname(newNickname)) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        // 사용자 정보 업데이트
+        user.setName(updateProfileRequest.getName());
+        user.setNickname(newNickname);
+
+        // 비밀번호 변경 (선택)
+        String newPassword = updateProfileRequest.getPassword();
+        if (newPassword != null && !newPassword.isEmpty()) {
+            validatePassword(newPassword, email);
+            user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        }
+
+        // 프로필 사진 업데이트 (선택)
+        if (profilePicture != null) {
+            FileEntity oldProfileImage = user.getProfileImage();
+
             try {
-                fileService.saveFile(profilePicture, user.getId(), FileEntity.RelatedType.PROFILE);
+                FileEntity newProfileImage = fileService.saveFile(profilePicture, user.getId(), FileEntity.RelatedType.PROFILE);
+                user.setProfileImage(newProfileImage);
+
+                if (oldProfileImage != null) {
+                    fileService.deleteFile(oldProfileImage.getFileId());
+                }
             } catch (Exception e) {
-                System.out.println("프로필 사진 저장 중 오류 발생: " + e.getMessage());
-                throw new RuntimeException("프로필 사진 저장에 실패했습니다.");
+                throw new RuntimeException("프로필 사진 업로드 중 오류가 발생했습니다: " + e.getMessage());
             }
         }
-    }
-}
 
+        userRepository.save(user);
+    }
+
+
+    /**
+     * 비밀번호 유효성 검사 메서드
+     * @param password 새 비밀번호
+     * @param email 사용자 이메일
+     */
+    private void validatePassword(String password, String email) {
+        String emailLocalPart = email.split("@")[0].toLowerCase();
+        String passwordLower = password.toLowerCase();
+
+        // 비밀번호에 이메일 로컬 파트 포함 여부 검증
+        if (passwordLower.contains(emailLocalPart)) {
+            throw new RuntimeException("비밀번호에 이메일 이름이 포함될 수 없습니다.");
+        }
+
+        // 비밀번호 유효성 검사
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&]).{8,16}$")) {
+            throw new RuntimeException("비밀번호는 영어, 숫자, 특수문자를 모두 포함하여 8~16자여야 합니다.");
+        }
+    }
+
+
+
+}
