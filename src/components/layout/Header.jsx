@@ -43,9 +43,9 @@ const Header = () => {
   return (
     <header
       // className="flex justify-between items-center p-4"
-      className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-[999999] h-16"
+      className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-[999999] h-16 bg-my-blue-1"
       // 모든 페이지에서 pt-16적용중(App.jsx) (Header.jsx에서 헤더높이를 h-16으로 해둠)
-      style={{ backgroundColor: "#003458" }}
+      // style={{ backgroundColor: "#003458" }}
     >
       <div>
         <Link to="/">
