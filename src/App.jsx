@@ -12,16 +12,18 @@ export default function App() {
   const location = useLocation();
   const hideFooterPaths = ["/join", "/login"];
   const hideSideNavbarPaths = ["/join", "/login","/documents"];
+  const hideHeaderPaths = ["/login"];
 
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
   const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname);
+  const shouldHideHeader = hideHeaderPaths.includes(location.pathname);
 
   return (
     <RecoilRoot>
       <div className="h-screen w-screen bg-gray-300 dark:bg-gray-800 relative">  
-        <Header />
+        {!shouldHideHeader && <Header />}
         {!shouldHideSideNavbar && <SideNavbar />}
-        <main className="flex-grow pt-16"> {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠)  */}
+        <main className="flex-grow "> {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠)  */}
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
