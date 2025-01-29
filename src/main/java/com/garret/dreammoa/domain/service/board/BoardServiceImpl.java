@@ -8,6 +8,8 @@ import com.garret.dreammoa.domain.model.UserEntity;
 import com.garret.dreammoa.domain.repository.BoardRepository;
 import com.garret.dreammoa.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository; // UserEntity 조회용
+    private final Logger logger = LoggerFactory.getLogger(BoardServiceImpl.class);
 
     /**
      * CREATE
@@ -58,8 +61,10 @@ public class BoardServiceImpl implements BoardService {
      */
     @Override
     public BoardResponseDto getBoard(Long postId) {
+        logger.info("Fetching board with ID: {}", postId);
         BoardEntity board = boardRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다. id=" + postId));
+        logger.debug("Fetched BoardEntity: {}", board);
         return convertToResponseDto(board);
     }
 
