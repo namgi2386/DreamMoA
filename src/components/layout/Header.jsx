@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authState, userState } from "../../recoil/atoms/authState";
 import testlogo from "../../assets/logo/testlogo.png";
@@ -6,7 +6,7 @@ import useAuth from "../../hooks/useAuth";
 
 const Header = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   const { isAuthenticated } = useRecoilValue(authState);
   // const resetAuthState = useResetRecoilState(authState);
   // const resetUserState = useResetRecoilState(userState);
@@ -38,13 +38,14 @@ const Header = () => {
   };
 
   // Login 페이지에서는 헤더 렌더링 안 함
-  if (location.pathname === "/login") return null;
+  // if (location.pathname === "/login") return null;
 
   return (
     <header
       // className="flex justify-between items-center p-4"
-      className="fixed top-0 left-0 right-0 flex justify-between items-center p-4"
-      style={{ backgroundColor: "#003458" }}
+      className="fixed top-0 left-0 right-0 flex justify-between items-center p-4 z-[999999] h-16 bg-my-blue-1"
+      // 모든 페이지에서 pt-16적용중(App.jsx) (Header.jsx에서 헤더높이를 h-16으로 해둠)
+      // style={{ backgroundColor: "#003458" }}
     >
       <div>
         <Link to="/">
