@@ -18,10 +18,10 @@ export default function App() {
 
   return (
     <RecoilRoot>
-      <div className="h-screen w-screen bg-gray-300 dark:bg-gray-800 relative">  {/* 남기 확인 요망 */}
+      <div className="h-screen w-screen bg-gray-300 dark:bg-gray-800 relative">  
         <Header />
         {!shouldHideSideNavbar && <SideNavbar />}
-        <main className="flex-grow pt-20">
+        <main className="flex-grow pt-16"> {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠)  */}
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
