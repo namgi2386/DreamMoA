@@ -5,30 +5,53 @@ const api = axios.create({
   baseURL: "http://localhost:8080", // 실제 API URL로 변경 필요
   withCredentials: true, // credentials 포함 설정 (쿠키 전송을 위해 필수)
   headers: {
-    "Content-Type": "application/json",
+    // 0129 회원정보(이미지) 수정과정에서 주석처리해버리기
+    // "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
-// 요청 인터셉터 - 모든 요청에 AccessToken 포함
+// // 요청 인터셉터 - 모든 요청에 AccessToken 포함
+// // 0129 회원정보(이미지) 수정과정에서수정함  
 api.interceptors.request.use(
   (config) => {
-    console.log("너 혹시 인터셉트 당했니?");
+    // 쿠키로 인증을 처리할 것이므로 Authorization 헤더는 제거
+    delete config.headers.Authorization;
 
-    const accessToken = localStorage.getItem("accessToken");
-    console.log(accessToken);
-    console.log("access토큰 아직있음");
-
-    // 회원가입 요청에는 Authorization 헤더를 추가하지 않음
-    if (accessToken && !config.url.includes("/auth/join")) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if (!config.url.includes('update-profile')) {
+      config.headers['Content-Type'] = 'application/json';
     }
+    
+    // if (!config.headers['Content-Type']) {
+    //   config.headers['Content-Type'] = 'application/json';
+    // }
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
+// 요청 인터셉터 - 모든 요청에 AccessToken 포함
+// api.interceptors.request.use(
+//   (config) => {
+//     console.log("Request Config:", config);
+
+//     const accessToken = localStorage.getItem("accessToken");
+//     console.log("Access Token:", accessToken);
+
+//     // 회원가입 요청에는 Authorization 헤더를 추가하지 않음
+//     if (accessToken && !config.url.includes("/auth/join")) {
+//       config.headers.Authorization = `Bearer ${accessToken}`;
+//     }
+//     if (!config.headers['Content-Type']) {
+//       config.headers['Content-Type'] = 'application/json';
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 export default api;
 // export default api;
 

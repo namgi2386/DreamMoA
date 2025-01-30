@@ -17,7 +17,7 @@ const LoginPage = () => {
   };
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-10 p-4 ">
+      <div className="fixed top-0 left-0 right-0 z-10 p-4 flex justify-start">
         <Link to="/">
           <img src={testlogo} alt="로고" className="h-10 w-auto" />
         </Link>
