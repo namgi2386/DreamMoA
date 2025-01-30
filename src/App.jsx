@@ -10,7 +10,7 @@ import SideNavbar from "./components/common/SideNavbar";
 
 export default function App() {
   const location = useLocation();
-  const hideFooterPaths = ["/join", "/login"];
+  const hideFooterPaths = ["/join", "/login","/documents","/challenge/create"];
   const hideSideNavbarPaths = ["/join", "/login","/documents"];
   const hideHeaderPaths = ["/login","/documents"];
 

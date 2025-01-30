@@ -46,7 +46,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-export default api;
 // 요청 인터셉터 - 모든 요청에 AccessToken 포함
 // api.interceptors.request.use(
 //   (config) => {
@@ -68,7 +67,7 @@ export default api;
 //     return Promise.reject(error);
 //   }
 // );
-
+export default api;
 // export default api;
 
 // 응답 인터셉터 - 토큰 만료 처리
