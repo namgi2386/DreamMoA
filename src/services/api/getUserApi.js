@@ -15,7 +15,6 @@ const getUserApi = {
   }),
 
   uploadProfileImage: (file, userInfo) => {
-    
     const formData = new FormData();
     
     const profileData = {
@@ -24,32 +23,46 @@ const getUserApi = {
       password: 'skarl0240!'
     };
     
-    formData.append('profileData', JSON.stringify(profileData));
-    formData.append('profilePicture', null);  // 직접 file 객체 사용
+    console.log('전송할 profileData:', profileData);
 
-    console.log('Request URL:', '/update-profile');
-    console.log('Profile Data:', profileData);
-    console.log('FormData contents:');
-    for (let pair of formData.entries()) {
-      console.log(pair[0] + ':', pair[1]);
-    }
-    
-    
-    return api.put('/update-profile', formData
-    // , {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
+    const profileDataBlob = new Blob([JSON.stringify(profileData)], {
+      type: 'application/json'
+    });
+
+
+    formData.append('profileData', profileDataBlob);
+    formData.append('profilePicture', file);  // 직접 file 객체 사용
+
+        console.log('Request URL:', '/update-profile');
+        console.log('Profile Data:', profileData);
+        console.log('이거 url?: ' , file);
+        
+        console.log('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key} 내용:`, value);
+        }
+    const accessToken = localStorage.getItem("accessToken");
+    return api.put('/update-profile', formData, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        }
+      }
+    )
+    .then(response => {
+      console.log('이미지 변경 성공:', response.data);
+    //   console.log(api.post('/profile-picture' 
+    //     , {
+    //     headers: {
+    //       'Authorization': `Bearer ${accessToken}`,
+    //     }
     //   }
-    // }
-  )
-      .then(response => {
-        console.log('이미지 변경 성공:', response.data);
-        return response;
-      })
-      .catch(error => {
-        console.error('이미지 변경 실패:', error);
-        throw error;
-      });
+    // ))
+      return response;
+    })
+    .catch(error => {
+      console.error('이미지 변경 실패:', error);
+      throw error;
+    });
   },
 };
 

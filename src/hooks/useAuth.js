@@ -80,6 +80,7 @@ const useAuth = () => {
   // 로그아웃 함수
   const logout = async () => {
     try {
+      console.log("hooks 로그아웃함수실행");
       await authApi.logout();
     } catch (error) {
       console.error('로그아웃 안됨' , error)

@@ -29,8 +29,16 @@ export const authApi = {
   // 로그아웃
   logout: async () => {
     try {
-      await api.post("/logout");
+      console.log("로그아웃1");
+      await api.post("/logout", {}, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log("로그아웃2 : api요청은 성공");
+      
       localStorage.removeItem("accessToken");
+      console.log("로그아웃3 : access토큰제거");
     } catch (error) {
       console.error("Logout failed:", error);
       localStorage.removeItem("accessToken"); // 에러가 나도 로컬 스토리지는 클리어
