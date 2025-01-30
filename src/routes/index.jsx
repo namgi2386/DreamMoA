@@ -18,7 +18,10 @@ const ChallengeDetailPage = lazy(() => import("../pages/Challenge/ChallengeDetai
 const ChallengeCreatePage = lazy(() => import("../pages/Challenge/ChallengeCreatePage"));
 const ChallengeMeetPage = lazy(() => import("../pages/Challenge/ChallengeMeetPage"));
 
-const CommunityListPage = lazy(() => import("../pages/Community/CommunityListPage"));
+const CommunityQnAListPage = lazy(() => import("../pages/Community/QnA/CommunityQnAListPage"));
+const CommunityFreeListPage = lazy(() => import("../pages/Community/Free/CommunityFreeListPage"));
+
+// const CommunityListPage = lazy(() => import("../pages/Community/CommunityListPage"));
 const CommunityDetailPage = lazy(() => import("../pages/Community/CommunityDetailPage")); 
 const CommunityWritePage = lazy(() => import("../pages/Community/CommunityWritePage"));
 const CommunityEditPage = lazy(() => import("../pages/Community/CommunityEditPage"));
@@ -36,7 +39,7 @@ export default function AppRoutes() {
       {/* 메인 페이지 하이라이트 경로 */}
       <Route path="/Challenge/ChallengeListPage" element={<ChallengeListPage />} />
       <Route path="/User/DashBoardPage" element={<DashBoardPage />} />
-      <Route path="/Community/CommunityListPage" element={<CommunityListPage />} />
+      {/* <Route path="/Community/CommunityListPage" element={<CommunityListPage />} /> */}
       {/* 회원 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
@@ -47,10 +50,12 @@ export default function AppRoutes() {
       <Route path="/dashboard" element={<DashBoardPage />} /> {/*대시보드 */}
       <Route path="/documents" element={<DocumentsPage />} /> {/*나의 문서 */}
       {/* 게시판 */}
-      <Route path="/community/list" element={<CommunityListPage />} />
-      <Route path="/community/detail/:id" element={<CommunityDetailPage />} />
+      <Route path="/community/detail/:postId" element={<CommunityDetailPage />} />
       <Route path="/community/write" element={<PrivateRoute><CommunityWritePage /></PrivateRoute>} />
       <Route path="/community/edit/:id" element={<CommunityEditPage />} />
+      {/* 자유게시판과 QnA 게시판을 각각 다른 URL로 설정 */}
+      <Route path="/community/free" element={<CommunityFreeListPage category="자유" />} />
+      <Route path="/community/qna" element={<CommunityQnAListPage category="질문" />} />
       {/* 챌린지 */}
       <Route path="/challenge/list" element={<ChallengeListPage />} />
       <Route path="/challenge/detail/:id" element={<ChallengeDetailPage />} />

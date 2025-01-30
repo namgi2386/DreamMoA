@@ -91,11 +91,13 @@ export const authApi = {
   sendVerificationCode: async (email) => {
     try {
       const response = await api.post("/send-verification-code", { email });
+      console.log(response)
       if (response.data.message !== "인증 코드가 이메일로 전송되었습니다.") {
         throw new Error("인증메일 발송에 실패했습니다.");
       }
       return response.data;
     } catch (error) {
+      console.log(email)
       console.error("Verification code send error:", error);
       throw new Error(
         error.response?.data?.message || "인증메일 발송 중 오류가 발생했습니다."
