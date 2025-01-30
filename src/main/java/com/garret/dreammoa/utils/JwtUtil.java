@@ -51,21 +51,21 @@ public class JwtUtil {
     }
 
 
-     public String createRefreshToken(UserEntity user) {
-         Date now = new Date();
-         Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
+    public String createRefreshToken(UserEntity user) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + REFRESH_TOKEN_EXPIRE_TIME);
 
         String refreshToken = Jwts.builder()
                 .setSubject(user.getEmail()) // 이메일을 토큰 주제로 설정
                 .setIssuedAt(now) // 토큰 발행 시간
                 .setExpiration(validity) // 토큰 만료 시간
                 .addClaims(Map.of( // 사용자 ID를 추가로 저장
-                        "userId", user.getId()
+                        "userId", user.getId().toString() // userId를 String으로 저장
                 ))
                 .signWith(key, SignatureAlgorithm.HS256) // HMAC SHA-256으로 서명
                 .compact();
 
-        // Redis에 리프레시 토큰 저장 (키: 이메일, 값: 토큰)
+        // Redis에 리프레시 토큰 저장 (키: userId.toString(), 값: 토큰)
         redisTemplate.opsForValue().set(user.getId().toString(), refreshToken, REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         return refreshToken;
     }
@@ -136,7 +136,8 @@ public class JwtUtil {
     }
 
     public boolean isRefreshTokenValid(Long userId, String refreshToken) {
-        String storedToken = redisTemplate.opsForValue().get(userId); // Redis에서 저장된 토큰 가져오기
+        // userId를 String으로 변환하여 Redis에서 저장된 토큰을 가져옵니다.
+        String storedToken = redisTemplate.opsForValue().get(userId.toString());
         return refreshToken.equals(storedToken); // 저장된 토큰과 비교
     }
 
@@ -160,8 +161,8 @@ public class JwtUtil {
 
             // String을 Long으로 변환
             return Long.parseLong(userIdStr);
-        } catch (JwtException e) {
-            log.error("유효하지 않은 JWT 토큰", e);
+        } catch (JwtException | NumberFormatException e) {
+            log.error("유효하지 않은 JWT 토큰 또는 userId 변환 실패", e);
             return null;
         }
     }

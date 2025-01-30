@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.CookieStore;
 import java.util.Arrays;
@@ -231,4 +232,68 @@ public class UserController {
             return ResponseEntity.badRequest().body("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
     }
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(@Valid @RequestBody LoginRequest loginRequest, HttpServletRequest request ) {
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body("Access Token이 없습니다.");
+        }
+
+        try {
+            // Authorization 헤더에서 accessToken을 추출하고 탈퇴 처리 요청
+            userService.deleteAccount(accessToken, loginRequest.getPassword());
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 비밀번호 불일치 또는 기타 잘못된 입력 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (SecurityException e) {
+            // 인증 또는 권한 문제 처리
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증 정보가 유효하지 않습니다.");
+        } catch (Exception e) {
+            // 서버 내부 오류 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원 탈퇴 처리 중 서버 오류가 발생했습니다.");
+        }
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestPart("profileData") @Valid UpdateProfileRequest updateProfileRequest,
+            BindingResult bindingResult,
+            @RequestPart(value = "profilePicture", required = false) MultipartFile profilePicture,
+            HttpServletRequest request) {
+
+        // 유효성 검증 결과 처리
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.joining(", "));
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        // Access Token 확인
+        String accessToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if (accessToken == null) {
+            return ResponseEntity.badRequest().body("Access Token이 없습니다.");
+        }
+
+        try {
+            userService.updateUserProfile(accessToken, updateProfileRequest, profilePicture);
+            return ResponseEntity.ok(new SuccessResponse("회원 정보가 성공적으로 수정되었습니다."));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+
 }
