@@ -84,14 +84,6 @@ export default function AppRoutes() {
         path="/community/detail/:postId"
         element={<CommunityDetailPage />}
       />
-      <Route
-        path="/community/write"
-        element={
-          <PrivateRoute>
-            <CommunityWritePage />
-          </PrivateRoute>
-        }
-      />
       <Route path="/community/edit/:id" element={<CommunityEditPage />} />
       {/* 자유게시판과 QnA 게시판을 각각 다른 URL로 설정 */}
       <Route
