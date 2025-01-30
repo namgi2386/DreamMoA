@@ -12,7 +12,7 @@ export default function App() {
   const location = useLocation();
   const hideFooterPaths = ["/join", "/login"];
   const hideSideNavbarPaths = ["/join", "/login","/documents"];
-  const hideHeaderPaths = ["/login"];
+  const hideHeaderPaths = ["/login","/documents"];
 
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
   const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname);
@@ -20,14 +20,15 @@ export default function App() {
 
   return (
     <RecoilRoot>
-      <div className="h-screen w-full bg-gray-300 dark:bg-gray-800 relative">  
+      <div className="h-screen w-full bg-gray-300 dark:bg-gray-800 relative ">  
         {!shouldHideHeader && <Header />}
         {!shouldHideSideNavbar && <SideNavbar />}
-        <main className="pt-16 bg-gray-100"> {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠) + bg-gray-100는 로그인페이지 배경색색 */}
+        {!shouldHideHeader && <main className="pt-16 bg-gray-100"> 
+          {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠) + bg-gray-100는 로그인페이지 배경색색 */}
+        </main>}
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
-        </main>
         {!shouldHideFooter && <Footer />}
       </div>
     </RecoilRoot>
