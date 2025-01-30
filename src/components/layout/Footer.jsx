@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MapPin, Star, Users, Book, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ConstellationFooter = () => {
   const [activeDream, setActiveDream] = useState(null);
@@ -128,6 +129,16 @@ const ConstellationFooter = () => {
             {[
               { name: "이용약관", icon: <ChevronRight size={16} /> },
               { name: "FAQ", icon: <ChevronRight size={16} /> },
+              {
+                name: "QnA게시판",
+                icon: <ChevronRight size={16} />,
+                path: "/community/qna",
+              },
+              {
+                name: "자유게시판",
+                icon: <ChevronRight size={16} />,
+                path: "/community/free",
+              },
               { name: "개인정보처리방침", icon: <ChevronRight size={16} /> },
             ].map((link) => (
               <li
@@ -135,7 +146,14 @@ const ConstellationFooter = () => {
                 className="flex items-center space-x-2 hover:text-[#F5CBA7] cursor-pointer"
               >
                 {link.icon}
-                <span>{link.name}</span>
+                {link.path ? (
+                  <Link to={link.path} className="hover:underline">
+                    {link.name}
+                  </Link> // ✅ Link 적용
+                ) : (
+                  <span>{link.name}</span>
+                )}
+                {/* <span>{link.name}</span> */}
               </li>
             ))}
           </ul>
