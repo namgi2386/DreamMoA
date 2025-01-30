@@ -41,13 +41,25 @@ export default function MyInfoCard({ isEditMode }) {
       try {
         // 서버에 이미지 업로드
         const response = await getUserApi.uploadProfileImage(file , userInfo);
-  
+        console.log("성공응답1! : " , response);
+        console.log("성공응답2! : " , response.data.message);
+        console.log("성공응답3! : " , response.data.imageUrl);
+        
         // 서버에서 받은 이미지 URL로 프로필 업데이트
-        if (response.data.imageUrl) {
-          setUserInfo({
-            ...userInfo,
-            profilePictureUrl: response.data.imageUrl
-          });
+        if (response.data.message === '회원 정보가 성공적으로 수정되었습니다.') {
+          console.log("수정하자!");
+          
+        // 프로필 정보를 새로 불러오기
+          try {
+            const userResponse = await getUserApi.getUserInfo();
+            console.log("한번더 확인 :" , userResponse);
+            
+            if (userResponse.data) {
+              setUserInfo(userResponse.data);
+            }
+          } catch (error) {
+            console.error('프로필 정보 갱신 실패:', error);
+          }
         }
       } catch (error) {
         console.error('프론트에서 이미지 변경 실패:', error);
