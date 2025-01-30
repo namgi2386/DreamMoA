@@ -12,6 +12,7 @@ export default function ChallengeImages() {
   ];
   const handleImageClick = (id) => {
     console.log(`Clicked image no.${id}`);
+    
   };
   return (
     <>
