@@ -46,6 +46,21 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// ✅ 🔥 추가한 코드: Authorization 헤더 추가 (기존 코드 영향 없음)
+api.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default api;
 // 요청 인터셉터 - 모든 요청에 AccessToken 포함
 // api.interceptors.request.use(
@@ -68,8 +83,6 @@ export default api;
 //     return Promise.reject(error);
 //   }
 // );
-
-// export default api;
 
 // 응답 인터셉터 - 토큰 만료 처리
 // api.interceptors.response.use(

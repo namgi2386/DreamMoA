@@ -11,13 +11,11 @@ export default function CommunityEditPage() {
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (!post) {
-        const response = await communityApi.getDetail(id);
-        setPost(response.data);
-      }
+      const response = await communityApi.getDetail(id);
+      setPost(response.data);
     };
     fetchPost();
-  }, [id, post, setPost]);
+  }, [id, setPost]);
 
   if (!post) return null;
 

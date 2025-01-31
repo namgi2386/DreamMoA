@@ -30,7 +30,12 @@ const communityApi = {
   }),
   
   // 글 작성
-  create: (data) => api.post(COMMUNITY_URL, data),
+  create: (data) => api.post(COMMUNITY_URL, data, {
+    withCredentials: true,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+    }
+  }),
   
   // 글 수정 
   update: (id, data) => api.put(`${COMMUNITY_URL}/${id}`, data)

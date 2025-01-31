@@ -7,10 +7,11 @@ import Loading from "./components/common/Loading";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import SideNavbar from "./components/common/SideNavbar";
+import SuccessModal from '/src/components/common/modal/SuccessModal';
 
 export default function App() {
   const location = useLocation();
-  const hideFooterPaths = ["/join", "/login"];
+  const hideFooterPaths = ["/join", "/login","/documents","/challenge/create"];
   const hideSideNavbarPaths = ["/join", "/login","/documents"];
   const hideHeaderPaths = ["/login","/documents"];
 
@@ -29,6 +30,7 @@ export default function App() {
           <Suspense fallback={<Loading />}>
             <AppRoutes />
           </Suspense>
+          <SuccessModal/>
         {!shouldHideFooter && <Footer />}
       </div>
     </RecoilRoot>
