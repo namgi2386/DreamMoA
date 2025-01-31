@@ -113,12 +113,13 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
 
-                        .requestMatchers("/login", "/", "/join", "/userInfo",
+                        .requestMatchers("/openvidu/*","/login", "/", "/join", "/userInfo",
                                 "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname", "/pwFind").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+//                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 // 구글로그인설정
                 .oauth2Login(oauth2 -> oauth2
