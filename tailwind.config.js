@@ -25,6 +25,9 @@ export default {
         'hmy-yellow': '#E0DF65',
         'my-red' : '#EB3223',
         'hmy-red' : '#C62A1D',
+      },
+      fontFamily: {
+        'user-input': ['Noto Sans KR', 'sans-serif'],
       }
     },
   },
