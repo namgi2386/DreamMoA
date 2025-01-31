@@ -24,7 +24,7 @@ export default function App() {
       <div className="h-screen w-full bg-gray-300 dark:bg-gray-800 relative ">  
         {!shouldHideHeader && <Header />}
         {!shouldHideSideNavbar && <SideNavbar />}
-        {!shouldHideHeader && <main className="pt-16 bg-gray-100"> 
+        {!shouldHideHeader && <main className=" bg-gray-100"> 
           {/* 모든 페이지에서 pt-16 (Header.jsx에서 헤더높이를 h-16으로 해둠) + bg-gray-100는 로그인페이지 배경색색 */}
         </main>}
           <Suspense fallback={<Loading />}>

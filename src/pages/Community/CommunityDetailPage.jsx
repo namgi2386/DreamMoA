@@ -75,7 +75,7 @@ export default function CommunityDetailPage() {
         content={post.content}
       />
 
-      <PostStats likes={post.likes} comments={post.comments} />
+      <PostStats postId={postId} likes={post.likes} comments={post.comments} />
 
       {/* 로그인한 사용자가 작성한 글일 경우에만 수정/삭제 버튼 표시 */}
       {isOwner && <Buttons postId={postId} onDelete={handleDelete} />}

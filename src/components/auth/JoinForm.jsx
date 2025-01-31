@@ -11,6 +11,8 @@ import AuthInput from "./AuthInput.jsx";
 import LoadingModal from "../common/modal/LoadingModal";
 import Swal from "sweetalert2";
 import { AnimatePresence } from "framer-motion";
+import { useSetRecoilState } from "recoil";
+import { successModalState } from '/src/recoil/atoms/modalState';
 
 const JoinForm = () => {
   const navigate = useNavigate();
@@ -31,7 +33,21 @@ const JoinForm = () => {
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
   const [wasNicknameChanged, setWasNicknameChanged] = useState(false); // 닉네임이 한번이라도 인증되었는지 추적
-
+  const setSuccessModalState = useSetRecoilState(successModalState);
+  
+  const handleSuccess = (myMessage ) => {
+    // 작업 완료 후
+    setSuccessModalState({
+      isOpen: true,
+      message: myMessage,
+      onCancel: () => {
+        // 실행 취소 시 수행할 작업
+        console.log('작업 취소됨');
+      },
+      isCancellable: false, // 실행 취소 버튼 표시 여부
+    });
+  };
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -134,19 +150,22 @@ const JoinForm = () => {
       await authApi.sendVerificationCode(formData.email);
       setIsLoading(false);
 
-      Swal.fire({
-        icon: "success",
-        text: "인증메일을 발송했습니다.",
-      });
+      // Swal.fire({
+      //   icon: "success",
+      //   text: "인증메일을 발송했습니다.",
+      // });
+      handleSuccess("인증메일을 발송했습니다. 이메일을 확인해 주세요.")
+
 
       setIsCodeSent(true);
       setIsEmailButtonDisabled(true); // 인증번호 받기 버튼 비활성화
     } catch (error) {
-      setIsLoading(false);
-      Swal.fire({
-        icon: "error",
-        text: "인증메일 발송 중 오류가 발생했습니다.",
-      });
+      // setIsLoading(false);
+      // Swal.fire({
+      //   icon: "error",
+      //   text: "인증메일 발송 중 오류가 발생했습니다.",
+      // });
+      handleSuccess("인증메일 발송 중 오류가 발생했습니다.")
     }
   };
 
@@ -155,17 +174,19 @@ const JoinForm = () => {
     try {
       await authApi.verifyEmailCode(formData.email, formData.verificationCode);
 
-      Swal.fire({
-        icon: "success",
-        text: "인증번호가 일치합니다.",
-      });
+      // Swal.fire({
+      //   icon: "success",
+      //   text: "인증번호가 일치합니다.",
+      // });
+      handleSuccess("인증번호가 일치합니다.")
 
       setIsEmailVerified(true);
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        text: "인증번호가 일치하지 않습니다.",
-      });
+      // Swal.fire({
+      //   icon: "error",
+      //   text: "인증번호가 일치하지 않습니다.",
+      // });
+      handleSuccess("인증번호가 일치하지 않습니다. 다시 입력해 주세요.")
     }
   };
 
@@ -175,17 +196,19 @@ const JoinForm = () => {
       const isAvailable = await authApi.checkNickname(formData.nickname);
 
       if (isAvailable) {
-        Swal.fire({
-          icon: "success",
-          text: "사용 가능한 닉네임입니다.",
-        });
+        // Swal.fire({
+        //   icon: "success",
+        //   text: "사용 가능한 닉네임입니다.",
+        // });
+        handleSuccess("사용 가능한 닉네임입니다.")
         setIsNicknameVerified(true);
         setWasNicknameChanged(false);
       } else {
-        Swal.fire({
-          icon: "error",
-          text: "이미 사용 중인 닉네임입니다.",
-        });
+        // Swal.fire({
+        //   icon: "error",
+        //   text: "이미 사용 중인 닉네임입니다.",
+        // });
+        handleSuccess("이미 사용 중인 닉네임입니다.")
         setIsNicknameVerified(false);
       }
     } catch (error) {
