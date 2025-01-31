@@ -109,7 +109,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/logout")
+    @PostMapping("/user-logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         // 리프레시 토큰 쿠키에서 추출
         String refreshToken = extractTokenFromCookie(request, "refresh_token");

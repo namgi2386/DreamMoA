@@ -53,7 +53,7 @@ public class UserEntity {
 
 
     public enum Role {
-        USER, ADMIN
+        USER, ADMIN, Google
     }
 
     /**
@@ -68,7 +68,7 @@ public class UserEntity {
                 .name(name)
                 .nickname(name) // 닉네임 기본값은 이름
                 .password(null) // 비밀번호 없음
-                .role(Role.USER) // 기본 역할 USER
+                .role(Role.Google) // 소셜로그인 역할 google로 수정
                 .build();
     }
 }
