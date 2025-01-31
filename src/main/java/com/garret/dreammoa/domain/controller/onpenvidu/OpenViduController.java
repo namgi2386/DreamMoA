@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RequestMapping("/openvidu")
+//@RequestMapping("/openvidu")
 @RestController
 public class OpenViduController {
 
