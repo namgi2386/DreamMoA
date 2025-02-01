@@ -108,19 +108,20 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/boards").permitAll()
 
                         // 상세 조회, 글 작성/수정/삭제는 로그인 사용자만
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/boards/{postId}").authenticated()
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/boards/**").authenticated()
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
-                                .requestMatchers("/api/comments/**").authenticated()  // 댓글 관련 요청 인증 필요
+//                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/boards/{postId}").authenticated()
+//                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/boards/**").authenticated()
+//                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
+//                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
+//                                .requestMatchers("/api/comments/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "api/likes/**").permitAll()
-                        .requestMatchers("api/likes/**").authenticated()
-                        .requestMatchers("/login", "/", "/join", "/userInfo",
-                                "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname", "/pwFind").permitAll()
+//                        .requestMatchers("api/likes/**").authenticated()
+                        .requestMatchers("/login", "/openvidu/**", "/join","/email-find","/pw-find",
+                                "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
+//                        .anyRequest().permitAll()
                 )
                 // 구글로그인설정
                 .oauth2Login(oauth2 -> oauth2
@@ -144,6 +145,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173")); // React 개발 서버 도메인
+        config.setAllowedOrigins(List.of("http://dreammoa.duckdns.org:80")); // React 개발 서버 도메인
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
         config.setAllowCredentials(true); // 인증 정보 허용

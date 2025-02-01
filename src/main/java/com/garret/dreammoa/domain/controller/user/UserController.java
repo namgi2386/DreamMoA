@@ -30,11 +30,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
-
 
     @PostMapping("/join")
     public ResponseEntity<?> joinProcess(@Valid @RequestBody JoinRequest joinRequest, BindingResult bindingResult) {
@@ -167,7 +165,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/user-info")
     public ResponseEntity<?> userInfo(HttpServletRequest request) {
         // 1. 쿠키에서 accessToken 가져오기
@@ -295,9 +292,9 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
-
     }
-        @PostMapping("/check-password")
+
+    @PostMapping("/check-password")
     public ResponseEntity<?> checkPassword(@Valid @RequestBody CheckPasswordRequest request,
                                            HttpServletRequest httpRequest) {
         // Access Token 확인
@@ -345,6 +342,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
         }
     }
-
-
 }
