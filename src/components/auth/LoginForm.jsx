@@ -21,6 +21,7 @@ const LoginForm = () => {
       ...prev,
       [name]: value
     }));
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -47,10 +48,11 @@ const LoginForm = () => {
             required
             value={formData.email}
             onChange={handleChange}
-            className="appearance-none rounded-none relative block w-full 
-            px-5 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 
-            border-2 rounded-t-md sm:text-sm text-sm
-            focus:outline-none focus:ring-indigo-500 focus:border-my-blue-4 focus:z-10 "
+            className={`appearance-none  relative block w-full 
+            px-5 py-3 border  placeholder-gray-500 text-gray-900 
+            border-2 rounded-md sm:text-sm text-sm
+            focus:outline-none focus:ring-indigo-500 focus:border-my-blue-4 focus:z-10 
+            ${!error ? 'border-gray-300' : 'border-my-red'} `}
             placeholder="Email"
           />
         </div>
@@ -63,10 +65,11 @@ const LoginForm = () => {
             required
             value={formData.password}
             onChange={handleChange}
-            className="appearance-none rounded-none relative block w-full 
-            px-5 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 
-            border-2 rounded-b-md sm:text-sm text-sm
-            focus:outline-none focus:ring-indigo-500 focus:border-my-blue-4 focus:z-10 "
+            className={`appearance-none  relative block w-full 
+            px-5 py-3 border placeholder-gray-500 text-gray-900 
+            border-2 rounded-md sm:text-sm text-sm
+            focus:outline-none focus:ring-indigo-500 focus:border-my-blue-4 focus:z-10 
+            ${!error ? 'border-gray-300' : 'border-my-red'} `}
             placeholder="Password"
           />
         </div>
@@ -74,7 +77,8 @@ const LoginForm = () => {
 
       {error && (
         <div className="text-red-500 text-sm text-center">
-          {error}
+          <p>아이디(로그인 전화번호, 로그인 전용 아이디) 또는 비밀번호가 </p>
+            <p>잘못 되었습니다. 아이디와 비밀번호를 정확히 입력해 주세요.</p>
         </div>
       )}
 

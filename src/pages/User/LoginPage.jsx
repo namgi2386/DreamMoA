@@ -33,7 +33,7 @@ const LoginPage = () => {
             </p>
           </div>
           <LoginForm />
-          <Link to="" className="text-xs block text-right hover:text-my-blue-1">forgot your password?</Link>
+          <Link to="/findpw" className="text-xs block text-right hover:text-my-blue-1">forgot your password?</Link>
           <p className="text-xs cursor-default">Or continue with</p>
           <div className="space-y-3">
             <SocialLoginButton provider="google" onClick={handleGoogleLogin} />

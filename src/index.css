@@ -43,7 +43,7 @@ body * {
   
 }
 
-@import "sweetalert2/dist/sweetalert2.min.css";
+/* @import "sweetalert2/dist/sweetalert2.min.css"; */
 
 /* 세로스크롤바(width)의 두께설정 , 가로스크롤바도 우선은 적용해둠 */
 ::-webkit-scrollbar {

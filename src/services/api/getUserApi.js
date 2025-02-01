@@ -2,7 +2,7 @@ import api from './axios';
 
 const getUserApi = {
   // 회원정보 조회
-  getUserInfo: () => api.post('/userInfo')
+  getUserInfo: () => api.post('/user-info')
   .then(response => {
     console.log('회원정보조회');
     

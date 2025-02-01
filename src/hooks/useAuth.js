@@ -90,6 +90,7 @@ const useAuth = () => {
         accessToken: null
       });
       setUserInfo(null)
+      localStorage.setItem('socialLoginPending', 'false');
       navigate('/login');
     }
   };

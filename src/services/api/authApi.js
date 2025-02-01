@@ -30,7 +30,27 @@ export const authApi = {
   logout: async () => {
     try {
       console.log("로그아웃1");
-      await api.post("/logout", {}, {
+      
+      // localStorage에서 userInfo를 가져와서 파싱
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      
+      // role에 따른 로그아웃 URL 설정
+      let wayToLogout = '/user-logout'; // 기본값
+      switch(userInfo?.role) {
+        case 'google':
+          wayToLogout = '/logout';
+          break;
+        case 'naver':
+          wayToLogout = '/logout/naver';
+          break;
+        case 'kakao':
+          wayToLogout = '/logout/kakao';
+          break;
+        default:
+          wayToLogout = '/user-logout';
+      }
+      
+      await api.post(wayToLogout, {}, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -147,6 +167,16 @@ export const authApi = {
   },
 };
 
+// 구글로그인 리다이렉션 보내보기 실패실패 (백엔드에서 엔드포인트 파라미터를 처리해줘야함)
+// export const socialLogin = (provider) => {
+//   const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
+//   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+// };
+
 export const socialLogin = (provider) => {
+  localStorage.setItem('socialLoginPending', 'true');
   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
 };
+// export const socialLogin = (provider) => {
+//   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+// };
