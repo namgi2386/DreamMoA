@@ -47,24 +47,33 @@ public class OpenViduController{
      * @Throws OpenViduHttpException            OpenVidu 서버와 HTTP 요청 중 오류 발생 시
      */
     @PostMapping("/sessions")
-    public ResponseEntity<?> initializeSession(@RequestBody(required = false)Map<String, Object> params, HttpServletRequest httpRequest) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ResponseEntity<?> initializeSession(@RequestBody(required = false) Map<String, Object> params, HttpServletRequest httpRequest) {
         String accessToken = Arrays.stream(httpRequest.getCookies())
                 .filter(cookie -> "access_token".equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst()
                 .orElse(null);
 
-        if(accessToken == null){
+        if (accessToken == null) {
             return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
         }
 
-        System.out.println("initializeSession 실행 완료 ");
+        try {
+            SessionProperties properties = SessionProperties.fromJson(params).build();
+            Session session = openVidu.createSession(properties);
 
-        SessionProperties properties = SessionProperties.fromJson(params).build();
-        Session session = openVidu.createSession(properties);
-        System.out.println("initializeSession 로직 완료 ");
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
+            if (Objects.isNull(session)) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("세션 생성에 실패했습니다."));
+            }
 
+            return ResponseEntity.ok(session.getSessionId());
+        } catch (OpenViduJavaClientException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("OpenVidu 클라이언트 오류: " + e.getMessage()));
+        } catch (OpenViduHttpException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(new ErrorResponse("OpenVidu 서버 연결 오류: " + e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("알 수 없는 오류 발생: " + e.getMessage()));
+        }
     }
 
     /**
