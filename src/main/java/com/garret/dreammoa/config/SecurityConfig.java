@@ -112,11 +112,10 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/boards/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/boards/**").authenticated()
-
-                        //=================================주의!!!!!!!=======================
-                        //                          openvidu 나중에 잠궈야됨
-                        //=================================주의!!!!!!!=======================
-                        .requestMatchers("/openvidu/**","/login", "/", "/join", "/userInfo",
+                                .requestMatchers("/api/comments/**").authenticated()  // 댓글 관련 요청 인증 필요
+                        .requestMatchers(HttpMethod.GET, "api/likes/**").permitAll()
+                        .requestMatchers("api/likes/**").authenticated()
+                        .requestMatchers("/login", "/", "/join", "/userInfo",
                                 "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname", "/pwFind").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()
