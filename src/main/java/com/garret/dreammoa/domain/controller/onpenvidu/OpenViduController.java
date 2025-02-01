@@ -48,15 +48,16 @@ public class OpenViduController{
      */
     @PostMapping("/sessions")
     public ResponseEntity<?> initializeSession(@RequestBody(required = false)Map<String, Object> params, HttpServletRequest httpRequest) throws OpenViduJavaClientException, OpenViduHttpException {
-//        String accessToken = Arrays.stream(httpRequest.getCookies())
-//                .filter(cookie -> "access_token".equals(cookie.getName()))
-//                .map(Cookie::getValue)
-//                .findFirst()
-//                .orElse(null);
-//
-//        if(accessToken == null){
-//            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
-//        }
+        String accessToken = Arrays.stream(httpRequest.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if(accessToken == null){
+            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
+        }
+
         System.out.println("initializeSession 실행 완료 ");
 
         SessionProperties properties = SessionProperties.fromJson(params).build();
@@ -79,15 +80,17 @@ public class OpenViduController{
     @PostMapping("/sessions/{sessionId}/connections")
     public ResponseEntity<?> createConnection(@PathVariable("sessionId") String sessionId,
                                                    @RequestBody(required = false) Map<String, Object> params, HttpServletRequest httpRequest) throws OpenViduJavaClientException, OpenViduHttpException {
-//        String accessToken = Arrays.stream(httpRequest.getCookies())
-//                .filter(cookie -> "access_token".equals(cookie.getName()))
-//                .map(Cookie::getValue)
-//                .findFirst()
-//                .orElse(null);
-//
-//        if(accessToken == null){
-//            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
-//        }
+        String accessToken = Arrays.stream(httpRequest.getCookies())
+                .filter(cookie -> "access_token".equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+
+        if(accessToken == null){
+            return ResponseEntity.badRequest().body(new ErrorResponse("Access Token이 없습니다."));
+        }
+
+
         System.out.println("createConnection 실행 완료 ");
         Session session = openVidu.getActiveSession(sessionId);
         if(session == null){
