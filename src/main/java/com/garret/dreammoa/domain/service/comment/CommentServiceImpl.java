@@ -47,6 +47,11 @@ public class CommentServiceImpl implements CommentService{
         if (commentRequestDto.getParentCommentId() != null) {
             parentComment = commentRepository.findById(commentRequestDto.getParentCommentId())
                     .orElseThrow(() -> new RuntimeException("부모 댓글을 찾을 수 없습니다."));
+
+            // 부모 댓글이 이미 대댓글이었다면, 대대댓글을 생성 불가
+            if (parentComment.getParentComment() != null) {
+                throw new RuntimeException("대댓글에는 추가 댓글을 달 수 없습니다.");
+            }
         }
 
         //댓글 엔티티 생성
@@ -140,12 +145,29 @@ public class CommentServiceImpl implements CommentService{
         // 현재 로그인된 사용자 정보 가져오기
         UserEntity user = getCurrentUser();
 
+
+        // 만약 이미 user가 null이면, 즉 "삭제된 댓글"이라면
+        if (comment.getUser() == null) {
+            // 여기서 바로 return 해주거나,
+            // throw new RuntimeException("이미 삭제된 댓글입니다.") 로 안내
+            // 예:
+            throw new RuntimeException("이미 삭제된 댓글입니다.");
+        }
+
         //댓글 작성자 확인
         if (!comment.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("본인이 작성한 댓글만 삭제할 수 있습니다.");
         }
 
-        commentRepository.delete(comment);
+        if (comment.getReplies().isEmpty()) {
+            //대댓글이 없는 경우 → 완전히 삭제
+            commentRepository.delete(comment);
+        } else {
+            //대댓글이 있는 경우 → "삭제된 댓글입니다."로 변경
+            comment.setContent("댓글이 삭제되었습니다");
+//            comment.setUser(null); // 사용자 정보 제거 (익명화)
+            commentRepository.save(comment);
+        }
     }
 
     // 특정 게시글의 모든 댓글 조회 (추가적인 필터링 및 정렬 가능)
@@ -190,6 +212,12 @@ public class CommentServiceImpl implements CommentService{
 
         // 특정 게시글의 모든 댓글 조회 (UserEntity와 parentComment, replies를 함께 로드)
         List<CommentEntity> comments = commentRepository.findByBoard_PostId(postId);
+
+        // 디버깅: 중복 여부 확인
+        System.out.println("=== 조회된 댓글 목록 ===");
+        for (CommentEntity comment : comments) {
+            System.out.println("댓글 ID: " + comment.getCommentId() + ", 내용: " + comment.getContent());
+        }
 
         // 최상위 댓글만 필터링하고, 대댓글을 포함하여 DTO로 변환
         return comments.stream()
