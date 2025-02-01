@@ -12,6 +12,7 @@ export default function MyPage() {
   const userInfo = useRecoilValue(userState);
   const [isEditModeState, setIsEditModeState] = useState(false);
   const setSuccessModalState = useSetRecoilState(successModalState);
+  const socialLoginDependency = localStorage.getItem('socialLoginDependency');
 
   const isEditMode = () => {
     setIsEditModeState(prev => !prev);
@@ -43,7 +44,7 @@ export default function MyPage() {
             </h1>
             
             <div className="relative">
-              <motion.button
+              {socialLoginDependency==='false' && <motion.button
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
                 className={`relative z-10 px-8 py-2 rounded-full mt-32 duration-300 font-bold tracking-wider text-xl
@@ -51,7 +52,8 @@ export default function MyPage() {
                 onClick={() => isEditMode()}
               >
                 {isEditModeState ? 'completed' : 'edit'}
-              </motion.button>
+              </motion.button>}
+              {socialLoginDependency==='true' && <div className={`relative z-10 px-8 py-1 my-1 rounded-full mt-32 font-bold tracking-wider text-xl cursor-default bg-gray-100`}>Social Mode</div>} 
 
               <AnimatePresence>
                 {isEditModeState && (

@@ -24,12 +24,13 @@ export const useSocialLogin = () => {
           setUserInfo(userResponse.data);
           
           localStorage.removeItem('socialLoginPending');
-          
+          localStorage.setItem('socialLoginDependency', 'true');
           console.log('소셜 로그인 처리 완료');
           
         } catch (error) {
           console.error('소셜 로그인 처리 중 에러:', error);
           localStorage.removeItem('socialLoginPending');
+          localStorage.removeItem('socialLoginDependency');
         }
       }
     };
