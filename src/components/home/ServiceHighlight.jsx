@@ -6,7 +6,7 @@ const ServiceHighlight = () => {
   const services = [
     {
       title: '챌린지',
-      description: '집중도 분석으로 효율적인 학습',
+      description: '태그 분석을 통한 맞춤형 챌린지',
       color: '#3F628A',
       path: '/Challenge/ChallengeListPage'
     },
