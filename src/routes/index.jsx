@@ -14,6 +14,7 @@ import FindpwPage from "../pages/User/FindpwPage";
 import DocumentsPage from "../pages/User/DocumentsPage";
 import CommunityForm from "../components/community/CommunityForm";
 
+
 const ChallengeListPage = lazy(() =>
   import("../pages/Challenge/ChallengeListPage")
 );
@@ -94,12 +95,12 @@ export default function AppRoutes() {
         path="/community/qna"
         element={<CommunityQnAListPage category="질문" />}
       />
-      // 자유게시판 글쓰기 페이지
+      {/* // 자유게시판 글쓰기 페이지 */}
       <Route
         path="/community/free/write"
         element={<CommunityWritePage boardCategory="자유" />}
       />
-      // 질문게시판 글쓰기 페이지
+      {/* // 질문게시판 글쓰기 페이지 */}
       <Route
         path="/community/qna/write"
         element={<CommunityWritePage boardCategory="질문" />}
