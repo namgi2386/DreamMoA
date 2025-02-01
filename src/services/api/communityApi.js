@@ -69,7 +69,46 @@ const communityApi = {
     
   // 댓글 삭제
   deleteComment: (postId, commentId) => 
-    api.delete(`${COMMUNITY_URL}/${postId}/comments/${commentId}`)
+    api.delete(`${COMMUNITY_URL}/${postId}/comments/${commentId}`),
+
+  /** 
+   * 댓글 계층형 조회 
+   * GET /api/post/{postId}/hierarchy
+   */
+  getCommentsHierarchy: (postId) =>
+    api.get(`/api/post/${postId}/hierarchy`),
+
+  /** 
+   * 댓글(평면) 목록 조회
+   * GET /api/post/{postId}/comments
+   * (필요하다면 사용)
+   */
+  getComments: (postId) =>
+    api.get(`/api/post/${postId}/comments`),
+
+  /** 
+   * 댓글 작성
+   * POST /api/post/{postId}/comments
+   * data 예시: { content: "댓글 내용", parentCommentId: 3 }
+   */
+  createComment: (postId, data) =>
+    api.post(`/api/post/${postId}/comments`, data),
+
+  /**
+   * 댓글 수정
+   * PUT /api/post/{postId}/{commentId}
+   * data 예시: { content: "수정할 내용" }
+   */
+  updateComment: (postId, commentId, data) =>
+    api.put(`/api/post/${postId}/${commentId}`, data),
+
+  /**
+   * 댓글 삭제
+   * DELETE /api/post/{postId}/{commentId}
+   */
+  deleteComment: (postId, commentId) =>
+    api.delete(`/api/post/${postId}/${commentId}`),
+
 };
 
 export default communityApi;
