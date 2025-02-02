@@ -1,12 +1,19 @@
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
 import defaultImage from '../../assets/default/defaultChallengePicture.png';
 
-const ChallengeCard = ({ challenge }) => {
+const ChallengeCard = ({ challenge, index, onHover }) => {
+  // 카드마다 다른 기울기 값을 생성 (-3도 ~ 3도 사이)
+  const randomRotation = useMemo(() => {
+    return Math.random() * 6 - 3;
+    }, []);
+
+  // 참여자 수 진행률 계산
   const calculateProgress = () => {
-    // 참여자 수 진행률 계산
     return (challenge.currentParticipants / challenge.maxParticipants) * 100;
   };
 
+  // 챌린지 시작일까지 남은 D-Day 계산
   const calculateDday = (startDate) => {
     const today = new Date();
     const start = new Date(startDate);
@@ -18,8 +25,14 @@ const ChallengeCard = ({ challenge }) => {
   return (
     <motion.div 
       className="w-full aspect-[5/7] bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.2 }}
+      initial={{ rotate: randomRotation }}
+      whileHover={{ 
+        scale: 1.02,
+        rotate: 0,
+        transition: { duration: 0.3 }
+      }}
+      onHoverStart={() => onHover && onHover(true)}
+      onHoverEnd={() => onHover && onHover(false)}
     >
       <div className="p-4 h-full flex flex-col">
         {/* 챌린지 이름 */}

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import ChallengeCard from './ChallengeCard';
 import '../../assets/styles/scrollbar-hide.css';
 import axios from 'axios';
@@ -9,7 +9,33 @@ const ChallengeCarousel = () => {
   const [challenges, setChallenges] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const carouselRef = useRef(null);
+  const controls = useAnimation();
+
+  const startCarouselAnimation = useCallback(() => {
+    controls.start({
+      x: [0, -1000], // 이동할 거리를 적절히 조정
+      transition: {
+        duration: 20, // 애니메이션 시간
+        ease: "linear",
+        repeat: Infinity,
+        repeatType: "loop"
+      }
+    });
+  }, [controls]);
+
+  useEffect(() => {
+    if (!isHovered) {
+      startCarouselAnimation();
+    } else {
+      controls.stop();
+    }
+  }, [isHovered, startCarouselAnimation, controls]);
+
+  const handleHover = useCallback((hovering) => {
+    setIsHovered(hovering);
+  }, []);
 
   const fetchChallenges = useCallback(async (page) => {
     try {
@@ -57,32 +83,41 @@ const ChallengeCarousel = () => {
     fetchChallenges(1);
   }, [fetchChallenges]);  // 의존성 있는 경우 해당 변수(fetchChallenges) 전달
 
+
   return (
-    <div className="w-full">
-      <div 
+    <div className="w-full overflow-hidden">
+      <motion.div 
         ref={carouselRef}
-        className="flex overflow-x-auto scrollbar-hide gap-4 py-4"
-        onScroll={handleScroll}
-        style={{ scrollBehavior: 'smooth' }}
+        className="flex gap-4 py-4"
+        animate={controls}
       >
         {challenges.map((challenge, index) => (
           <motion.div 
             key={`${challenge.challengeId}-${index}`}
             className="flex-none w-72 sm:w-80 md:w-96"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
           >
-            <ChallengeCard challenge={challenge} />
+            <ChallengeCard 
+              challenge={challenge} 
+              index={index}
+              onHover={handleHover}
+            />
           </motion.div>
         ))}
         
-        {isLoading && (
-          <div className="flex-none w-72 sm:w-80 md:w-96 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-          </div>
-        )}
-      </div>
+        {/* 무한 스크롤을 위해 처음 요소들을 복제 */}
+        {challenges.map((challenge, index) => (
+          <motion.div 
+            key={`clone-${challenge.challengeId}-${index}`}
+            className="flex-none w-72 sm:w-80 md:w-96"
+          >
+            <ChallengeCard 
+              challenge={challenge} 
+              index={index}
+              onHover={handleHover}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
     </div>
   );
 };
