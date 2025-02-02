@@ -18,7 +18,8 @@ const generateMockChallenges = (count) => {
       startDate: startDate.toISOString(),
       endDate: new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7일 후 종료
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      challengePicture: Math.random() > 0.5 ? null : `https://picsum.photos/400/400?random=${i}`, // 테스트용 랜덤 이미지
     });
   }
 

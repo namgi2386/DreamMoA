@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import defaultImage from '../../assets/default/defaultChallengePicture.png';
 
 const ChallengeCard = ({ challenge }) => {
   const calculateProgress = () => {
@@ -16,14 +17,24 @@ const ChallengeCard = ({ challenge }) => {
 
   return (
     <motion.div 
-      className="w-full aspect-[4/3] bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
+      className="w-full aspect-[5/7] bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
       <div className="p-4 h-full flex flex-col">
+        {/* 챌린지 이름 */}
         <h3 className="text-xl font-bold mb-2 truncate">{challenge.roomName}</h3>
-        <p className="text-gray-600 mb-4 line-clamp-2">{challenge.description}</p>
-        
+        {/* 챌린지 설명 - 48바이트 제한 */}
+        <p className="text-gray-600 mb-4 truncate text-base" style={{ maxWidth: '48ch'}}>{challenge.description}</p>
+        {/* 챌린지 이미지 - 1:1 비율 */}
+        <div className='w-full aspect-square mb-4 overflow-hidden rounded-lg'>
+          <img
+            src={challenge.challengePicture || defaultImage}
+            alt={challenge.roomName}
+            className="w-full h-full object-cover"  // object-cover->이미지 비율 유지하면서 영역 채움
+          />
+        </div>
+        {/* 챌린지 정보 - 하단 */}
         <div className="mt-auto">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-500">
