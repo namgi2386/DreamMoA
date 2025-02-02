@@ -2,8 +2,8 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import ChallengeCard from './ChallengeCard';
 import '../../assets/styles/scrollbar-hide.css';
-import axios from 'axios';
 import { mockApiResponse } from '../../utils/mockData';
+import axios from 'axios';
 
 const ChallengeCarousel = () => {
   const [challenges, setChallenges] = useState([]);
@@ -31,13 +31,13 @@ const ChallengeCarousel = () => {
       startCarouselAnimation();
     } else {
       // 호버 시 현재 위치 저장!
-      controls.stop().then(() => {
-        controls.getAnimationState().then(state => {
-          if (state?.x) {
-            setCurrentX(state.x);
-          }
-        });
-      });
+      controls.stop();
+      // 현재 위치를 가져오기 위해 DOM 요소의 transform 값을 사용
+      if (carouselRef.current) {
+        const transform = window.getComputedStyle(carouselRef.current).transform;
+        const matrix = new DOMMatrix(transform);
+        setCurrentX(matrix.m41); // transform matrix의 x 위치 값
+      }
     }
   }, [isHovered, startCarouselAnimation, controls]);
 
