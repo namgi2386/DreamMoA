@@ -91,6 +91,7 @@ const useAuth = () => {
       });
       setUserInfo(null)
       localStorage.setItem('socialLoginPending', 'false');
+      localStorage.setItem('socialLoginDependency', 'false');
       navigate('/login');
     }
   };

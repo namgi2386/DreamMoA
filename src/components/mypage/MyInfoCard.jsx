@@ -1,28 +1,46 @@
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { userState } from "../../recoil/atoms/authState";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from 'react';
 import { FaCamera } from "react-icons/fa";
 import getUserApi from '../../services/api/getUserApi';
+import { successModalState } from '/src/recoil/atoms/modalState';
 
 // 프로필 기본 이미지
 import defaultUserImageOrange from '/src/assets/default/defaultUserImageOrange.png'
+import authChangeApi from '../../services/api/authChangeApi';
 
 // 중복되는 CSS 변수분리
 const totalBackGroundColor = "bg-white"
 const tagBodyStyles = 'flex items-center gap-12'
-const tagTitleStyles = `bg-my-blue-3 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300
+const tagTitleStyles = `bg-my-blue-3 px-4 py-2 rounded-xl  cursor-default transition-all duration-300
                         text-xl w-32 text-center hover:bg-my-yellow text-gray-900 hover:bg-opacity-30`
-const tagContentStyles = 'text-gray-800 cursor-pointer text-xl'
+const tagContentStyles = 'text-gray-800 cursor-default text-xl'
 
 
 
 
 export default function MyInfoCard({ isEditMode }) {
   const [userInfo, setUserInfo] = useRecoilState(userState); //회원정보 불러오기
-  const [inputValue , setInputValue] = useState(null); // 닉네임 입력값
+  const [inputNicknameValue , setInputNicknameValue] = useState(null); // 닉네임 입력값
+  const [inputNameValue , setInputNameValue] = useState(null); // 이름 입력값
+  const [inputPasswordValue1 , setInputPasswordValue1] = useState(null); // 현재비밀번호입력값
+  const [inputPasswordValue2 , setInputPasswordValue2] = useState(null); // 새비밀번호입력값
+  const [inputPasswordValue3 , setInputPasswordValue3] = useState(null); // 새비밀번호확인입력값
+  const [isPasswordCorrect, setIsPasswordCorrect] = useState("");
   const [isPasswordMode, setIsPasswordMode] = useState(false); // 패스워드변경 화면 on off
   const fileInputRef = useRef(null);
+  const setSuccessModalState = useSetRecoilState(successModalState);
+
+  // 비밀번호 일치여부검사
+  useEffect(() => {
+    if (inputPasswordValue3) {
+      setIsPasswordCorrect(inputPasswordValue2 === inputPasswordValue3);
+    } else {
+      setIsPasswordCorrect(null);
+    }
+  }, [inputPasswordValue2, inputPasswordValue3]);
+
 
   // 사진변경 클릭버튼 로직
   const handleImageClick = () => {
@@ -68,26 +86,68 @@ export default function MyInfoCard({ isEditMode }) {
   };
 
   // 닉네임 중복확인 로직 
-  const handleDuplicateCheck = (inputValue) => {
-    console.log(inputValue);
+  const isCorrectNameCheck = (inputNameValue) => {
+    console.log(inputNameValue);
+  };
+  // 닉네임 중복확인 로직 
+  const handleDuplicateCheck = (inputNicknameValue) => {
+    console.log(inputNicknameValue);
   };
 
   // 화면 렌더링시 초기상태 
   useEffect(() => {
-    setInputValue(null)
+    setInputNicknameValue(null)
+    setInputPasswordValue1(null)
+    setInputPasswordValue2(null)
+    setInputPasswordValue3(null)
     setIsPasswordMode(false)
   },[isEditMode])
 
   // 비밀번호 변경 상태에서 "저장","취소버튼" 로직
-  const passwordChangeButton = (type) => {
+  const passwordChangeButton = async (type) => {
     if (type === 'save') {
       console.log('저장');
+      console.log(inputPasswordValue1); // 현재비밀번호
+      console.log(inputPasswordValue2); // 새 비밀번호
+      console.log(inputPasswordValue3); // 비밀번호 확인
+      try {
+        const response = await authChangeApi.changePassword(inputPasswordValue1, inputPasswordValue2, inputPasswordValue3);
+        console.log('비밀번호 변경 결과:', response);
+        setSuccessModalState({
+          isOpen: true,
+          message: '비밀번호 변경 완료',
+          onCancel: () => {
+            // 실행 취소 시 수행할 작업
+            console.log('작업 취소됨');
+          },
+          isCancellable: false, // 실행 취소 버튼 표시 여부
+        });
+      }
+      catch (error) {
+        console.log("비밀번호 변경 에러: ",error);
+        setSuccessModalState({
+          isOpen: true,
+          message: '비밀번호 변경 에러',
+          onCancel: () => {
+            // 실행 취소 시 수행할 작업
+            console.log('작업 취소됨');
+          },
+          isCancellable: false, // 실행 취소 버튼 표시 여부
+        });
+        
+      } finally {
+        console.log("ok");
+        
+      }
     } else if (type === 'cancel') {
       console.log('취소');
     } else {
       console.log('뭘 누른거야');
     }
-    setInputValue(null)
+    setInputNicknameValue(null)
+    setInputPasswordValue1(null)
+    setInputPasswordValue2(null)
+    setInputPasswordValue3(null)
     setIsPasswordMode(false)
   }
 
@@ -153,24 +213,24 @@ export default function MyInfoCard({ isEditMode }) {
                             text-xl w-80 text-start text-gray-900  `}>
                       현재 비밀번호
                     </span>
-                    <input type="text" placeholder='paa' className={` pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md w-full focus:outline-none`}
-                  onChange={(e) => setInputValue(e.target.value)}/>
+                    <input type="password" placeholder='remember' className={` pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md w-full focus:outline-none`}
+                  onChange={(e) => setInputPasswordValue1(e.target.value)}/>
                   </div>
                   <div className={`flex items-center gap-2     `}>
                     <span className={` pl-3 py-2 rounded-xl  cursor-pointer transition-all duration-300
                             text-xl w-80 text-start text-gray-900  `}>
                       새 패스워드
                     </span>
-                    <input type="text" placeholder='ssw' className={` pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md w-full focus:outline-none`}
-                  onChange={(e) => setInputValue(e.target.value)}/>
+                    <input type="password" placeholder='your' className={` pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md w-full focus:outline-none`}
+                  onChange={(e) => setInputPasswordValue2(e.target.value)}/>
                   </div>
                   <div className={`flex items-center gap-2     `}>
                     <span className={` pl-3 py-2 rounded-xl  cursor-pointer transition-all duration-300
                             text-xl w-80 text-start text-gray-900  `}>
                       새로운 패스워드 확인
                     </span>
-                    <input type="text" placeholder='ordd' className={`pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md  w-full focus:outline-none`}
-                  onChange={(e) => setInputValue(e.target.value)}/>
+                    <input type="password" placeholder='password' className={`pl-2 border border-2 focus:border-my-blue-4 mr-2 py-1 rounded-md  w-full focus:outline-none`}
+                  onChange={(e) => setInputPasswordValue3(e.target.value)}/>
                   </div>
                 </div>
               </div>
@@ -180,9 +240,12 @@ export default function MyInfoCard({ isEditMode }) {
                     onClick={()=> passwordChangeButton('cancel')}
                 >취소
                 </button>
-                <button className={`bg-my-blue-4 px-4 py-1 mt-2 rounded-xl  cursor-pointer transition-all duration-300
-                    text-xl w-42 text-center hover:bg-my-blue-1 hover:text-white text-gray-900  whitespace-nowrap`}
-                    onClick={()=> passwordChangeButton('save')}
+                <button 
+                  onClick={()=> passwordChangeButton('save')}
+                  disabled={!isPasswordCorrect || ! inputPasswordValue1 }
+                  className={` px-4 py-1 mt-2 rounded-xl  cursor-pointer transition-all duration-300
+                  text-xl w-42 text-center   whitespace-nowrap
+                  ${isPasswordCorrect && inputPasswordValue1 ? 'bg-my-blue-1 text-white hover:bg-hmy-blue-1' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
                 >저장
                 </button>
               </div>
@@ -203,12 +266,24 @@ export default function MyInfoCard({ isEditMode }) {
     >
       <div className="flex flex-col h-full justify-between py-2 gap-8 lg:gap-0 ml-8 lg:ml-16">
         {/* 이름 */}
-        <div className={`${tagBodyStyles} bg-gray-300 rounded-xl mr-3 hover:bg-gray-400 duration-300 cursor-pointer`}>
-          <span className={` px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300
-                  text-xl w-32 text-center text-gray-900  `}>
-            name
+        <div className={`flex items-center pr-3  w-full justify-between `}>
+          <div className="flex items-center gap-12 text-xl border border-4 hover:border-my-blue-4 focus-within:border-my-blue-4 w-full mr-8 pr-3 rounded-xl  text-gray-900  transition-all duration-300">
+            <span className={` text-center w-32  px-4 py-2 cursor-pointer`}>
+              name
+            </span>
+            <input type="text" placeholder={userInfo.name} className={` w-full focus:outline-none`}
+              onChange={(e) => setInputNameValue(e.target.value)}/>
+          </div>
+          <span className={`bg-gray-300 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300
+                  text-xl w-32 text-center  text-white  whitespace-nowrap
+                  ${inputNameValue 
+                    ? 'bg-my-blue-4 hover:bg-hmy-blue-4 cursor-pointer' 
+                    : 'bg-gray-300 cursor-not-allowed'
+                  }`}
+                  onClick={inputNameValue ? () => isCorrectNameCheck(inputNameValue) : undefined}
+          >
+            이름 확인
           </span>
-          <span className={`${tagContentStyles} `}>{userInfo.name}</span>
         </div>
         {/* 닉네임 */}
         <div className={`flex items-center pr-3  w-full justify-between `}>
@@ -217,20 +292,19 @@ export default function MyInfoCard({ isEditMode }) {
               nickname
             </span>
             <input type="text" placeholder={userInfo.nickname} className={` w-full focus:outline-none`}
-              onChange={(e) => setInputValue(e.target.value)}/>
+              onChange={(e) => setInputNicknameValue(e.target.value)}/>
           </div>
           <span className={`bg-gray-300 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300
                   text-xl w-32 text-center  text-white  whitespace-nowrap
-                  ${inputValue 
+                  ${inputNicknameValue 
                     ? 'bg-my-blue-4 hover:bg-hmy-blue-4 cursor-pointer' 
                     : 'bg-gray-300 cursor-not-allowed'
                   }`}
-                  onClick={inputValue ? () => handleDuplicateCheck(inputValue) : undefined}
+                  onClick={inputNicknameValue ? () => handleDuplicateCheck(inputNicknameValue) : undefined}
           >
             중복 확인
           </span>
         </div>
-
         {/* 이메일 */}
         <div className={`${tagBodyStyles} bg-gray-300 rounded-xl mr-3 hover:bg-gray-400 duration-300 cursor-pointer`}>
           <span className={` px-4 py-2 rounded-xl   transition-all duration-300
@@ -240,12 +314,28 @@ export default function MyInfoCard({ isEditMode }) {
           <span className={`${tagContentStyles}`}>{userInfo.email}</span>
         </div>
         {/* 비번교체 */}
-        <div className={`${tagBodyStyles}  mr-3 justify-end `}>
-          <span className={`bg-gray-200 px-4 py-1 rounded-xl  cursor-pointer transition-all duration-300
+        <div className={`${tagBodyStyles}  mr-3 justify-between `}>
+          <div className="flex space-x-2">
+            <div className={`bg-gray-200 px-4 py-1 rounded-xl  cursor-pointer transition-all duration-300
+                      text-xl w-42 text-center hover:bg-my-blue-1 hover:text-white text-gray-900  whitespace-nowrap`}
+                    onClick={()=> setIsPasswordMode(true)}>
+              password change
+            </div>
+            <div className={`bg-gray-200 px-4 py-1 rounded-xl  cursor-pointer transition-all duration-300
+                      text-xl w-42 text-center hover:bg-my-blue-1 hover:text-white text-gray-900  whitespace-nowrap`}
+                    // onClick={()=> setIsDeletedMode(true)}
+                    // 회원탈퇴
+            >
+              delete ID
+            </div>
+          </div>
+          <button 
+          
+          className={`bg-gray-200 px-4 py-1 rounded-xl  cursor-pointer transition-all duration-300
                     text-xl w-42 text-center hover:bg-my-blue-1 hover:text-white text-gray-900  whitespace-nowrap`}
                   onClick={()=> setIsPasswordMode(true)}>
-            password change
-          </span>
+            SAVE
+          </button>
         </div>
       </div>
     </motion.div>
