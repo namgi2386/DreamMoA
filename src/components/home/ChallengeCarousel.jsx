@@ -10,12 +10,13 @@ const ChallengeCarousel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [currentX, setCurrentX] = useState(0);  // 현재 x 위치 추적
   const carouselRef = useRef(null);
   const controls = useAnimation();
 
   const startCarouselAnimation = useCallback(() => {
     controls.start({
-      x: [0, -1000], // 이동할 거리를 적절히 조정
+      x: [currentX, currentX - 1000],  // 현재 위치에서 시작
       transition: {
         duration: 20, // 애니메이션 시간
         ease: "linear",
@@ -23,13 +24,20 @@ const ChallengeCarousel = () => {
         repeatType: "loop"
       }
     });
-  }, [controls]);
+  }, [controls, currentX]);
 
   useEffect(() => {
     if (!isHovered) {
       startCarouselAnimation();
     } else {
-      controls.stop();
+      // 호버 시 현재 위치 저장!
+      controls.stop().then(() => {
+        controls.getAnimationState().then(state => {
+          if (state?.x) {
+            setCurrentX(state.x);
+          }
+        });
+      });
     }
   }, [isHovered, startCarouselAnimation, controls]);
 
