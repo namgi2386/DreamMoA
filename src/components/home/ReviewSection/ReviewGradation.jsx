@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import ReviewMain from './ReviewMain';
 
-export default function TestComponent() {
+export default function ReviewGradation() {
   // opacity 상태값 (0: 완전 투명, 1: 완전 불투명)
   const [opacity, setOpacity] = useState(0);
   // 컴포넌트의 중간 지점을 지났는지 여부를 추적하는 상태값
@@ -42,7 +43,7 @@ export default function TestComponent() {
   }, [isScrolledPast]); // isScrolledPast가 변경될 때마다 effect 재실행
 
   return (
-    <div ref={componentRef} className="h-[800px] relative">
+    <div ref={componentRef} className="h-[1000px] relative">
       {/* 그라데이션 배경 div */}
       <div 
         className="absolute inset-0 w-full h-full" // 절대위치 tblr-0설정 즉 전체화면
@@ -58,9 +59,7 @@ export default function TestComponent() {
       </div>
       {/* 실제내용div (배경보다 위에 z-10) */}
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10" >
-
-        <h1 className="bg-gray-100">Test</h1>
-        
+        <ReviewMain/>
       </div>
     </div>
   );
