@@ -2,6 +2,7 @@ import MainHero from '../components/home/MainHero';
 import ServiceHighlight from '../components/home/ServiceHighlight';
 import AIFeatureSection from '../components/home/AIFeatureSection';
 import ChallengeCarousel from '../components/home/ChallengeCarousel';
+// import '../assets/styles/scrollbar-hide.css';
 import { useSocialLogin } from '../hooks/useSocialLogin';
 
 export default function HomePage() {
@@ -26,7 +27,7 @@ export default function HomePage() {
           <ChallengeCarousel />
         </div>
       </section>
-      
+
       <AIFeatureSection />
     </div>
   );

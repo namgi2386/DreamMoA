@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import ChallengeCard from './ChallengeCard';
+import '../../assets/styles/scrollbar-hide.css';
 import axios from 'axios';
+import { mockApiResponse } from '../../utils/mockData';
 
 const ChallengeCarousel = () => {
   const [challenges, setChallenges] = useState([]);
@@ -12,8 +14,11 @@ const ChallengeCarousel = () => {
   const fetchChallenges = useCallback(async (page) => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`/api/rooms?page=${page}`);
-      
+
+      // 백에서 API 구현되면 주석 풀기!!!!!
+      // const response = await axios.get(`/api/rooms?page=${page}`);
+      const response = { data: mockApiResponse(page, 10)};
+
       // 마감임박(참여자 60%이상 찼거나 D-3 이하) 챌린지 필터링
       const filteredChallenges = response.data.data.filter(challenge => {
         const participationRate = challenge.currentParticipants / challenge.maxParticipants;
