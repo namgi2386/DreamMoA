@@ -32,7 +32,7 @@ const ServiceHighlight = () => {
             key={index} 
             className="w-1/3 p-6 text-center hover:shadow-lg transition cursor-pointer"
             style={{ backgroundColor: service.color, color: 'white' }}
-            onClick={() => navigate(service.path)} // 클릭 시 경로로 이동
+            onClick={() => navigate(service.path)}
           >
             <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
             <p>{service.description}</p>
