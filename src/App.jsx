@@ -9,11 +9,14 @@ import Footer from "./components/layout/Footer";
 import SideNavbar from "./components/common/SideNavbar";
 import SuccessModal from '/src/components/common/modal/SuccessModal';
 
+// OpenVidu 관련 상수
+const APPLICATION_SERVER_URL = process.env.NODE_ENV === 'production' ? '' : 'https://demos.openvidu.io/';
+
 export default function App() {
   const location = useLocation();
-  const hideFooterPaths = ["/join","/findpw","/findid", "/login","/documents","/challenge/create"];
-  const hideSideNavbarPaths = ["/join","/findpw","/findid", "/login","/documents"];
-  const hideHeaderPaths = ["/login","/findpw","/findid", "/documents"];
+  const hideFooterPaths = ["/join","/findpw","/findid", "/login","/documents","/challenge/create", "/video"];
+  const hideSideNavbarPaths = ["/join","/findpw","/findid", "/login","/documents", "/video"];
+  const hideHeaderPaths = ["/login","/findpw","/findid", "/documents", "/video"];
 
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
   const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname);

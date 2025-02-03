@@ -14,6 +14,8 @@ import FindpwPage from "../pages/User/FindpwPage";
 import DocumentsPage from "../pages/User/DocumentsPage";
 import CommunityForm from "../components/community/CommunityForm";
 
+import VideoRoom from '../pages/Video/VideoRoom';
+
 
 const ChallengeListPage = lazy(() =>
   import("../pages/Challenge/ChallengeListPage")
@@ -121,6 +123,7 @@ export default function AppRoutes() {
         }
       />
       <Route path="*" element={<Notfound />} />
+      <Route path="/video" element={<VideoRoom />} />
     </Routes>
   );
 }
