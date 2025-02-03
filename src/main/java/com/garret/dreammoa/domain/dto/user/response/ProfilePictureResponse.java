@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class ProfilePictureResponse {
-    private String profilePictureUrl; // 닉네임 사용 가능 여부
+    private String profilePictureUrl;
 }

@@ -25,6 +25,8 @@ bin/
 out/
 *.class
 
+src/main/resources/*.properties
+
 # 기타
 *.war
 *.jar

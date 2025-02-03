@@ -5,8 +5,10 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_file")
-@Getter @Setter
+@Table(name = "tb_file",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"relatedId", "relatedType"})})
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

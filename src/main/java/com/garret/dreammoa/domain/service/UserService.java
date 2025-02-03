@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -171,6 +172,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
+
     @Transactional
     public void updateUserProfile(String accessToken, UpdateProfileRequest updateProfileRequest, MultipartFile profilePicture) {
         if (!jwtUtil.validateToken(accessToken)) {
@@ -192,29 +194,23 @@ public class UserService {
         user.setName(updateProfileRequest.getName());
         user.setNickname(newNickname);
 
-        // 비밀번호 변경 (선택)
+        // 비밀번호 변경 --> 이거 프론트랑 상의 해야됨 (일단 놨둬도 상관 없는데 흠..)
         String newPassword = updateProfileRequest.getPassword();
         if (newPassword != null && !newPassword.isEmpty()) {
             validatePassword(newPassword, email);
             user.setPassword(bCryptPasswordEncoder.encode(newPassword));
         }
 
-        // 프로필 사진 업데이트 (선택)
-        if (profilePicture != null) {
-            FileEntity oldProfileImage = user.getProfileImage();
-
-            try {
+        // 프로필 사진 업데이트 (모든 파일이 S3에 저장됨)
+        if(Objects.nonNull(profilePicture)){
+            try{
+                //기본 PROFILE 타입 이 있으면 업데이트
                 FileEntity newProfileImage = fileService.saveFile(profilePicture, user.getId(), FileEntity.RelatedType.PROFILE);
                 user.setProfileImage(newProfileImage);
-
-                if (oldProfileImage != null) {
-                    fileService.deleteFile(oldProfileImage.getFileId());
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("프로필 사진 업로드 중 오류가 발생했습니다: " + e.getMessage());
+            }catch (Exception e){
+                throw new RuntimeException("프로필 사진 업로드 중 오류가 발생했습니다 : " + e.getMessage());
             }
         }
-
         userRepository.save(user);
     }
 
