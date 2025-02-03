@@ -2,7 +2,7 @@ import axios from "axios";
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: "http://dreammoa.duckdns.org:8080",
   withCredentials: true, 
   headers: {
     Accept: "application/json",
