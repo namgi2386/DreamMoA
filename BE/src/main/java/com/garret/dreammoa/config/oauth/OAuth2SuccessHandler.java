@@ -1,17 +1,18 @@
 package com.garret.dreammoa.config.oauth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garret.dreammoa.config.FileProperties;
 import com.garret.dreammoa.domain.model.FileEntity;
-import com.garret.dreammoa.domain.repository.FileRepository;
-import com.garret.dreammoa.utils.JwtUtil;
 import com.garret.dreammoa.domain.model.UserEntity;
+import com.garret.dreammoa.domain.repository.FileRepository;
 import com.garret.dreammoa.domain.repository.UserRepository;
+import com.garret.dreammoa.utils.JwtUtil;
 import com.garret.dreammoa.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -21,6 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,86 +34,142 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final UserRepository userRepository; // 사용자 데이터베이스 관리
     private final FileRepository fileRepository;
     private final FileProperties fileProperties;
+    private static final String UPLOAD_DIR = "C:/SSAFY/uploads/profile/"; // 프로필 이미지 저장 폴더
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal(); // 인증된 사용자 정보
-        String email = (String) oAuth2User.getAttributes().get("email"); // Google 프로필에서 이메일 추출
-        String name = (String) oAuth2User.getAttributes().get("name"); // Google 프로필에서 이름 추출
-        String profileImageUrl = (String) oAuth2User.getAttributes().get("picture");
-        // 사용자 확인 또는 새 사용자 생성
-        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String registrationId = ((OAuth2AuthenticationToken) authentication).getAuthorizedClientRegistrationId();
+
+        if (registrationId == null) {
+            throw new IllegalArgumentException("Missing registrationId in OAuth2 login");
+        }
+
+        // 유저 정보 조회 또는 신규 생성
+        OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
+        Optional<UserEntity> userOptional = userRepository.findByEmail(userInfo.getEmail());
 
         UserEntity user = userOptional.orElseGet(() -> {
             UserEntity newUser = UserEntity.builder()
-                    .email(email)
-                    .name(name) // Google에서 가져온 이름 설정
-                    .nickname(name) // 기본 닉네임은 이름과 동일하게 설정
-                    .password("GooglePassWord123!")
-                    .role(UserEntity.Role.USER) // 기본 역할 설정
+                    .email(userInfo.getEmail())
+                    .name(userInfo.getName())
+                    .nickname(userInfo.getName())
+                    .password("SOCIAL_LOGIN")
+                    .role(UserEntity.Role.USER)
                     .build();
             return userRepository.save(newUser);
         });
 
-        // Google 프로필 이름 변경 시 데이터베이스 동기화
-        if (!user.getName().equals(name)) {
-            user.setName(name);
+        // 🔹 사용자 정보 업데이트 (이름 변경 시 반영)
+        if (!user.getName().equals(userInfo.getName())) {
+            user.setName(userInfo.getName());
             userRepository.save(user);
         }
-        // 프로필 이미지 처리
-        if (profileImageUrl != null) {
-            FileEntity profileImage = fileRepository.findByRelatedIdAndRelatedType(user.getId(), FileEntity.RelatedType.PROFILE)
-                    .stream()
-                    .findFirst()
-                    .orElseGet(() -> {
-                        // 고유 파일명 생성
-                        String uniqueFileName = UUID.randomUUID().toString() + ".jpg";
 
-                        // 파일 저장 경로
-                        Path filePath = Paths.get(fileProperties.getUploadDir(), uniqueFileName);
+        // 🔹 프로필 이미지 저장
+        saveProfileImage(user, userInfo.getProfileImageUrl());
 
-                        try {
-                            // 디렉토리 생성 (존재하지 않으면 생성)
-                            Files.createDirectories(filePath.getParent());
+        // 🔹 JWT 토큰 생성
+        String accessToken = jwtUtil.createAccessToken(
+                user.getId(), user.getEmail(), user.getName(), user.getNickname()
+        );
+        String refreshToken = jwtUtil.createRefreshToken(user);
 
-                            // Google 프로필 이미지 다운로드 후 저장
-                            byte[] imageBytes = new URL(profileImageUrl).openStream().readAllBytes();
-                            Files.write(filePath, imageBytes);
-                        } catch (IOException e) {
-                            throw new RuntimeException("Failed to save profile image", e);
-                        }
-
-                        // 파일 URL 생성 (정적 경로 기준)
-                        String fileUrl = fileProperties.getStaticLocations().replace("file:", "") + uniqueFileName;
-
-                        // FileEntity 생성 및 저장
-                        FileEntity newFile = FileEntity.builder()
-                                .relatedId(user.getId())
-                                .relatedType(FileEntity.RelatedType.PROFILE)
-                                .fileName(uniqueFileName)
-                                .filePath(filePath.toString())
-                                .fileUrl(fileUrl)
-                                .fileType("jpeg")
-                                .build();
-                        return fileRepository.save(newFile);
-                    });
-
-            // User와 프로필 이미지 연관
-            user.setProfileImage(profileImage);
-        }
-
-        // JWT 토큰 생성
-        String accessToken = jwtUtil.createAccessToken(user.getId(), user.getEmail(), user.getName(), user.getNickname());
-        String refreshToken = jwtUtil.createRefreshToken(user); // Redis에 저장됨
-
-        // 쿠키에 토큰 저장
-        CookieUtil.addCookie(response, "access_token", accessToken, (int) jwtUtil.getAccessTokenExpirationTime());
+        // 🔹 리프레시 토큰을 쿠키에 저장
         CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) jwtUtil.getRefreshTokenExpirationTime());
 
-        // 성공 메시지 전송
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.sendRedirect("http://localhost:5173/");
+        // 🔹 일반 로그인과 동일한 JSON 응답 반환
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        new ObjectMapper().writeValue(response.getWriter(), Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
+        ));
+    }
+
+
+
+    /**
+     * 소셜 로그인별 기본 비밀번호 설정
+     */
+    private String getDefaultPassword(String registrationId) {
+        switch (registrationId.toLowerCase()) {
+            case "naver":
+                return "NaverPassWord123!";
+            case "google":
+                return "GooglePassWord123!";
+            case "kakao":
+                return "KakaoPassWord123!";
+            default:
+                return "SocialLoginPassWord123!";
+        }
+    }
+
+    /**
+     * 소셜 로그인별 역할 설정
+     */
+    private UserEntity.Role getUserRole(String registrationId) {
+        switch (registrationId.toLowerCase()) {
+            case "naver":
+                return UserEntity.Role.Naver;
+            case "google":
+                return UserEntity.Role.Google;
+            case "kakao":
+                return UserEntity.Role.Kakao;
+            default:
+                return UserEntity.Role.USER;
+        }
+    }
+
+    /**
+     * 프로필 이미지 저장 및 업데이트 로직
+     */
+    private void saveProfileImage(UserEntity user, String profileImageUrl) {
+        if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+            try {
+                // 기존 프로필 이미지 확인 (이미 있으면 업데이트)
+                Optional<FileEntity> existingProfile = fileRepository.findByRelatedIdAndRelatedType(user.getId(), FileEntity.RelatedType.PROFILE)
+                        .stream()
+                        .findFirst();
+
+                // 새 파일명 생성
+                String uniqueFileName = UUID.randomUUID().toString() + ".jpg";
+                Path filePath = Paths.get(UPLOAD_DIR, uniqueFileName);
+
+                // 디렉토리 생성 (없으면 생성)
+                Files.createDirectories(filePath.getParent());
+
+                // 프로필 이미지 다운로드 및 저장
+                byte[] imageBytes = new URL(profileImageUrl).openStream().readAllBytes();
+                Files.write(filePath, imageBytes);
+
+                // 파일 URL 생성 (정적 리소스 접근 가능하도록 변경)
+                String fileUrl = "/uploads/profile/" + uniqueFileName;
+
+                if (existingProfile.isPresent()) {
+                    // 기존 파일 정보 업데이트
+                    FileEntity profileImage = existingProfile.get();
+                    profileImage.setFileName(uniqueFileName);
+                    profileImage.setFilePath(filePath.toString());
+                    profileImage.setFileUrl(fileUrl);
+                    fileRepository.save(profileImage);
+                } else {
+                    // 새로운 프로필 이미지 저장
+                    FileEntity newFile = FileEntity.builder()
+                            .relatedId(user.getId())
+                            .relatedType(FileEntity.RelatedType.PROFILE)
+                            .fileName(uniqueFileName)
+                            .filePath(filePath.toString())
+                            .fileUrl(fileUrl)
+                            .fileType("jpeg")
+                            .build();
+                    fileRepository.save(newFile);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to save profile image", e);
+            }
+        }
     }
 }
