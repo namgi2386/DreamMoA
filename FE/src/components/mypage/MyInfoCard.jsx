@@ -71,6 +71,15 @@ export default function MyInfoCard({ isEditMode }) {
           try {
             const userResponse = await getUserApi.getUserInfo();
             console.log("한번더 확인 :" , userResponse);
+            setSuccessModalState({
+              isOpen: true,
+              message: '프로필사진 변경 완료',
+              onCancel: () => {
+                // 실행 취소 시 수행할 작업
+                console.log('작업 취소됨');
+              },
+              isCancellable: false, // 실행 취소 버튼 표시 여부
+            });
             
             if (userResponse.data) {
               setUserInfo(userResponse.data);
@@ -85,7 +94,7 @@ export default function MyInfoCard({ isEditMode }) {
     }
   };
 
-  // 닉네임 중복확인 로직 
+  // 이름 중복확인 로직 
   const isCorrectNameCheck = (inputNameValue) => {
     console.log(inputNameValue);
   };
