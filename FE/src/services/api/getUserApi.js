@@ -64,6 +64,47 @@ const getUserApi = {
       throw error;
     });
   },
+
+  uploadProfileInfo: (inputNameValue, inputNicknameValue ) => {
+    const formData = new FormData();
+    
+    const profileData = {
+      name: inputNameValue,
+      nickname: inputNicknameValue,
+    };
+    
+    console.log('전송할 profileData:', profileData);
+
+    const profileDataBlob = new Blob([JSON.stringify(profileData)], {
+      type: 'application/json'
+    });
+    formData.append('profileData', profileDataBlob);
+    // formData.append('profilePicture', file);  // 직접 file 객체 사용
+
+        // console.log('Request URL:', '/update-profile');
+        // console.log('Profile Data:', profileData);
+        // console.log('이거 url?: ' , file);
+        
+        // console.log('FormData contents:');
+        // for (let [key, value] of formData.entries()) {
+        //   console.log(`${key} 내용:`, value);
+        // }
+    const accessToken = localStorage.getItem("accessToken");
+    return api.put('/update-profile', formData, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        }
+      }
+    )
+    .then(response => {
+      console.log('정보 변경 성공:', response.data);
+      return response;
+    })
+    .catch(error => {
+      console.error('정보 변경 실패:', error);
+      throw error;
+    });
+  },
 };
 
 export default getUserApi;

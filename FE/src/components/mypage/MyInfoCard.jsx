@@ -5,10 +5,17 @@ import { useEffect, useRef, useState } from 'react';
 import { FaCamera } from "react-icons/fa";
 import getUserApi from '../../services/api/getUserApi';
 import { successModalState } from '/src/recoil/atoms/modalState';
+import {
+  // validateEmail,
+  // validatePassword,
+  // validateNickname,
+  validateName,
+} from "../../utils/validation";
 
 // 프로필 기본 이미지
 import defaultUserImageOrange from '/src/assets/default/defaultUserImageOrange.png'
 import authChangeApi from '../../services/api/authChangeApi';
+import { authApi } from '../../services/api/authApi';
 
 // 중복되는 CSS 변수분리
 const totalBackGroundColor = "bg-white"
@@ -22,8 +29,8 @@ const tagContentStyles = 'text-gray-800 cursor-default text-xl'
 
 export default function MyInfoCard({ isEditMode }) {
   const [userInfo, setUserInfo] = useRecoilState(userState); //회원정보 불러오기
-  const [inputNicknameValue , setInputNicknameValue] = useState(null); // 닉네임 입력값
   const [inputNameValue , setInputNameValue] = useState(null); // 이름 입력값
+  const [inputNicknameValue , setInputNicknameValue] = useState(null); // 닉네임 입력값
   const [inputPasswordValue1 , setInputPasswordValue1] = useState(null); // 현재비밀번호입력값
   const [inputPasswordValue2 , setInputPasswordValue2] = useState(null); // 새비밀번호입력값
   const [inputPasswordValue3 , setInputPasswordValue3] = useState(null); // 새비밀번호확인입력값
@@ -32,14 +39,7 @@ export default function MyInfoCard({ isEditMode }) {
   const fileInputRef = useRef(null);
   const setSuccessModalState = useSetRecoilState(successModalState);
 
-  // 비밀번호 일치여부검사
-  useEffect(() => {
-    if (inputPasswordValue3) {
-      setIsPasswordCorrect(inputPasswordValue2 === inputPasswordValue3);
-    } else {
-      setIsPasswordCorrect(null);
-    }
-  }, [inputPasswordValue2, inputPasswordValue3]);
+
 
 
   // 사진변경 클릭버튼 로직
@@ -94,23 +94,102 @@ export default function MyInfoCard({ isEditMode }) {
     }
   };
 
-  // 이름 중복확인 로직 
+  // 이름 유효성 검사 로직 
   const isCorrectNameCheck = (inputNameValue) => {
     console.log(inputNameValue);
-  };
-  // 닉네임 중복확인 로직 
-  const handleDuplicateCheck = (inputNicknameValue) => {
-    console.log(inputNicknameValue);
+    const errorOrName = validateName(inputNameValue);
+    console.log(errorOrName);
+    setSuccessModalState({
+      isOpen: true,
+      message: errorOrName ? errorOrName : '사용가능한 이름입니다!',
+      onCancel: () => {
+        // 실행 취소 시 수행할 작업
+        console.log('작업 취소됨');
+      },
+      isCancellable: false, // 실행 취소 버튼 표시 여부
+    });
   };
 
-  // 화면 렌더링시 초기상태 
+  // 닉네임 중복확인 로직 
+  const handleDuplicateCheck = async (inputNicknameValue) => {
+    try {
+      const isAvailable = await authApi.checkNickname(inputNicknameValue);
+
+      if (isAvailable) {
+        setSuccessModalState({
+          isOpen: true,
+          message: '사용가능한 닉네임입니다.',
+          onCancel: () => {
+            // 실행 취소 시 수행할 작업
+            console.log('작업 취소됨');
+          },
+          isCancellable: false, // 실행 취소 버튼 표시 여부
+        });
+      } else {
+        setSuccessModalState({
+          isOpen: true,
+          message: '이미 사용 중인 닉네임입니다.',
+          onCancel: () => {
+            // 실행 취소 시 수행할 작업
+            console.log('작업 취소됨');
+          },
+          isCancellable: false, // 실행 취소 버튼 표시 여부
+        });
+      }
+    } catch (error) {
+      console.log("이메일검증에러:",error);
+      
+    }
+  };
+
+  // 이름 닉네임 변경 로직
+  const editProfileSaveButton = async () => {
+    try {
+      // 변경axios함수 실행
+      const response = await getUserApi.uploadProfileInfo(inputNameValue, inputNicknameValue );
+      console.log("성공응답1! : " , response);
+      console.log("성공응답2! : " , response.data);
+      console.log("성공응답3! : " , response.data.message);
+      
+      // 서버에서 받은 이미지 URL로 프로필 업데이트
+      if (response.data.message === '회원 정보가 성공적으로 수정되었습니다.') {
+        console.log("수정하자!");
+        
+      // 프로필 정보를 새로 불러오기
+        try {
+          const userResponse = await getUserApi.getUserInfo();
+          console.log("한번더 확인 :" , userResponse);
+          setSuccessModalState({
+            isOpen: true,
+            message: '변경 완료',
+            onCancel: () => {
+              // 실행 취소 시 수행할 작업
+              console.log('작업 취소됨');
+            },
+            isCancellable: false, // 실행 취소 버튼 표시 여부
+          });
+          
+          if (userResponse.data) {
+            setUserInfo(userResponse.data);
+          }
+        } catch (error) {
+          console.error('프로필 정보 갱신 실패:', error);
+        }
+      }
+    } catch (error) {
+      console.error('프론트에서 이미지 변경 실패:', error);
+    }
+    
+  }
+
+  // 비밀번호 일치여부검사
   useEffect(() => {
-    setInputNicknameValue(null)
-    setInputPasswordValue1(null)
-    setInputPasswordValue2(null)
-    setInputPasswordValue3(null)
-    setIsPasswordMode(false)
-  },[isEditMode])
+    if (inputPasswordValue3) {
+      setIsPasswordCorrect(inputPasswordValue2 === inputPasswordValue3);
+    } else {
+      setIsPasswordCorrect(null);
+    }
+  }, [inputPasswordValue2, inputPasswordValue3]);
 
   // 비밀번호 변경 상태에서 "저장","취소버튼" 로직
   const passwordChangeButton = async (type) => {
@@ -159,6 +238,15 @@ export default function MyInfoCard({ isEditMode }) {
     setInputPasswordValue3(null)
     setIsPasswordMode(false)
   }
+
+  // 화면 렌더링시 초기상태 
+  useEffect(() => {
+    setInputNicknameValue(null)
+    setInputPasswordValue1(null)
+    setInputPasswordValue2(null)
+    setInputPasswordValue3(null)
+    setIsPasswordMode(false)
+  },[isEditMode])
 
   // 기본화면 or 수정화면 or 비밀번호변경화면 전환 로직
   const renderContent = () => {
@@ -342,7 +430,7 @@ export default function MyInfoCard({ isEditMode }) {
           
           className={`bg-gray-200 px-4 py-1 rounded-xl  cursor-pointer transition-all duration-300
                     text-xl w-42 text-center hover:bg-my-blue-1 hover:text-white text-gray-900  whitespace-nowrap`}
-                  onClick={()=> setIsPasswordMode(true)}>
+                  onClick={()=> editProfileSaveButton(userInfo)}>
             SAVE
           </button>
         </div>
@@ -350,6 +438,8 @@ export default function MyInfoCard({ isEditMode }) {
     </motion.div>
     )
   }
+
+
 
   return (
     <>
