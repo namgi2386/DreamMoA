@@ -13,9 +13,15 @@ import com.garret.dreammoa.domain.service.FileService;
 import com.garret.dreammoa.utils.CookieUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -39,49 +45,86 @@ public class AuthController {
     private final FileService fileService;
     private final UserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request,  BindingResult  bindingResult, HttpServletResponse response) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult, HttpServletResponse response) {
+        Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+        logger.info("🟢 [로그인 요청] Email: {}", request.getEmail());
+
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error ->
-                    errors.put(error.getField(), error.getDefaultMessage())
-            );
-            return ResponseEntity.badRequest().body(errors); // 400 에러와 함께 에러 메시지 반환
+            bindingResult.getFieldErrors().forEach(error -> {
+                errors.put(error.getField(), error.getDefaultMessage());
+                logger.warn("⚠️ [입력값 오류] Field: {}, Message: {}", error.getField(), error.getDefaultMessage());
+            });
+            return ResponseEntity.badRequest().body(errors);
         }
 
-        // 이메일과 비밀번호로 인증 객체 생성
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        try {
+            // 1️⃣ 이메일로 사용자 정보 조회
+            UserEntity userEntity = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> {
+                        logger.error("❌ [사용자 조회 실패] 이메일이 존재하지 않음: {}", request.getEmail());
+                        return new IllegalArgumentException("User not found");
+                    });
 
-        // 인증 수행
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            logger.info("✅ [사용자 조회 성공] Email: {}", userEntity.getEmail());
+            logger.info("🔐 [DB 저장된 비밀번호] {}", userEntity.getPassword());
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            // 2️⃣ 비밀번호 비교 (로그 추가)
+            logger.info("🔑 [입력한 비밀번호] {}", request.getPassword());
 
-        UserEntity userEntity = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            if (!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {
+                logger.error("❌ [비밀번호 불일치] 입력한 비밀번호가 다름");
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("Invalid credentials");
+            }
 
-        // 인증 성공 시 JWT 생성
-        String accessToken = jwtUtil.createAccessToken(
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getName(),
-                userDetails.getNickname()
-        );
-        String refreshToken = jwtUtil.createRefreshToken(userEntity);
-        Long userId = userDetails.getId();
-        Optional<FileEntity> profilePicture = fileService.getProfilePicture(userId);
-        String profilePictureUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+            // 3️⃣ 인증 객체 생성
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
-        userService.updateLastLogin(userId);
+            // 4️⃣ Spring Security 인증 실행
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            logger.info("✅ [인증 성공] Email: {}", request.getEmail());
 
-        // 쿠키에 토큰 저장
-        CookieUtil.addHttpOnlyCookie(response, "access_token", accessToken, (int) jwtUtil.getAccessTokenExpirationTime());
-        CookieUtil.addHttpOnlyCookie(response, "refresh_token", refreshToken, (int) jwtUtil.getRefreshTokenExpirationTime());
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        // 응답 본문으로도 토큰 반환
-        return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken));
+            // 5️⃣ JWT 토큰 생성
+            String accessToken = jwtUtil.createAccessToken(
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getName(),
+                    userDetails.getNickname()
+            );
+            String refreshToken = jwtUtil.createRefreshToken(userEntity);
+            logger.info("🔑 [토큰 생성 완료] AccessToken: {}, RefreshToken: {}", accessToken, refreshToken);
+
+            // 6️⃣ 마지막 로그인 업데이트
+            userService.updateLastLogin(userDetails.getId());
+            logger.info("🕒 [마지막 로그인 업데이트] UserId: {}", userDetails.getId());
+
+            // 7️⃣ 리프레시 토큰을 쿠키에 저장 (RT는 쿠키에만 담아 전송)
+            CookieUtil.addCookie(response, "refresh_token", refreshToken, (int) jwtUtil.getRefreshTokenExpirationTime());
+            logger.info("🍪 [쿠키 저장] RefreshToken 저장 완료");
+
+            // 8️⃣ 액세스 토큰은 응답 본문에만 담아 전송 (AT는 메시지 바디)
+            Map<String, String> tokenResponse = new HashMap<>();
+            tokenResponse.put("accessToken", accessToken);
+
+            return ResponseEntity.ok(tokenResponse);
+
+        } catch (Exception e) {
+            logger.error("❌ [로그인 실패] 원인: {}", e.getMessage());
+            return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).body("Invalid credentials");
+        }
     }
+
+
+
+
 
 
     @PostMapping("/refresh")

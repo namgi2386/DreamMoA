@@ -24,6 +24,7 @@ C:/SSAFY/uploads
 bin/
 out/
 *.class
+src/main/
 
 src/main/resources/*.properties
 
