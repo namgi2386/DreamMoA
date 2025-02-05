@@ -20,7 +20,7 @@ const getUserApi = {
     const profileData = {
       name: userInfo.name,
       nickname: userInfo.nickname,
-      password: 'skarl0240!'
+      // password: 'skarl0240!' // 비밀번호 이제 안보냄
     };
     
     console.log('전송할 profileData:', profileData);
