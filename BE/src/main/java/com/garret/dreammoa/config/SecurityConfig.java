@@ -108,7 +108,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/boards").permitAll()
                         .requestMatchers(HttpMethod.GET, "api/likes/**").permitAll()
 //                        .requestMatchers("api/likes/**").authenticated()
-                        .requestMatchers("/login","/", "/openvidu/**", "/join","/email-find","/pw-find",
+                        .requestMatchers("/login","/", "/refresh", "/openvidu/**", "/join","/email-find","/pw-find",
                                 "/send-verification-code", "/verify-email-code", "/check-email", "/check-nickname").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/files/**").permitAll()

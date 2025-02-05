@@ -124,32 +124,73 @@ public class AuthController {
 
 
 
-
-
-
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(HttpServletRequest request, HttpServletResponse response) {
-        // 리프레시 토큰 쿠키에서 추출
-        String refreshToken = extractTokenFromCookie(request, "refresh_token");
+        Logger logger = LoggerFactory.getLogger(AuthController.class);
+        logger.info("🔄 [토큰 갱신 요청] Authorization 헤더 확인 중...");
 
-        // 리프레시 토큰 검증 및 액세스 토큰 갱신
-        if (refreshToken != null && jwtUtil.validateToken(refreshToken)) {
-            Long userId = Long.valueOf(jwtUtil.getUserIdFromToken(refreshToken));
+        try {
+            // Authorization 헤더에서 리프레시 토큰 추출 (Bearer 토큰 형식)
+            String refreshToken = resolveTokenFromHeader(request);
+            if (refreshToken == null) {
+                logger.warn("⚠️ [토큰 없음] Authorization 헤더에 Refresh Token이 없습니다.");
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(Map.of("message", "Authorization 헤더에 Refresh Token이 없습니다."));
+            }
+
+            // 리프레시 토큰 유효성 검사
+            if (!jwtUtil.validateToken(refreshToken)) {
+                logger.warn("❌ [유효하지 않은 토큰] Refresh Token이 만료되었거나 변조되었습니다.");
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(Map.of("message", "Invalid refresh token"));
+            }
+
+            // 토큰에서 사용자 정보 추출
+            Long userId = jwtUtil.getUserIdFromToken(refreshToken);
             String email = jwtUtil.getEmailFromToken(refreshToken);
             String name = jwtUtil.getNameFromToken(refreshToken);
             String nickname = jwtUtil.getNicknameFromToken(refreshToken);
-
-            if (jwtUtil.isRefreshTokenValid(userId, refreshToken)) {
-                // 새로운 액세스 토큰 생성
-                String newAccessToken = jwtUtil.createAccessToken(userId, email, name, nickname);
-
-                // 쿠키에 저장
-                CookieUtil.addHttpOnlyCookie(response, "access_token", newAccessToken, (int) jwtUtil.getAccessTokenExpirationTime());
-                return ResponseEntity.ok(new TokenResponse(newAccessToken, null));
+            if (userId == null || email == null) {
+                logger.error("❌ [토큰 검증 실패] Refresh Token에서 사용자 정보를 추출할 수 없음.");
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(Map.of("message", "Invalid refresh token payload"));
             }
+
+            // Redis에서 저장된 RT와 비교하여 검증
+            if (!jwtUtil.isRefreshTokenValid(userId, refreshToken)) {
+                logger.warn("🚫 [토큰 불일치] 서버에 저장된 Refresh Token과 다름");
+                return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
+                        .body(Map.of("message", "Invalid refresh token"));
+            }
+
+            // 새로운 액세스 토큰 생성
+            logger.info("🔄 [AT 갱신 요청] RT 검증 완료. 새로운 AT 발급 시작...");
+            String newAccessToken = jwtUtil.createAccessToken(userId, email, name, nickname);
+            logger.info("✅ [새로운 AT 발급 완료] UserID: {}, Email: {}", userId, email);
+
+            // 액세스 토큰을 응답 본문에 담아 전송
+            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+
+        } catch (Exception e) {
+            logger.error("❌ [토큰 갱신 실패] 내부 오류 발생: ", e);
+            return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "서버 내부 오류가 발생했습니다.", "error", e.getMessage()));
         }
-        return ResponseEntity.status(401).body("Invalid refresh token");
     }
+
+
+    /**
+     * Authorization 헤더에서 Bearer 토큰을 추출하는 메서드
+     */
+    private String resolveTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+
 
 
     @PostMapping("/user-logout")
