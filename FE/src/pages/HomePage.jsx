@@ -12,14 +12,24 @@ import SplashScreen from '../components/home/SplashScreen';
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
+  const [totalHours, setTotalHours] = useState(0);
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+  
   useSocialLogin();
 
   return (
     <>
-      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
-      <div className={`min-h-screen w-full ${showSplash ? 'hidden' : ''}`}>
+      {showSplash && (
+        <SplashScreen
+          onComplete={handleSplashComplete}
+          setFinalHours={setTotalHours}
+        />
+      )}
+      <div className={`min-h-screen w-full ${showSplash ? 'invisible' : 'visible'}`}>
+        <MainHero totalHours={totalHours} />
         <HomeCommunity/>
-        <MainHero />
         <ServiceHighlight />
 
         {/* 마감 임박 챌린지  */}

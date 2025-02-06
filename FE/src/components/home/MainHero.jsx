@@ -1,9 +1,9 @@
-const MainHero = () => {
+const MainHero = ({ totalHours }) => {
   return (
     <div className="bg-[#003458] text-white py-20 px-10 flex items-center justify-between">
       <div className="w-1/2 space-y-6">
         <h1 className="text-5xl font-bold text-[#F9F871]">
-          우리의 꿈이 모인지 13892시간째
+          우리의 꿈이 모인지 {totalHours.toLocaleString()}시간째
         </h1>
         <p className="text-xl text-[#DBF2FF]">
           AI 기술로 학습을 혁신적으로 지원합니다.
