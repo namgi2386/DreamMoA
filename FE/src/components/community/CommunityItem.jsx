@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
-import { FaRegThumbsUp, FaRegComment } from 'react-icons/fa';
+import { Link } from "react-router-dom";
+import { FaRegThumbsUp, FaRegComment } from "react-icons/fa";
+import DOMPurify from "dompurify";
 
 export default function CommunityItem({ post }) {
   return (
@@ -15,14 +16,25 @@ export default function CommunityItem({ post }) {
         <h3 className="text-lg font-semibold text-gray-800">{post.title}</h3>
 
         {/* 본문 내용 일부 (100자까지만 표시) */}
-        <p className="mt-2 text-gray-600 text-sm line-clamp-2">
-          {post.content.length > 100 ? `${post.content.substring(0, 100)}...` : post.content}
-        </p>
+        <div
+          className="mt-2 text-gray-600 text-sm line-clamp-2 not-italic font-normal"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(
+              (post.content.length > 100
+                ? post.content.substring(0, 100) + "..."
+                : post.content
+              ).replace(/<i>|<\/i>|<em>|<\/em>/g, "")
+            ),
+          }}
+        ></div>
 
         {/* 태그 (나중에 추가 가능) */}
         <div className="flex gap-2 mt-2">
-          {post.tags?.map(tag => (
-            <span key={tag} className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded">
+          {post.tags?.map((tag) => (
+            <span
+              key={tag}
+              className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded"
+            >
               {tag}
             </span>
           ))}
