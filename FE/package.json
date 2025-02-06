@@ -13,6 +13,7 @@
     "@xeger/quill-image-actions": "^0.7.2",
     "@xeger/quill-image-formats": "^0.7.2",
     "axios": "^1.7.9",
+    "badwords-ko": "^1.0.4",
     "dompurify": "^3.2.4",
     "framer-motion": "^12.0.3",
     "lucide-react": "^0.474.0",

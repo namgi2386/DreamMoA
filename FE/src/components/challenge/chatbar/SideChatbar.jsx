@@ -1,12 +1,32 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-// import { FaAngleDoubleLeft  } from "react-icons/fa";
 import { HiOutlineChevronDoubleRight, HiOutlineChevronDoubleLeft } from "react-icons/hi";
 import { WiDirectionUp } from "react-icons/wi";
+import SideChatbarContentSection from "./SideChatbarContentSection";
 
 export default function SideChatbar() {
   const [isOpen, setIsOpen] = useState(true);
+  const [chatInput, setChatInput] = useState("");
+
+  const ChatRequest = (e) => {
+    e.preventDefault(); // 새로고침 방지
+    console.log(chatInput);
+    setChatInput(""); // 입력값 초기화
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      ChatRequest(e);
+    }
+  };
+  useEffect(() => {
+    const textarea = document.querySelector('textarea');
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }, [chatInput]);
 
   return (
     <>
@@ -49,48 +69,31 @@ export default function SideChatbar() {
           <h2 className="text-lg font-semibold ">SSAFY 알고리즘 스터디 방</h2>
         </div>
 
-                  {/* 채팅창 메인구역 */}
-        
-        <div 
-          className="h-[calc(100vh-180px)] overflow-y-auto p-4 flex-col break-words border-t" 
-          style={{ fontFamily: "Cheetos" }}
-        >
-          <p style={{ fontFamily: "Cheetos" }}>
-          Once when I was six years old I saw a magnificent picture in a book, called True Stories from Nature,
-          about the primeval forest. It was a picture of a boa constrictor in the act of swallowing an animal. Here is a
-          copy of the drawing.
-          </p>
-          <p style={{ fontFamily: "Cheetos" }}>
-          In the book it said: &apos;&apos;Boa constrictors swallow their prey whole, without chewing it. After that they are not
-          able to move, and they sleep through the six months that they need for digestion.&apos;&apos;
-          I pondered deeply, then, over the adventures of the jungle. And after some work with a colored pencil I
-          succeeded in making my first drawing. My Drawing Number One. It looked something like this:
-          </p>
-          <p style={{ fontFamily: "Cheetos" }}>
-          I showed my masterpiece to the grown-ups, and asked them whether the drawing frightened them.
-          But they answered: &quot;Frighten? Why should any one be frightened by a hat?&quot;
-          My drawing was not a picture of a hat. It was a picture of a boa constrictor digesting an elephant. But since
-          the grown-ups were not able to understand it, I made another drawing: I drew the inside of a boa
-          constrictor, so that the grown-ups could see it clearly. They always need to have things explained. My
-          Drawing Number Two looked like this:
-          </p>
-          <p>ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</p>
-        </div>
+        {/* 채팅창 메인구역 */}
+        <SideChatbarContentSection />
 
                   {/* 채팅창 입력구역 */}
         <div className="absolute bottom-0 w-full pt-4 pl-4 pr-4 border-t ">
           <div className="flex flex-col items-center  ">
-            <div className="w-full p-1 rounded-2xl border border-my-blue-2 border-2 
-            focus:outline-none focus:border-blue-500 flex justify-between">
-              <input
-                type="text"
+            <form onSubmit={ChatRequest}
+            className="w-full p-1 rounded-2xl border border-my-blue-2 border-2 
+            focus:outline-none focus:border-blue-500 flex ">
+              <textarea
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={1}
                 placeholder="input"
-                className="bg-gray-100 w-full focus:outline-none ml-3"
+                style={{ height: 'auto', minHeight: '24px', maxHeight: '150px' }}
+                className="bg-gray-100 w-full focus:outline-none ml-3 font-user-input resize-none overflow-hidden"
               />
-              <button className="text-3xl bg-gray-300 text-white rounded-xl hover:bg-my-blue-4">
+              {/* 입력 버튼 */}
+              <button  type="submit"
+              className={`text-3xl  text-white rounded-xl hover:bg-my-blue-2 self-end h-7 flex items-center ${chatInput ? 'bg-my-blue-4' : 'bg-gray-300'}`}>
                 <WiDirectionUp/>
               </button>
-            </div>
+            </form>
+            {/* 최하단 버튼들 */}
             <div className="flex gap-1 w-full">
               <button className="p-2 text-gray-500 hover:text-gray-700">
                 📎

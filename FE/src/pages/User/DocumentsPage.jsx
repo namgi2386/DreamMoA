@@ -1,4 +1,4 @@
-import SideChatbar from "../../components/challenge/run/SideChatbar";
+import SideChatbar from "../../components/challenge/chatbar/SideChatbar";
 import EndButton from "../../components/challenge/finish/EndButton";
 import { Link } from "react-router-dom";
 import testlogo from "../../assets/logo/testlogo.png";
