@@ -15,24 +15,28 @@ export default function HomePage() {
   useSocialLogin();
 
   useEffect(() => {
-    const loadMainContent = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsMainLoaded(true);
-      } catch (error) {
-        console.error("Failed to load main content:", error);
-        setIsMainLoaded(true);
-      }
-    };
-
-    loadMainContent();
+    // 아래 주석을 해제 시 -> 스플래시 화면 끝나자마자 급하게 메인 화면 렌더링
+    // 아래 주석 처리 시 -> 스플래시 화면 끝나고 2초 대기 후 메인 화면 렌더링
+    // const loadMainContent = async () => {
+    //   try {
+    //     await new Promise((resolve) => setTimeout(resolve, 2000));
+    //     setIsMainLoaded(true);
+    //   } catch (error) {
+    //     console.error("Failed to load main content:", error);
+    //     setIsMainLoaded(true);
+    //   }
+    // };
+    // loadMainContent();
   }, []);
 
   return (
     <>
-      {!isMainLoaded && (
+      {showSplash && (
         <SplashScreen
-          onComplete={() => setShowSplash(false)}
+          onComplete={() => {
+            setShowSplash(false);
+            setIsMainLoaded(true);
+          }}
           setFinalHours={setTotalHours}
         />
       )}

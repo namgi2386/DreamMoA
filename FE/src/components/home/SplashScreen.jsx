@@ -7,6 +7,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const [count, setCount] = useState(0);
   const [targetHours, setTargetHours] = useState(0);
   const [isCountingDone, setIsCountingDone] = useState(false);
+  const [showFadeOut, setShowFadeOut] = useState(false);
   const animationDuration = 6;
 
   useEffect(() => {
@@ -43,15 +44,26 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
         onComplete();
       }
     };
+
     fetchAndSetupAnimation();
   }, [onComplete, setFinalHours, forceComplete]);
 
   useEffect(() => {
     if (isCountingDone) {
-      const timer = setTimeout(() => {
-        onComplete();
+      // 카운팅 완료 후 1초 대기
+      const holdTimer = setTimeout(() => {
+        setShowFadeOut(true);
       }, 1000);
-      return () => clearTimeout(timer);
+
+      // fadeOut 시작 후 2초 뒤에 완료
+      const completeTimer = setTimeout(() => {
+        onComplete();
+      }, 3000); // 1초 대기 + 2초 페이드아웃
+
+      return () => {
+        clearTimeout(holdTimer);
+        clearTimeout(completeTimer);
+      };
     }
   }, [isCountingDone, onComplete]);
 
@@ -59,14 +71,14 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     <motion.div
       className="fixed inset-0 bg-[#003458] flex items-center justify-center z-50"
       initial={{ opacity: 1 }}
-      animate={isCountingDone ? { opacity: 0 } : { opacity: 1 }}
-      transition={{ duration: 1, ease: "easeOut" }}
+      animate={showFadeOut ? { opacity: 0 } : { opacity: 1 }}
+      transition={{ duration: 2.0, ease: "easeOut" }}
     >
       <motion.div
         className="text-white text-8xl font-bold"
         initial={{ opacity: 1 }}
-        animate={isCountingDone ? { opacity: 0 } : { opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        animate={showFadeOut ? { opacity: 0 } : { opacity: 1 }}
+        transition={{ duration: 2.0, ease: "easeOut" }}
       >
         {Math.floor(count).toLocaleString()}
       </motion.div>
