@@ -66,6 +66,8 @@ public class BoardServiceImpl implements BoardService {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+
         UserEntity user = userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("해당 사용자 없음: id=" + userDetails.getId()));
 

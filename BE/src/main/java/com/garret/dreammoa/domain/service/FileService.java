@@ -8,6 +8,7 @@ import com.garret.dreammoa.domain.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +32,7 @@ public class FileService {
      * S3에 모든 파일을 저장하는 메서드
      */
     public FileEntity saveFile(MultipartFile multipartFile, Long relatedId, RelatedType relatedType) throws Exception {
+
         // 파일 크기 제한 조건
         if (relatedType == RelatedType.PROFILE) {
             long maxProfileSize = 2 * 1024 * 1024; // 2MB
