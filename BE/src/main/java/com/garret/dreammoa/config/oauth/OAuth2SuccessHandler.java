@@ -30,11 +30,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtUtil jwtUtil; // JWT 생성 및 검증 클래스
-    private final UserRepository userRepository; // 사용자 데이터베이스 관리
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
     private final FileRepository fileRepository;
     private final FileProperties fileProperties;
-    private static final String UPLOAD_DIR = "C:/SSAFY/uploads/profile/"; // 프로필 이미지 저장 폴더
+    private static final String UPLOAD_DIR = "C:/SSAFY/uploads/profile/";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
@@ -89,52 +89,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         ));
     }
 
-
-
     /**
-     * 소셜 로그인별 기본 비밀번호 설정
-     */
-    private String getDefaultPassword(String registrationId) {
-        switch (registrationId.toLowerCase()) {
-            case "naver":
-                return "NaverPassWord123!";
-            case "google":
-                return "GooglePassWord123!";
-            case "kakao":
-                return "KakaoPassWord123!";
-            default:
-                return "SocialLoginPassWord123!";
-        }
-    }
-
-    /**
-     * 소셜 로그인별 역할 설정
-     */
-    private UserEntity.Role getUserRole(String registrationId) {
-        switch (registrationId.toLowerCase()) {
-            case "naver":
-                return UserEntity.Role.Naver;
-            case "google":
-                return UserEntity.Role.Google;
-            case "kakao":
-                return UserEntity.Role.Kakao;
-            default:
-                return UserEntity.Role.USER;
-        }
-    }
-
-    /**
-     * 프로필 이미지 저장 및 업데이트 로직
+     * 🔹 프로필 이미지 저장 및 업데이트
      */
     private void saveProfileImage(UserEntity user, String profileImageUrl) {
         if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
             try {
-                // 기존 프로필 이미지 확인 (이미 있으면 업데이트)
                 Optional<FileEntity> existingProfile = fileRepository.findByRelatedIdAndRelatedType(user.getId(), FileEntity.RelatedType.PROFILE)
                         .stream()
                         .findFirst();
 
-                // 새 파일명 생성
                 String uniqueFileName = UUID.randomUUID().toString() + ".jpg";
                 Path filePath = Paths.get(UPLOAD_DIR, uniqueFileName);
 
@@ -145,18 +109,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 byte[] imageBytes = new URL(profileImageUrl).openStream().readAllBytes();
                 Files.write(filePath, imageBytes);
 
-                // 파일 URL 생성 (정적 리소스 접근 가능하도록 변경)
                 String fileUrl = "/uploads/profile/" + uniqueFileName;
 
                 if (existingProfile.isPresent()) {
-                    // 기존 파일 정보 업데이트
                     FileEntity profileImage = existingProfile.get();
                     profileImage.setFileName(uniqueFileName);
                     profileImage.setFilePath(filePath.toString());
                     profileImage.setFileUrl(fileUrl);
                     fileRepository.save(profileImage);
                 } else {
-                    // 새로운 프로필 이미지 저장
                     FileEntity newFile = FileEntity.builder()
                             .relatedId(user.getId())
                             .relatedType(FileEntity.RelatedType.PROFILE)
