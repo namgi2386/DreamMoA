@@ -14,33 +14,31 @@ export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
   useSocialLogin();
 
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
-
   return (
-    <div className="min-h-screen w-full">
-      {/* <TopLine/> */}
-      <HomeCommunity/>
-      <MainHero />
-      <ServiceHighlight />
+    <>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
+      <div className={`min-h-screen w-full ${showSplash ? 'hidden' : ''}`}>
+        <HomeCommunity/>
+        <MainHero />
+        <ServiceHighlight />
 
-      {/* 마감 임박 챌린지  */}
-      <section className="w-full py-16">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-              인기 있는 챌린지
-            </h2>
-            <p className="mt-2 text-gray-600">
-              곧 시작하거나 많은 사람들이 참여하고 있는 챌린지를 확인해보세요
-            </p>
+        {/* 마감 임박 챌린지  */}
+        <section className="w-full py-16">
+          <div className="container mx-auto px-4">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">
+                인기 있는 챌린지
+              </h2>
+              <p className="mt-2 text-gray-600">
+                곧 시작하거나 많은 사람들이 참여하고 있는 챌린지를 확인해보세요
+              </p>
+            </div>
+            <ChallengeCarousel />
           </div>
-          <ChallengeCarousel />
-        </div>
-      </section>
+        </section>
 
-      <AIFeatureSection />
-    </div>
+        <AIFeatureSection />
+      </div>
+    </>
   );
 }

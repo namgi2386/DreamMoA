@@ -51,7 +51,7 @@ const SplashScreen = ({ onComplete }) => {
   }, [showFinalText, onComplete]);
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+    <div className="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
       <AnimatePresence>
         {!showFinalText ? (
           <motion.div
