@@ -166,17 +166,14 @@ public class UserController {
     public ResponseEntity<?> userInfo(HttpServletRequest request) {
         // 1. Authorization 헤더에서 Bearer 토큰 추출
         String authorizationHeader = request.getHeader("Authorization");
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Access Token이 없습니다.");
         }
-
-        String accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 토큰 값만 추출
+        String accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 토큰 값 추출
 
         try {
-            // 2. Service를 통해 UserResponse DTO 추출
-            UserResponse userInfo = userService.extractUserInfo(accessToken);
-
+            // 2. 서비스에서 DB를 통해 사용자 정보 조회
+            UserResponse userInfo = userService.getUserInfoFromDb(accessToken);
             // 3. 유저 정보 반환
             return ResponseEntity.ok(userInfo);
         } catch (Exception e) {

@@ -273,4 +273,31 @@ public class UserService {
         user.setPassword(bCryptPasswordEncoder.encode(newPassword));
         userRepository.save(user);
     }
+
+    public UserResponse getUserInfoFromDb(String accessToken) {
+        // JWT 토큰 유효성 검증
+        if (!jwtUtil.validateToken(accessToken)) {
+            throw new RuntimeException("유효하지 않은 Access Token입니다.");
+        }
+
+        // 토큰에서 사용자 ID 추출
+        Long userId = jwtUtil.getUserIdFromToken(accessToken);
+
+        // DB에서 사용자 정보 조회
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+
+        // 프로필 이미지 URL 조회 (UserEntity 내의 profileImage 또는 별도 파일 테이블 조회)
+        String profileUrl = null;
+        if (user.getProfileImage() != null) {
+            profileUrl = user.getProfileImage().getFileUrl();
+        } else {
+            Optional<FileEntity> profilePicture = fileRepository.findByRelatedIdAndRelatedType(userId, FileEntity.RelatedType.PROFILE)
+                    .stream().findFirst();
+            profileUrl = profilePicture.map(FileEntity::getFileUrl).orElse(null);
+        }
+
+        // DB의 사용자 정보를 기반으로 UserResponse DTO 생성 및 반환
+        return new UserResponse(user.getEmail(), user.getName(), user.getNickname(), profileUrl);
+    }
 }
