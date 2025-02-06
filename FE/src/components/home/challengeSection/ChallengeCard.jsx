@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import defaultImage from "../../assets/default/defaultChallengePicture.png";
+import defaultImage from "../../../assets/default/defaultChallengePicture.png";
 
 const ChallengeCard = ({ challenge, index, onHover }) => {
   // 카드마다 다른 기울기 값을 생성 (-3도 ~ 3도 사이)
