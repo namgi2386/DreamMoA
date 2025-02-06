@@ -1,14 +1,22 @@
+import { useState } from 'react';
 import MainHero from '../components/home/MainHero';
 import ServiceHighlight from '../components/home/ServiceHighlight';
 import AIFeatureSection from '../components/home/AIFeatureSection';
-import ChallengeCarousel from '../components/home/ChallengeCarousel';
+import ChallengeCarousel from '../components/home/challengeSection/ChallengeCarousel';
 // import '../assets/styles/scrollbar-hide.css';
 import { useSocialLogin } from '../hooks/useSocialLogin';
 import HomeCommunity from '../components/home/homeCommunitySection/HomeCommunity';
 // import TopLine from '../components/home/topLineSection/TopLine';
+import SplashScreen from '../components/home/SplashScreen';
+
 
 export default function HomePage() {
+  const [showSplash, setShowSplash] = useState(true);
   useSocialLogin();
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   return (
     <div className="min-h-screen w-full">
