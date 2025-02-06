@@ -1,11 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { PiSirenFill } from "react-icons/pi";
+import api from '../../../services/api/axios';
+import { successModalState } from '/src/recoil/atoms/modalState';
+import { useSetRecoilState } from 'recoil';
 
 export default function ReportModal({ isOpen, onClose, reportType, targetId }) {
-  const [selectedReasons, setSelectedReasons] = useState([]);
-  const [comment, setComment] = useState('');
+  const [selectedReasons, setSelectedReasons] = useState([]); // 선택한 옵션
+  const [comment, setComment] = useState(''); // 작성한 글
+  const setSuccessModalState = useSetRecoilState(successModalState); // 성공모달
 
+  //선택지
   const reportReasons = [
     { id: 1, label: '스팸 홍보/도배' },
     { id: 2, label: '욕설/협오/차별적 표현' },
@@ -14,6 +19,7 @@ export default function ReportModal({ isOpen, onClose, reportType, targetId }) {
     { id: 5, label: '음란물/성적인 콘텐츠' },
   ];
 
+  // 선택지 바뀔때마다 업데이트
   const handleReasonToggle = (reasonId) => {
     setSelectedReasons(prev =>
       prev.includes(reasonId)
@@ -21,20 +27,56 @@ export default function ReportModal({ isOpen, onClose, reportType, targetId }) {
         : [...prev, reasonId]
     );
   };
-
-  const handleSubmit = (e) => {
+  
+  // 신고버튼 눌렀을때 로직
+  const handleSubmit = async  (e) => {
     e.preventDefault();
-    // API 호출 로직
-    console.log({
-      reportType,
-      targetId,
-      reasons: selectedReasons,
-      comment
+    // 선택된 신고 사유들의 label을 모아서 문자열로 만듦
+    const selectedLabels = reportReasons
+      .filter(reason => selectedReasons.includes(reason.id))
+      .map(reason => reason.label)
+      .join(', ');
+
+    // 신고 사유와 코멘트 합치기
+    const finalReason = comment 
+      ? `${selectedLabels} - ${comment}`
+      : selectedLabels;
+
+    try {
+      const mydata = {
+        reportType: reportType.toUpperCase(), // "post" -> "POST"
+        targetId: Number(targetId),  // 문자열인 경우를 대비해 숫자로 변환
+        reason: finalReason
+      };
+
+    await api.post("/reports", mydata);
+
+    console.log("신고성공");
+    setSuccessModalState({
+      isOpen: true,
+      message: "신고가 접수되었습니다.",
+      onCancel: () => {
+        // 실행 취소 시 수행할 작업
+        console.log('작업 취소됨');
+      },
+      isCancellable: false, // 실행 취소 버튼 표시 여부
     });
     
     setSelectedReasons([]);
     setComment('');
     onClose();
+    } catch (error) {
+      console.error('신고 처리 중 오류가 발생했습니다:', error);
+      setSuccessModalState({
+        isOpen: true,
+        message: "신고 접수가 완료되지 못했습니다.",
+        onCancel: () => {
+          // 실행 취소 시 수행할 작업
+          console.log('작업 취소됨');
+        },
+        isCancellable: false, // 실행 취소 버튼 표시 여부
+      });
+    }
   };
 
   return (
