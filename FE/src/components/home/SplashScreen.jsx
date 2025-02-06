@@ -3,11 +3,17 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getTotalStudyTime } from "../../services/api/studyTimeApi";
 
-const SplashScreen = ({ onComplete, setFinalHours }) => {
+const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const [count, setCount] = useState(0);
   const [targetHours, setTargetHours] = useState(0);
   const [isCountingDone, setIsCountingDone] = useState(false);
-  const animationDuration = 8;
+  const animationDuration = 6;
+
+  useEffect(() => {
+    if (forceComplete && !isCountingDone) {
+      setIsCountingDone(true);
+    }
+  }, [forceComplete, isCountingDone]);
 
   useEffect(() => {
     const fetchAndSetupAnimation = async () => {
@@ -23,7 +29,7 @@ const SplashScreen = ({ onComplete, setFinalHours }) => {
         const step = hours / (animationDuration * 60);
         const interval = setInterval(() => {
           setCount((prev) => {
-            if (prev >= hours) {
+            if (prev >= hours || forceComplete) {
               clearInterval(interval);
               setIsCountingDone(true);
               return hours;
@@ -38,7 +44,7 @@ const SplashScreen = ({ onComplete, setFinalHours }) => {
       }
     };
     fetchAndSetupAnimation();
-  }, [onComplete, setFinalHours]);
+  }, [onComplete, setFinalHours, forceComplete]);
 
   useEffect(() => {
     if (isCountingDone) {

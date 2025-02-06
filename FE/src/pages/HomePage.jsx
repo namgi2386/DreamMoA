@@ -1,37 +1,45 @@
-import { useState } from 'react';
-import MainHero from '../components/home/MainHero';
-import ServiceHighlight from '../components/home/ServiceHighlight';
-import AIFeatureSection from '../components/home/AIFeatureSection';
-import ChallengeCarousel from '../components/home/challengeSection/ChallengeCarousel';
-// import '../assets/styles/scrollbar-hide.css';
-import { useSocialLogin } from '../hooks/useSocialLogin';
-import HomeCommunity from '../components/home/homeCommunitySection/HomeCommunity';
-// import TopLine from '../components/home/topLineSection/TopLine';
-import SplashScreen from '../components/home/SplashScreen';
-
+import { useState, useEffect } from "react";
+import MainHero from "../components/home/MainHero";
+import ServiceHighlight from "../components/home/ServiceHighlight";
+import AIFeatureSection from "../components/home/AIFeatureSection";
+import ChallengeCarousel from "../components/home/challengeSection/ChallengeCarousel";
+import { useSocialLogin } from "../hooks/useSocialLogin";
+import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
+import SplashScreen from "../components/home/SplashScreen";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
-
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-  };
+  const [isMainLoaded, setIsMainLoaded] = useState(false);
 
   useSocialLogin();
 
+  useEffect(() => {
+    const loadMainContent = async () => {
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setIsMainLoaded(true);
+      } catch (error) {
+        console.error("Failed to load main content:", error);
+        setIsMainLoaded(true);
+      }
+    };
+
+    loadMainContent();
+  }, []);
+
   return (
     <>
-      {showSplash && (
+      {!isMainLoaded && (
         <SplashScreen
-          onComplete={handleSplashComplete}
+          onComplete={() => setShowSplash(false)}
           setFinalHours={setTotalHours}
         />
       )}
-      <div className={` ${showSplash ? 'invisible' : 'visible'}`}>
+      <div className={`${!isMainLoaded ? "invisible" : "visible"}`}>
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
-          <HomeCommunity/>
+          <HomeCommunity />
         </div>
         <div className="snap-start">
           <ServiceHighlight />
