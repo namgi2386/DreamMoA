@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -97,7 +99,10 @@ public class AuthController {
                     userDetails.getId(),
                     userDetails.getUsername(),
                     userDetails.getName(),
-                    userDetails.getNickname()
+                    userDetails.getNickname(),
+                    userDetails.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .collect(Collectors.joining(","))
             );
             String refreshToken = jwtUtil.createRefreshToken(userEntity);
             logger.info("🔑 [토큰 생성 완료] AccessToken: {}, RefreshToken: {}", accessToken, refreshToken);
@@ -150,6 +155,7 @@ public class AuthController {
             String email = jwtUtil.getEmailFromToken(refreshToken);
             String name = jwtUtil.getNameFromToken(refreshToken);
             String nickname = jwtUtil.getNicknameFromToken(refreshToken);
+            String role = jwtUtil.getRoleFromToken(refreshToken);
             if (userId == null || email == null) {
                 logger.error("❌ [토큰 검증 실패] Refresh Token에서 사용자 정보를 추출할 수 없음.");
                 return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED)
@@ -165,7 +171,7 @@ public class AuthController {
 
             // 새로운 액세스 토큰 생성
             logger.info("🔄 [AT 갱신 요청] RT 검증 완료. 새로운 AT 발급 시작...");
-            String newAccessToken = jwtUtil.createAccessToken(userId, email, name, nickname);
+            String newAccessToken = jwtUtil.createAccessToken(userId, email, name, nickname, role);
             logger.info("✅ [새로운 AT 발급 완료] UserID: {}, Email: {}", userId, email);
 
             // 액세스 토큰을 응답 본문에 담아 전송
