@@ -13,10 +13,11 @@ import SplashScreen from '../components/home/SplashScreen';
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
+
   const handleSplashComplete = () => {
     setShowSplash(false);
   };
-  
+
   useSocialLogin();
 
   return (
@@ -27,13 +28,15 @@ export default function HomePage() {
           setFinalHours={setTotalHours}
         />
       )}
-      <div className={`min-h-screen w-full ${showSplash ? 'invisible' : 'visible'}`}>
+      <div className={` ${showSplash ? 'invisible' : 'visible'}`}>
         <MainHero totalHours={totalHours} />
-        <HomeCommunity/>
-        <ServiceHighlight />
-
-        {/* 마감 임박 챌린지  */}
-        <section className="w-full py-16">
+        <div className="snap-start">
+          <HomeCommunity/>
+        </div>
+        <div className="snap-start">
+          <ServiceHighlight />
+        </div>
+        <section className="w-full py-16 snap-start">
           <div className="container mx-auto px-4">
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900">
@@ -46,8 +49,9 @@ export default function HomePage() {
             <ChallengeCarousel />
           </div>
         </section>
-
-        <AIFeatureSection />
+        <div className="snap-start">
+          <AIFeatureSection />
+        </div>
       </div>
     </>
   );
