@@ -6,10 +6,12 @@ export const authApi = {
     // console.log("login inner 01");
 
     try {
-      // console.log("로그인 test1");
+      console.log("로그인 test1");
       console.log(credentials); // {email: 'namgi@ssafy.com', password: '1234'} 잘들어있음
 
-      const response = await api.post("/login", credentials);
+      const response = await api.post("/login", credentials, {
+        withCredentials: true  // 이 요청에만 특별히 적용
+      });
       console.log("로그인 test2");
       console.log(response);
 
@@ -53,15 +55,18 @@ export const authApi = {
       await api.post(wayToLogout, {}, {
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        withCredentials: true 
       });
       console.log("로그아웃2 : api요청은 성공");
       
       localStorage.removeItem("accessToken");
+      document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       console.log("로그아웃3 : access토큰제거");
     } catch (error) {
       console.error("Logout failed:", error);
       localStorage.removeItem("accessToken"); // 에러가 나도 로컬 스토리지는 클리어
+      document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       throw error;
     }
   },
