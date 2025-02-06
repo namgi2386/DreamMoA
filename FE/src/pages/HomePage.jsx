@@ -5,14 +5,35 @@ import ChallengeCarousel from '../components/home/ChallengeCarousel';
 // import '../assets/styles/scrollbar-hide.css';
 import { useSocialLogin } from '../hooks/useSocialLogin';
 import HomeCommunity from '../components/home/homeCommunitySection/HomeCommunity';
-// import TopLine from '../components/home/topLineSection/TopLine';
+import TopLine from '../components/home/topLineSection/TopLine';
+import { useState } from 'react';
 
 export default function HomePage() {
   useSocialLogin();
+  // localStorage 확인은 초기값으로 한 번만 실행
+  const [showBanner, setShowBanner] = useState(() => {
+    const stored = localStorage.getItem('topLineBanner');
+    if (!stored) return true;
+    
+    const { timestamp } = JSON.parse(stored);
+    const now = new Date().getTime();
+    // const oneDay = 24 * 60 * 60 * 1000; // 24시간을 밀리초로
+    const oneDay = 1 * 60 * 60 * 1000; // 24시간을 밀리초로
+    
+    return now - timestamp > oneDay;
+  });
 
+  const topLineView = () => {
+    const bannerData = {
+      timestamp: new Date().getTime(),
+      hidden: true
+    };
+    localStorage.setItem('topLineBanner', JSON.stringify(bannerData));
+    setShowBanner(false);
+  };
   return (
     <div className="min-h-screen w-full">
-      {/* <TopLine/> */}
+      {showBanner && <TopLine isVisible={true} onClose={topLineView} />}
       <HomeCommunity/>
       <MainHero />
       <ServiceHighlight />
