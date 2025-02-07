@@ -4,14 +4,16 @@ import { X } from "lucide-react";
 import { HiOutlineChevronDoubleRight, HiOutlineChevronDoubleLeft } from "react-icons/hi";
 import { WiDirectionUp } from "react-icons/wi";
 import SideChatbarContentSection from "./SideChatbarContentSection";
+import Filter from "badwords-ko";
 
 export default function SideChatbar() {
   const [isOpen, setIsOpen] = useState(true);
   const [chatInput, setChatInput] = useState("");
+  const filter = new Filter({ placeHolder: "😂" });
 
   const ChatRequest = (e) => {
     e.preventDefault(); // 새로고침 방지
-    console.log(chatInput);
+    console.log(filter.clean(chatInput));
     setChatInput(""); // 입력값 초기화
   };
   const handleKeyDown = (e) => {
