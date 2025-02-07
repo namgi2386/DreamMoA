@@ -68,6 +68,15 @@ const ChallengeDetailModal = ({ isOpen, onClose, challenge }) => {
     description,
   } = challenge;
 
+  const StartChallenge = () => {
+    console.log("입장성공");
+    onClose();
+  }
+  const QuitChallenge = () => {
+    console.log("탈퇴성공");
+    onClose();
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -191,11 +200,15 @@ const ChallengeDetailModal = ({ isOpen, onClose, challenge }) => {
 
 
           {/* 버튼 */}
-          <button className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white py-4 rounded-xl font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg">
+          <button 
+          onClick={() => {StartChallenge()}}
+          className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white py-4 rounded-xl font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg">
             챌린지 입장하기
           </button>
           {/* 탈퇴 */}
-          <button className="text-gray-400 hover:text-gray-600 duration-300">탈퇴하기</button>
+          <button 
+          onClick={() => {QuitChallenge()}}
+          className="text-gray-400 hover:text-gray-600 duration-300">탈퇴하기</button>
         </div>
       </motion.div>
     </motion.div>
