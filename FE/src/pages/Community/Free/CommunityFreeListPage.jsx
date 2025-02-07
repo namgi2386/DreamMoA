@@ -13,7 +13,7 @@ export default function CommunityFreeListPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ 현재 URL에서 `page`와 `sortOption` 값을 가져옴 (기본값: 최신순, 1페이지)
+  // 현재 URL에서 page와 sortOption 값을 가져옴 (기본값: 최신순, 1페이지)
   const queryParams = new URLSearchParams(location.search);
   const currentPage = Number(queryParams.get("page")) || 1;
   const currentSort = queryParams.get("sort") || "최신순";
