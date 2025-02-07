@@ -7,6 +7,7 @@ import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
 import TopLine from "../components/home/topLineSection/TopLine";
+import VideoSection from "../components/home/videoSection/VideoSection";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(() => {
@@ -63,6 +64,9 @@ export default function HomePage() {
         </section>
         <div className="snap-start">
           <AIFeatureSection />
+        </div>
+        <div>
+          <VideoSection/>
         </div>
       </div>
     </>
