@@ -1,14 +1,18 @@
-// src/components/home/SplashScreen.jsx
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getTotalStudyTime } from "../../services/api/studyTimeApi";
 
 const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const [count, setCount] = useState(0);
-  const [targetHours, setTargetHours] = useState(0);
   const [isCountingDone, setIsCountingDone] = useState(false);
   const [showFadeOut, setShowFadeOut] = useState(false);
   const animationDuration = 6;
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   useEffect(() => {
     if (forceComplete && !isCountingDone) {
@@ -23,7 +27,6 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
         // const totalMinutes = await getTotalStudyTime();
         const totalMinutes = 150000; // 임시 값
         const hours = Math.floor(totalMinutes / 60);
-        setTargetHours(hours);
         setFinalHours(hours);
 
         // 카운터 애니메이션
