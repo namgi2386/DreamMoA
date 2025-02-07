@@ -14,13 +14,25 @@ const itemVariants = {
     x: initialPosition.x + '%',
     y: initialPosition.y + '%',
     transition: {
-      duration: 0.8,     // 애니메이션 시간 조정
+      duration: 0.8,     // 전체 애니메이션 지속 시간
       opacity: {         // opacity만 따로 설정
         duration: 0.4    // opacity는 좀 더 빠르게
       },
       scale: {          // scale만 따로 설정
         type: "spring",  // 스프링 효과 적용
-        stiffness: 50    // 탄성 강도
+        stiffness: 100,  // 탄성 강도 (높을수록 빠르게 안정화)
+        damping: 20,     // 감쇠 (높을수록 덜 튕김)
+        mass: 1         // 무게감 (영향력 조절)
+      },
+      x: {              // x축 이동에 대한 설정
+        type: "spring",
+        stiffness: 100,
+        damping: 30
+      },
+      y: {              // y축 이동에 대한 설정
+        type: "spring",
+        stiffness: 100,
+        damping: 30
       }
     }
   })
@@ -48,10 +60,14 @@ export default function HomeCommunityItem({ item, initialPosition, maxZ, setMaxZ
       custom={initialPosition}
       drag
       dragConstraints={{
-        left: -200,
-        right: 200,
-        top: -200,
-        bottom: 200,
+        left: -400,
+        right: 600,
+        top: -140,
+        bottom: 100,
+      }}
+      dragTransition={{     
+        power: 0.2,        // 관성의 힘 (기본값 0.8)
+        timeConstant: 100   // 관성이 유지되는 시간 (밀리초)
       }}
       onDragStart={handleDragStart}
       dragElastic={0.1}

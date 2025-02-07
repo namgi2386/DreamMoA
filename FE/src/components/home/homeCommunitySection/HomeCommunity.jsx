@@ -19,7 +19,7 @@ export default function HomeCommunity() {
   const [displayedItems, setDisplayedItems] = useState([]);
   const [maxZ, setMaxZ] = useState(0);
   const [myNumber, setCount] = useState(0);
-  const targetNumber = 50000;
+  const targetNumber = 10;
   
   useEffect(() => {
     const duration = 3000; // 3초
@@ -55,8 +55,8 @@ export default function HomeCommunity() {
 
   return (
     <div className="flex justify-center my-6">
-      <div className="relative min-w-[1000px] min-h-[600px] bg-emerald-500 rounded-lg p-8 overflow-hidden">
-        <h2 className="text-white text-4xl font-bold mb-8 ">
+      <div className="relative w-full max-w-[1400px] min-h-[600px] bg-emerald-500 rounded-lg p-8 overflow-hidden">
+        <h2 className="text-white text-4xl font-bold mb-8 cursor-default select-none">
           Trusted by {myNumber.toLocaleString()}+ creatives
         </h2>
         <motion.div
