@@ -8,38 +8,39 @@ import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity
 import SplashScreen from "../components/home/SplashScreen";
 
 export default function HomePage() {
-  // 상태 관리
   const [showSplash, setShowSplash] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
   const [isMainLoaded, setIsMainLoaded] = useState(false);
-  // 메인 컨텐츠의 실제 준비 상태를 추적하는 새로운 상태
-  const [isMainReady, setIsMainReady] = useState(false);
 
   useSocialLogin();
 
-  // 메인 컨텐츠를 미리 렌더링하고 준비하는 로직
   useEffect(() => {
-    const loadMainContent = async () => {
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsMainLoaded(true);
-      } catch (error) {
-        console.error("Failed to load main content:", error);
-        setIsMainLoaded(true);
-      }
-    };
-
-    loadMainContent();
+    // 아래 주석을 해제 시 -> 스플래시 화면 끝나자마자 급하게 메인 화면 렌더링
+    // 아래 주석 처리 시 -> 스플래시 화면 끝나고 2초 대기 후 메인 화면 렌더링
+    // const loadMainContent = async () => {
+    //   try {
+    //     await new Promise((resolve) => setTimeout(resolve, 2000));
+    //     setIsMainLoaded(true);
+    //   } catch (error) {
+    //     console.error("Failed to load main content:", error);
+    //     setIsMainLoaded(true);
+    //   }
+    // };
+    // loadMainContent();
   }, []);
 
   return (
-    <div className="relative">
-      {/* 메인 컨텐츠 - 항상 렌더링되지만 opacity로 숨김/표시 제어 */}
-      <div 
-        className={`transition-opacity duration-1000 ${
-          !showSplash && isMainLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
+    <>
+      {showSplash && (
+        <SplashScreen
+          onComplete={() => {
+            setShowSplash(false);
+            setIsMainLoaded(true);
+          }}
+          setFinalHours={setTotalHours}
+        />
+      )}
+      <div >
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
           <HomeCommunity />
@@ -64,21 +65,6 @@ export default function HomePage() {
           <AIFeatureSection />
         </div>
       </div>
-
-      {/* SplashScreen을 absolute 포지셔닝으로 오버레이 */}
-      {showSplash && (
-        <div className="absolute inset-0 z-50">
-          <SplashScreen
-            onComplete={() => {
-              // 메인 컨텐츠가 로드된 상태에서만 스플래시 화면을 제거
-              if (isMainLoaded) {
-                setShowSplash(false);
-              }
-            }}
-            setFinalHours={setTotalHours}
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 }
