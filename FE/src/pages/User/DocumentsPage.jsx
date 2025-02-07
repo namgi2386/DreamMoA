@@ -26,16 +26,18 @@ export default function DocumentsPage() {
       <div className="min-h-screen w-full bg-gray-200 flex flex-col gap-10 items-center justify-center">
         <p>documents</p>
 
-
+        {/* 신고테스트 */}
         <CallThePoliceModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        reportType="POST" // "POST", "USER", "COMMENT", "CHALLENGE"
+        reportType="USER" // "POST", "USER", "COMMENT", "CHALLENGE"
         targetId="1" // 여기 api연동 (게시글id,댓글id,챌린지id) 꼭! 게시글먼저쓴뒤에 신고테스트
         />
         <button onClick={() => setIsModalOpen(true)}>
           신고하기테스트버튼
         </button>
+
+        {/* 테그테스트 */}
         <div>
           <h2>선택된 태그:</h2>
           <div className="flex gap-2">

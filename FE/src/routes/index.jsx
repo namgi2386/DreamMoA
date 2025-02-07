@@ -47,6 +47,7 @@ const CommunityWritePage = lazy(() =>
 const CommunityEditPage = lazy(() =>
   import("../pages/Community/CommunityEditPage")
 );
+const AdminPage = lazy(() => import("../pages/Admin/AdminPage"));
 
 const MyPage = lazy(() => import("../pages/User/MyPage"));
 const DashBoardPage = lazy(() => import("../pages/User/DashBoardPage"));
@@ -122,8 +123,10 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
-      <Route path="*" element={<Notfound />} />
       <Route path="/video" element={<VideoRoom />} />
+      <Route path="/admin" element={<AdminPage />} />
+
+      <Route path="*" element={<Notfound />} />
     </Routes>
   );
 }

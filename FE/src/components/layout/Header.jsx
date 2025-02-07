@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { authState, userState } from "../../recoil/atoms/authState";
 import testlogo from "../../assets/logo/testlogo.png";
 import useAuth from "../../hooks/useAuth";
+import { RiAdminFill } from "react-icons/ri";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -52,7 +53,16 @@ const Header = () => {
           <img src={testlogo} alt="로고" className="h-10 w-auto" />
         </Link>
       </div>
-      <div>
+      <div className="flex ">
+        {/* 관리자버튼추가 */}
+        {UserInfo.role === "ADMIN" ? 
+                <div>
+                <Link to="/admin">
+                  <RiAdminFill className="h-10 w-auto text-white" />
+                </Link>
+              </div> 
+              : ''
+        }
         <button
           onClick={handleLogout}
           className="text-white px-4 py-2 rounded"
