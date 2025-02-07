@@ -1,18 +1,24 @@
+import { useState } from 'react';
+import TestChallengeList from '../challenge/challengelist/TestChallengeList';
 import mypagechallenge1 from '/src/assets/test/mypagechallenge1.png'
 import mypagechallenge2 from '/src/assets/test/mypagechallenge2.png'
 import mypagechallenge3 from '/src/assets/test/mypagechallenge3.png'
 import mypagechallenge4 from '/src/assets/test/mypagechallenge4.png'
 
 export default function ChallengeImages() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
+  
   const challengeImages = [
     { id:1, src: mypagechallenge1, isOn:true, title: '새벽 챌린지 5시까지 공부중'},
     { id:2, src: mypagechallenge2, isOn:false, title: '알고리즘 스터디방'},
     { id:3, src: mypagechallenge4, isOn:true, title: '독서 챌린지'},
     { id:4, src: mypagechallenge3, isOn:false, title: '4시 미라클모닝! 해보쟈구'},
   ];
-  const handleImageClick = (id) => {
-    console.log(`Clicked image no.${id}`);
-    
+  const handleImageClick = (item) => {
+    console.log(`Clicked image no.${item.id}`);
+    setSelectedChallenge(item);
+    setIsModalOpen(true);
   };
   return (
     <>
@@ -29,13 +35,15 @@ export default function ChallengeImages() {
                 absolute top-5 -right-2 z-10 duration-300
                 ${item.isOn ? 'bg-green-400 hover:bg-green-500' : 'bg-gray-400 hover:bg-gray-500'}`}/>
             <div className="aspect-video overflow-hidden rounded-xl">
-              <img src={item.src} onClick={() => handleImageClick(item.id)}
+              <img src={item.src} onClick={() => handleImageClick(item)}
                 className='w-full h-full border rounded-xl object-cover
                 transition-transform duration-500 hover:scale-110'/>
             </div>
           </div>
         ))}
       </div>
+      {/* 챌린지 상세모달 */}
+      <TestChallengeList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} selectedChallenge={selectedChallenge}/>
     </>
   );
 }
