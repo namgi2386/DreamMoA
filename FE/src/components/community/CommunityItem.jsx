@@ -1,10 +1,20 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaRegThumbsUp, FaRegComment } from "react-icons/fa";
 import DOMPurify from "dompurify";
 
 export default function CommunityItem({ post }) {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const currentPage = queryParams.get("page") || "1";
+  const currentSort = queryParams.get("sort") || "최신순"; // ✅ 현재 정렬 옵션 가져오기
+
+  console.log("📌 CommunityItem 렌더링됨 - 현재 페이지:", currentPage, "정렬 기준:", currentSort); // ✅ 디버깅 로그 추가
+
   return (
-    <Link to={`/community/detail/${post.postId}`} className="block">
+    <Link 
+    to={`/community/detail/${post.postId}`}
+    state={{ page: Number(currentPage), sortOption: currentSort, category: post.category }}
+    className="block">
       <div className="p-4 border-b border-gray-300 hover:bg-gray-50 transition">
         {/* 사용자 닉네임 및 카테고리
         <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
