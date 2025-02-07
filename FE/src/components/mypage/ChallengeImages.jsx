@@ -41,6 +41,7 @@ export default function ChallengeImages() {
             </div>
           </div>
         ))}
+
       </div>
       {/* 챌린지 상세모달 */}
       <TestChallengeList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} selectedChallenge={selectedChallenge}/>
