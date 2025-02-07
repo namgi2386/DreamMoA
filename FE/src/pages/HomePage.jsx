@@ -6,28 +6,13 @@ import ChallengeCarousel from "../components/home/challengeSection/ChallengeCaro
 import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
+import TopLine from "../components/home/topLineSection/TopLine";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(true);
   const [totalHours, setTotalHours] = useState(0);
-  const [isMainLoaded, setIsMainLoaded] = useState(false);
 
   useSocialLogin();
-
-  useEffect(() => {
-    // 아래 주석을 해제 시 -> 스플래시 화면 끝나자마자 급하게 메인 화면 렌더링
-    // 아래 주석 처리 시 -> 스플래시 화면 끝나고 2초 대기 후 메인 화면 렌더링
-    // const loadMainContent = async () => {
-    //   try {
-    //     await new Promise((resolve) => setTimeout(resolve, 2000));
-    //     setIsMainLoaded(true);
-    //   } catch (error) {
-    //     console.error("Failed to load main content:", error);
-    //     setIsMainLoaded(true);
-    //   }
-    // };
-    // loadMainContent();
-  }, []);
 
   return (
     <>
@@ -35,12 +20,12 @@ export default function HomePage() {
         <SplashScreen
           onComplete={() => {
             setShowSplash(false);
-            setIsMainLoaded(true);
           }}
           setFinalHours={setTotalHours}
         />
       )}
       <div >
+        <TopLine />
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
           <HomeCommunity />
