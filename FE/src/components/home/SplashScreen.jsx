@@ -8,6 +8,13 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const animationDuration = 6;
 
   useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  useEffect(() => {
     if (forceComplete && !isCountingDone) {
       setIsCountingDone(true);
     }

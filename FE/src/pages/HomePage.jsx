@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import MainHero from "../components/home/MainHero";
 import ServiceHighlight from "../components/home/ServiceHighlight";
 import AIFeatureSection from "../components/home/AIFeatureSection";
