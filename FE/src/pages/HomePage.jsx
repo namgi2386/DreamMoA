@@ -9,22 +9,37 @@ import SplashScreen from "../components/home/SplashScreen";
 import TopLine from "../components/home/topLineSection/TopLine";
 
 export default function HomePage() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    // 오늘 날짜를 'YYYY-MM-DD' 형식으로 가져옵니다
+    const today = new Date().toISOString().split('T')[0];
+    // localStorage에서 마지막으로 스플래시 스크린을 본 날짜를 가져옵니다
+    const lastSplashDate = localStorage.getItem('lastSplashDate');
+    
+    // 오늘 처음 방문했다면 스플래시 스크린을 보여줍니다
+    return lastSplashDate !== today;
+  });
+
   const [totalHours, setTotalHours] = useState(0);
 
   useSocialLogin();
+
+  const handleSplashComplete = () => {
+    // 스플래시 스크린이 끝나면 오늘 날짜를 저장합니다
+    const today = new Date().toISOString().split('T')[0];
+    localStorage.setItem('lastSplashDate', today);
+    setShowSplash(false);
+  };
 
   return (
     <>
       {showSplash && (
         <SplashScreen
-          onComplete={() => {
-            setShowSplash(false);
-          }}
+          onComplete={handleSplashComplete}
           setFinalHours={setTotalHours}
         />
       )}
-      <div >
+      <div>
+        
         <TopLine />
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
