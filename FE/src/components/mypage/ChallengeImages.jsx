@@ -7,7 +7,7 @@ import mypagechallenge4 from '/src/assets/test/mypagechallenge4.png'
 
 export default function ChallengeImages() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
   
   const challengeImages = [
     { id:1, src: mypagechallenge1, isOn:true, title: '새벽 챌린지 5시까지 공부중'},
@@ -17,7 +17,7 @@ export default function ChallengeImages() {
   ];
   const handleImageClick = (item) => {
     console.log(`Clicked image no.${item.id}`);
-    setSelectedImage(item);
+    setSelectedChallenge(item);
     setIsModalOpen(true);
   };
   return (
@@ -43,7 +43,7 @@ export default function ChallengeImages() {
         ))}
       </div>
       {/* 챌린지 상세모달 */}
-      <TestChallengeList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} selectedImage={selectedImage}/>
+      <TestChallengeList isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} selectedChallenge={selectedChallenge}/>
     </>
   );
 }
