@@ -2,9 +2,8 @@ import axios from "axios";
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "http://localhost:8080", // 로컬컬
-  // baseURL: "http://dreammoa.duckdns.org:8080/", // 배포주소
-  withCredentials: false, // 쿠키 사용불가 (로그인+로그아웃 로직에서만 임시적으로 true 하기)
+  baseURL: "http://dreammoa.duckdns.org:8080",
+  withCredentials: true, 
   headers: {
     Accept: "application/json",
   },
