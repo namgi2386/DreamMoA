@@ -1,8 +1,8 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import ChallengeCard from './ChallengeCard';
-import '../../assets/styles/scrollbar-hide.css';
-import { mockApiResponse } from '../../utils/mockData';
+import '../../../assets/styles/scrollbar-hide.css';
+import { mockApiResponse } from '../../../utils/mockData';
 
 const ChallengeCarousel = () => {
   const [challenges, setChallenges] = useState([]);
