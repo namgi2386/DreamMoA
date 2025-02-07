@@ -70,7 +70,7 @@ export default function HomeCommunity() {
     } else {
       setDisplayedItems([]);
     }
-  }, [isInView]); // 컴포넌트 마운트 시 한 번만 실행
+  }, [isInView]);
 
   return (
     <div className="flex justify-center my-6">
