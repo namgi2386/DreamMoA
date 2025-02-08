@@ -15,6 +15,7 @@ import DocumentsPage from "../pages/User/DocumentsPage";
 import CommunityForm from "../components/community/CommunityForm";
 
 import VideoRoom from '../pages/Video/VideoRoom';
+import OAuth2RedirectHandler from "../pages/User/OAuth2RedirectHandler";
 
 
 const ChallengeListPage = lazy(() =>
@@ -78,6 +79,8 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />{" "}
+      {/* 소셜로그인 리다이렉션 요청용페이지 0208테스트 실패  */}
+      {/* <Route path="/login/oauth2/code/:provider" element={<OAuth2RedirectHandler />} /> */}
       {/* /user-Info */}
       <Route path="/findid" element={<FindidPage />} /> {/* 아이디 찾기 */}
       <Route path="/findpw" element={<FindpwPage />} /> {/* 비밀번호 찾기 */}
