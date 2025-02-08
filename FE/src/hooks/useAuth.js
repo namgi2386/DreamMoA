@@ -15,18 +15,14 @@ const useAuth = () => {
   useEffect(() => {
     const initializeAuth = async () => {
       console.log("initialize");
-      
       try {
         const storedToken = localStorage.getItem('accessToken');
         if (storedToken && !auth.isAuthenticated) {
-          // console.log("find accessToken");
           
           setAuth({
             isAuthenticated: true,
             accessToken: storedToken
           });
-          // console.log(auth.isAuthenticated);
-          // console.log(auth.accessToken);
           
         }
       } finally {
@@ -61,6 +57,7 @@ const useAuth = () => {
         // 유저 정보 가져오기
         const userResponse = await getUserApi.getUserInfo();
         setUserInfo(userResponse.data);
+
         return { success: true };
       } catch (userError) {
         // 유저 정보 가져오기 실패 시 처리

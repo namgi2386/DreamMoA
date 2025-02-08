@@ -10,20 +10,19 @@ export const useSocialLogin = () => {
 
   useEffect(() => {
     const processSocialLogin = async () => {
-      
       const socialLoginPending = localStorage.getItem('socialLoginPending');
       const socialAccessToken = document.cookie
       .split('; ')
       .find(row => row.startsWith('access_token='))
       ?.split('=')[1];
-      localStorage.setItem("accessToken", socialAccessToken);
-      
+      if (socialAccessToken){
+        localStorage.setItem("accessToken", socialAccessToken);
+      }
       
       
       if (socialLoginPending === 'true') {
         try {
           const userResponse = await getUserApi.getUserInfo();
-          console.log("test v3:",userResponse);
           
           
           setAuth({

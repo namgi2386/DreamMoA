@@ -13,12 +13,14 @@ export const authApi = {
         withCredentials: true  // 이 요청에만 특별히 적용
       });
       console.log("로그인 test2");
-      console.log(response);
+      console.log(response.data.accessToken);
 
       if (response.data && response.data.accessToken) {
         console.log(" acc");
 
         localStorage.setItem("accessToken", response.data.accessToken);
+        console.log(localStorage.getItem("accessToken"));
+        
         return response.data;
       }
       throw new Error("Invalid response format");

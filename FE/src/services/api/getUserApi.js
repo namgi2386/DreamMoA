@@ -7,6 +7,7 @@ const getUserApi = {
     console.log('회원정보조회');
     
     console.log('응답 데이터:', response.data);
+    console.log("정보2:" ,localStorage.getItem('accessToken'));
     return response;
   })
   .catch(error => {
