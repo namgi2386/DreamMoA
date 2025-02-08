@@ -11,7 +11,7 @@ export default function EditableTagList({
 }) {
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
 
-  // 새로 추가: 태그 삭제 핸들러
+  // 태그 삭제 핸들러
   const handleTagDelete = (tagToDelete) => {
     setSelectedTags(selectedTags.filter((tag) => tag !== tagToDelete));
   };
@@ -42,50 +42,71 @@ export default function EditableTagList({
   };
 
   const tagVariants = {
-    hidden: { opacity: 10, y: 5 },
+    hidden: { opacity: 0},
     visible: {
       opacity: 1,
-      y: 0,
+      // y: 0,
       transition: {
-        duration: 0.3,
+        duration: 0.2,
         ease: "easeOut",
       },
     },
     exit: {
       opacity: 0,
-      y: -5,
+      // y: -5,
       transition: {
-        duration: 0.3,
+        duration: 0.1,
         ease: "easeIn",
       },
     },
   };
 
-  // 새로 추가: 태그 버튼 렌더링 함수
-  const renderTagButtons = () => {
-    const buttons = [];
+  // 태그 버튼 렌더링 함수
+  const renderTagContent = () => {
+    // 태그가 없고 edit 모드가 아닐 때
+    if (!isEdittag && selectedTags.length === 0) {
+      return (
+        <motion.p
+          variants={tagVariants}
+          className="text-gray-500 text-lg"
+        >
+          관심있는 태그를 설정해보세요.
+        </motion.p>
+      );
+    }
+
+    // 태그 버튼들 렌더링
+    const tags = [];
     for (let i = 0; i < 3; i++) {
       const tag = selectedTags[i];
-      buttons.push(
-        <motion.button
-          key={i}
-          variants={tagVariants}
-          onClick={() => tag && handleTagDelete(tag)}
-          className={`
+      if (isEdittag || tag) {
+        tags.push(
+          <motion.button
+            key={i}
+            variants={tagVariants}
+            onClick={() => isEdittag && tag && handleTagDelete(tag)}
+            className={`
               px-4 py-2 rounded-lg text-sm font-medium
               transition-all duration-200
               ${
                 tag
                   ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
-                  : "bg-gray-100 text-gray-400"
+                  : isEdittag
+                  ? "bg-gray-100 text-gray-400"
+                  : "hidden"
               }
             `}
-        >
-          {tag ? `#${tag}` : "태그 추가"}
-        </motion.button>
-      );
+          >
+            {tag ? `#${tag}` : "태그 추가"}
+          </motion.button>
+        );
+      }
     }
-    return buttons;
+    return (
+      <div className="flex gap-2">
+        {tags}
+      </div>
+    );
   };
 
   return (
@@ -98,13 +119,12 @@ export default function EditableTagList({
         exit="exit"
       >
         <div className="w-full bg-white rounded-3xl border-2 border-gray-300 p-4">
-          <div className="flex gap-2 mb-4">
-            {renderTagButtons()}
+          <div className="mb-4">
+            {renderTagContent()}
           </div>
-          <div className="flex justify-between items-center mb-4"></div>
           
           <AnimatePresence mode="wait">
-            {isEdittag ? (
+            {isEdittag && (
               <motion.div
                 key="editor"
                 variants={tagVariants}
@@ -120,36 +140,6 @@ export default function EditableTagList({
                     className="text-red-500 text-sm"
                   >
                     최대 3개의 태그만 선택할 수 있습니다.
-                  </motion.p>
-                )}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="display"
-                variants={tagVariants}
-                className="min-h-[40px]"
-              >
-                {selectedTags.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedTags.map((tag, index) => (
-                      <motion.span
-                        key={index}
-                        variants={tagVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="px-3 py-1 text-sm text-blue-600 bg-blue-50 rounded-full"
-                      >
-                        #{tag}
-                      </motion.span>
-                    ))}
-                  </div>
-                ) : (
-                  <motion.p
-                    variants={tagVariants}
-                    className="text-gray-500 text-lg"
-                  >
-                    관심있는 태그를 설정해보세요.
                   </motion.p>
                 )}
               </motion.div>
