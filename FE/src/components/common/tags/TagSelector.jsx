@@ -8,7 +8,6 @@ import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 export default function TagSelector() {
   // recoil 상태관리
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
-
   const tags = [
     { id: 1, name: "공무원" },
     { id: 2, name: "토익" },
@@ -28,6 +27,16 @@ export default function TagSelector() {
     { id: 16, name: "취준생" },
   ];
 
+    // 가로 스크롤을 위한 이벤트 핸들러 추가
+    const handleWheel = (e) => {
+      const container = e.currentTarget;
+      if (container) {
+        container.scrollLeft += e.deltaY;
+        // 페이지 세로 스크롤 방지
+        e.preventDefault();
+      }
+    };
+
   // 태그 클릭시!!!!
   const handleTagClick = (tag) => {
     //selectedTags == 선택한 태그들 저장 중
@@ -39,12 +48,13 @@ export default function TagSelector() {
   };
 
   return (
-    <div className="w-full bg-yellow-50 rounded-lg p-4">
+    <div className="w-full bg-yellow-50 rounded-lg p-8">
       {/* 태그 목록을 map으로 순회하며 버튼 생성 */}
       <div
+        onWheel={handleWheel}
         className={`
-      flex flex-nowrap overflow-x-auto overflow-y-hidden gap-2
-      lg:grid lg:grid-cols-8 lg:auto-rows-auto lg:gap-2 lg:overflow-x-auto lg:overflow-y-hidden lg:gap-y-4          `}
+          flex flex-nowrap overflow-x-auto overflow-y-hidden gap-2 py-4
+          lg:grid lg:grid-cols-8 lg:auto-rows-auto lg:gap-2 lg:overflow-x-auto lg:overflow-y-hidden lg:gap-y-4 `}
       >
         {tags.map((tag) => (
           <button
