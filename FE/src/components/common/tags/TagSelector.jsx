@@ -39,26 +39,34 @@ export default function TagSelector() {
   };
 
   return (
-    <div className={`grid grid-cols-8 gap-2 p-4 bg-yellow-50 rounded-lg gap-y-4`}>
-      {/* 태그 목록을 map으로 순회하며 버튼 생성 */}
-      {tags.map((tag) => (  
-        <button
-          key={tag.id}
-          onClick={() => handleTagClick(tag)}
-          className={`
-            px-1 py-1 rounded-full text-sm
-            transition-all duration-200 ease-in-out
-            hover:scale-105
-            ${
-              selectedTags.includes(tag.name)
-                ? 'bg-my-blue-4 text-white'
-                : 'bg-yellow-50 text-my-blue-1 hover:bg-blue-200'
-            }
+    <div className="w-full bg-yellow-50 rounded-lg p-4">
+    {/* 태그 목록을 map으로 순회하며 버튼 생성 */}
+          <div
+            className={`
+            flex flex-nowrap overflow-x-auto gap-2
+            lg:grid lg:grid-cols-8 lg:gap-2 lg:overflow-x-visible lg:gap-y-4
           `}
-        >
-          # {tag.name}
-        </button>
-      ))}
-    </div>
-  );
-}
+          >
+            {tags.map((tag) => (
+              <button
+                key={tag.id}
+                onClick={() => handleTagClick(tag)}
+                className={`
+                  flex-shrink-0
+                  px-3 py-1.5 rounded-full text-sm
+                  transition-all duration-200 ease-in-out
+                  hover:scale-105 whitespace-nowrap
+                  ${
+                    selectedTags.includes(tag.name)
+                      ? "bg-my-blue-4 text-white"
+                      : "bg-yellow-50 text-my-blue-1 hover:bg-blue-200"
+                  }
+                `}
+              >
+                # {tag.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
