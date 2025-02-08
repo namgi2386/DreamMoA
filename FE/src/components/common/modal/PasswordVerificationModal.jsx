@@ -1,14 +1,25 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
-export default function PasswordVerificationModal({ isOpen, onClose, onVerify }) {
-  const [password, setPassword] = useState('');
+export default function PasswordVerificationModal({ isOpen, onClose, onVerify, isVerified, setIsVerified }) {
+  const [password, setPassword] = useState(''); // 비밀번호 입력값 상태 관리
 
+  // 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
     onVerify(password);
     setPassword('');  // 입력 필드 초기화
   };
+
+  // 입력값 변경 핸들러
+  // 사용자가 입력을 시작하면 isVerified를 1로 초기화
+  //isVerified : 1==입력중, 2==입력완료, 3==에러발생(비밀번호 틀림)
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    if(isVerified === 3) {
+      setIsVerified(1);
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -25,8 +36,8 @@ export default function PasswordVerificationModal({ isOpen, onClose, onVerify })
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-my-blue-1"
+                onChange={handlePasswordChange}
+                className={`w-full px-4 py-2 border  ${isVerified===3?'border-my-red focus:ring-hmy-red':'border-gray-300 focus:ring-my-blue-1'}  rounded-lg focus:outline-none focus:ring-2 `}
                 placeholder="비밀번호를 입력하세요"
                 autoFocus
               />

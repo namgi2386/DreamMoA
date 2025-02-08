@@ -55,7 +55,7 @@ const Header = () => {
       </div>
       <div className="flex ">
         {/* 관리자버튼추가 */}
-        {UserInfo.role === "ADMIN" ? 
+        {UserInfo && UserInfo.role === "ADMIN" ? 
                 <div>
                 <Link to="/admin">
                   <RiAdminFill className="h-10 w-auto text-white" />
