@@ -60,17 +60,20 @@ export default function MyPage() {
   };
 
   // tag 수정/완료 버튼을 위한 핸들러
-  const handleEdittag = () => {
+  const handleEdittag = async () => {
     if (!isEdittagState) {
-      // 수정 모드가 아닐 때 (즉, 수정 버튼을 누를 때)
-      setIsEdittagState(!isEdittagState); // 현재 상태의 반대값으로 설정
-      console.log("수정모드 아닐때");
+      // 수정 모드로 진입
+      setIsEdittagState(true);
     } else {
-      // 이미 수정 모드일 때 (즉, 완료 버튼을 누를 때)
-      setIsEdittagState(!isEdittagState); // 현재 상태의 반대값으로 설정
-      setIsEdittagState(false);
+      // 완료 버튼을 눌렀을 때
+      try {
+        // TODO: API 호출하여 태그 저장
+        // await tagApi.saveTags(selectedTags);
+        setIsEdittagState(false);
+      } catch (error) {
+        console.error("태그 저장 실패:", error);
+      }
     }
-    console.log("태그 수정모드", isEdittagState);
   };
 
   // 취소 버튼을 위한 핸들러
