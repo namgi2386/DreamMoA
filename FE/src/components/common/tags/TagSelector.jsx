@@ -1,4 +1,5 @@
 // components/common/TagSelector.jsx
+import { useRef, useEffect } from "react"; // useRef 추가
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 
@@ -8,6 +9,7 @@ import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 export default function TagSelector() {
   // recoil 상태관리
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
+  const scrollContainerRef = useRef(null);
   const tags = [
     { id: 1, name: "공무원" },
     { id: 2, name: "토익" },
@@ -27,15 +29,51 @@ export default function TagSelector() {
     { id: 16, name: "취준생" },
   ];
 
-    // 가로 스크롤을 위한 이벤트 핸들러 추가
-    const handleWheel = (e) => {
-      const container = e.currentTarget;
-      if (container) {
-        container.scrollLeft += e.deltaY;
-        // 페이지 세로 스크롤 방지
+  // 가로 스크롤을 위한 이벤트 핸들러
+  const handleWheel = (e) => {
+    if (!scrollContainerRef.current) return;
+
+    const container = scrollContainerRef.current;
+    const isScrollable = container.scrollWidth > container.clientWidth;
+
+    if (isScrollable && e.deltaY !== 0) {
+      e.preventDefault(); // 먼저 기본 동작 방지
+
+      // 부드러운 스크롤을 위한 계산
+      const scrollAmount = e.deltaY;
+      const currentScroll = container.scrollLeft;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+
+      // 스크롤 범위 제한
+      if (
+        (currentScroll <= 0 && scrollAmount < 0) ||
+        (currentScroll >= maxScroll && scrollAmount > 0)
+      ) {
+        return;
+      }
+
+      container.scrollLeft += scrollAmount;
+      return false; // 이벤트 전파 중지
+    }
+  };
+
+  // 이벤트 리스너 추가 및 제거
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const preventScroll = (e) => {
+      if (e.target === container || container.contains(e.target)) {
         e.preventDefault();
       }
     };
+
+    container.addEventListener("wheel", preventScroll, { passive: false });
+
+    return () => {
+      container.removeEventListener("wheel", preventScroll);
+    };
+  }, []);
 
   // 태그 클릭시!!!!
   const handleTagClick = (tag) => {
@@ -51,10 +89,13 @@ export default function TagSelector() {
     <div className="w-full bg-yellow-50 rounded-lg p-8">
       {/* 태그 목록을 map으로 순회하며 버튼 생성 */}
       <div
+        ref={scrollContainerRef}
         onWheel={handleWheel}
         className={`
           flex flex-nowrap overflow-x-auto overflow-y-hidden gap-2 py-4
-          lg:grid lg:grid-cols-8 lg:auto-rows-auto lg:gap-2 lg:overflow-x-auto lg:overflow-y-hidden lg:gap-y-4 `}
+          lg:grid lg:grid-cols-8 lg:auto-rows-auto lg:gap-2 lg:overflow-x-auto lg:overflow-y-hidden lg:gap-y-4
+          scroll-smooth touch-pan-x
+        `}
       >
         {tags.map((tag) => (
           <button
