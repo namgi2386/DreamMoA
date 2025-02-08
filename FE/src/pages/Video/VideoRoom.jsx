@@ -31,50 +31,53 @@ const VideoRoom = () => {
   // 세션 참가 핸들러
   const handleJoinSession = async () => {
     try {
-      await connectSession(mySessionRoomName, myUserName);
+      await connectSession(mySessionRoomName, myUserName); // 내이름 방이름 가져가서 입장시켜줌
     } catch (error) {
       // 에러는 useOpenVidu에서 처리됨
       console.error('세션 참가 실패:', error);
     }
   };
 
-  // 언마운트시 세션 정리
+  // 언마운트시 세션 정리 (강제종료(크롬창닫음)시 세션 종료)
   useEffect(() => {
     return () => {
-      disconnectSession();
+      disconnectSession(); 
     };
   }, [disconnectSession]);
 
   return (
     <div className="w-full h-screen bg-gray-900 text-white p-4">
+      {/* 로딩페이지 */}
       {isLoading && <TestLoadingSpinner />}
+      {/* 에러페이지 */}
       {error && (
         <TestErrorAlert 
           message={error}
           onClose={clearError}
         />
       )}
+
       {!session ? (
-        <VideoJoinForm 
-          myUserName={myUserName}
-          mySessionRoomName={mySessionRoomName}
-          onUserNameChange={setMyUserName}
-          onSessionNameChange={setMySessionRoomName}
-          onJoin={handleJoinSession}
-          isLoading={isLoading}
+        <VideoJoinForm  // 입장화면 
+          myUserName={myUserName} // 내가 입력한 이름
+          mySessionRoomName={mySessionRoomName} // 세션(방)이름
+          onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
+          onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
+          onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
+          isLoading={isLoading} // 로딩화면
         />
       ) : (
         <div className="h-full">
-          <VideoControls 
-            sessionName={mySessionRoomName}
-            onSwitchCamera={switchCamera}
-            onLeaveSession={disconnectSession}
+          <VideoControls  // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
+            sessionName={mySessionRoomName} // 세션이름
+            onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
+            onLeaveSession={disconnectSession}  // 나가기 함수 매개변수로 넘겨줌
           />
-          <VideoGrid 
+          <VideoGrid  // 너와나의 비디오 위치 크기 등등
             mainStreamManager={mainStreamManager}
-            publisher={publisher}
-            subscribers={subscribers}
-            onStreamClick={updateMainStreamManager}
+            publisher={publisher} // 내 화면
+            subscribers={subscribers} // 친구들 화면
+            onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
           />
         </div>
       )}

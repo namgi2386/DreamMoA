@@ -1,4 +1,4 @@
-import { useState,useEffect , useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import { videoApi } from '../services/api/videoApi';
 
@@ -11,6 +11,8 @@ const useOpenVidu = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null); // 현재 사용 중인 카메라 장치
   const [isLoading, setIsLoading] = useState(false); // 로딩상태관리
   const [error, setError] = useState(null); // 에러상태관리 
+
+  // ▽▼▽▼▽ 기본 함수(세션발급+토큰생성 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
   // 에러 초기화 함수
   const clearError = useCallback(() => {
@@ -51,8 +53,10 @@ const useOpenVidu = () => {
     const sessionIdResponse = await createSession(sessionId);
     return await createToken(sessionIdResponse);
   };
+  
+  // ▽▼▽▼▽▼▽▼▽▼▽▼▽▼ 아래 부터가 진짜 기능들 ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
-  // 세션 정리 함수 아래서 사용함. 
+  // ☆★☆★☆★ 세션 연결 함수 (방생성 방참가) ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
   const connectSession = useCallback(async (sessionName, userName) => {
     setIsLoading(true);
     setError(null);
@@ -129,10 +133,8 @@ const useOpenVidu = () => {
     }
   }, [session]);
 
-  /**
-   * 카메라 전환 함수
-   * 사용 가능한 다른 카메라로 전환
-   */
+
+   // 카메라 전환 함수 : 사용 가능한 다른 카메라로 전환
   const switchCamera = useCallback(async () => {
     try {
       const devices = await OV.current.getDevices();

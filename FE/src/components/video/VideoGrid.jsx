@@ -1,10 +1,9 @@
 import UserVideoComponent from './UserVideo';
 
-// mainStreamManager  // 메인 스트림
-// publisher          // 자신의 스트림
-// subscribers        // 다른 참가자들의 스트림
-// onStreamClick      // 스트림 클릭 핸들러
-
+// mainStreamManager : 메인 스트림
+// publisher         : 자신의 스트림
+// subscribers       : 다른 참가자들의 스트림
+// onStreamClick     : 스트림 클릭 핸들러
 export default function VideoGrid({mainStreamManager, publisher, subscribers, onStreamClick}) {
   return (
     <div className="grid grid-cols-3 gap-4 h-[calc(100%-80px)]">
