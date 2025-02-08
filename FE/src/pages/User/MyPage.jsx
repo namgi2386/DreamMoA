@@ -149,21 +149,29 @@ export default function MyPage() {
           />
 
           {/* 관심 태그 섹션 */}
-          <div className="relative flex justify-end pb-2">
+          <div className="flex justify-between items-center mt-20 mb-4">
+            <h1
+              className="bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
+              text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60"
+            >
+              관심 태그
+            </h1>
+
             <div className="relative">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
-                className={`relative z-10 px-8 py-2 rounded-full mt-32 duration-300 font-bold tracking-wider text-xl
-          ${
-            isEdittagState
-              ? "bg-my-yellow bg-opacity-50 text-black hover:bg-opacity-80"
-              : "bg-my-blue-1 text-white"
-          }`}
+                className={`relative z-10 px-8 py-2 rounded-full duration-300 font-bold tracking-wider text-xl
+        ${
+          isEdittagState
+            ? "bg-my-yellow bg-opacity-50 text-black hover:bg-opacity-80"
+            : "bg-my-blue-1 text-white"
+        }`}
                 onClick={handleEdittag}
               >
                 {isEdittagState ? "completed" : "edit"}
               </motion.button>
+
               <AnimatePresence>
                 {isEdittagState && (
                   <motion.button
@@ -177,7 +185,7 @@ export default function MyPage() {
                       damping: 15,
                       delay: 0.1,
                     }}
-                    className="absolute z-0 right-0 top-32 px-8 py-2 rounded-full font-bold tracking-wider text-xl
+                    className="absolute z-0 right-0 top-0 px-8 py-2 rounded-full font-bold tracking-wider text-xl
             bg-gray-200 text-gray-700"
                     onClick={handleCanceltag}
                   >
@@ -193,8 +201,8 @@ export default function MyPage() {
           />
           {/* 챌린지 섹션 */}
           <h1
-            className={`ml-4 mt-20 mb-4 bg-my-yellow px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
-                        text-xl w-32 text-center hover:bg-my-yellow text-gray-900 bg-opacity-40 hover:bg-opacity-60  `}
+            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+                        text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
             challenge
           </h1>
