@@ -22,7 +22,7 @@ export default function ChallengeImages() {
   };
   return (
     <>
-      <div className={`rounded-3xl bg-white border border-2 border-gray-300
+      <div className={`rounded-3xl bg-white border-2 border-gray-300
                 py-12 grid duration-500
                 grid-cols-1 md:grid-cols-2 lg:grid-cols-3
                 gap-6 md:gap-8 lg:gap-12

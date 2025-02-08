@@ -20,7 +20,7 @@ import { authApi } from '../../services/api/authApi';
 // 중복되는 CSS 변수분리
 const totalBackGroundColor = "bg-white"
 const tagBodyStyles = 'flex items-center gap-12'
-const tagTitleStyles = `bg-my-blue-3 px-4 py-2 rounded-xl  cursor-default transition-all duration-300
+const tagTitleStyles = `bg-blue-200 bg-opacity-30 px-4 py-2 rounded-xl cursor-default transition-all duration-300
                         text-xl w-32 text-center hover:bg-my-yellow text-gray-900 hover:bg-opacity-30`
 const tagContentStyles = 'text-gray-800 cursor-default text-xl'
 
