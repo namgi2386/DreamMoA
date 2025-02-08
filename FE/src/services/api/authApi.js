@@ -3,24 +3,12 @@ import api, { API_BASE_URL } from "./axios";
 export const authApi = {
   // 로그인
   login: async (credentials) => {
-    // console.log("login inner 01");
-
     try {
-      console.log("로그인 test1");
-      console.log(credentials); // {email: 'namgi@ssafy.com', password: '1234'} 잘들어있음
-
       const response = await api.post("/login", credentials, {
         withCredentials: true  // 이 요청에만 특별히 적용
       });
-      console.log("로그인 test2");
-      console.log(response.data.accessToken);
-
       if (response.data && response.data.accessToken) {
-        console.log(" acc");
-
         localStorage.setItem("accessToken", response.data.accessToken);
-        console.log(localStorage.getItem("accessToken"));
-        
         return response.data;
       }
       throw new Error("Invalid response format");
@@ -34,8 +22,6 @@ export const authApi = {
   logout: async () => {
     try {
       console.log("로그아웃1");
-      
-      // localStorage에서 userInfo를 가져와서 파싱
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       
       // role에 따른 로그아웃 URL 설정

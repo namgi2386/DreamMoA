@@ -37,11 +37,6 @@ const Header = () => {
       navigate("/login");
     }
   };
-  const testhand = async () => {
-    const te = localStorage.getItem('accessToken')
-    console.log(te);
-    
-  }
 
   // Login 페이지에서는 헤더 렌더링 안 함
   // if (location.pathname === "/login") return null;
@@ -68,9 +63,6 @@ const Header = () => {
               </div> 
               : ''
         }
-        <button onClick={testhand}>
-          dd
-        </button>
         <button
           onClick={handleLogout}
           className="text-white px-4 py-2 rounded"
