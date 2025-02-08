@@ -27,7 +27,7 @@ const tagContentStyles = 'text-gray-800 cursor-default text-xl'
 
 
 
-export default function MyInfoCard({ isEditMode }) {
+export default function MyInfoCard({ isEditMode,setIsEditModeState,isVerified,setIsVerified }) {
   const [userInfo, setUserInfo] = useRecoilState(userState); //회원정보 불러오기
   const [inputNameValue , setInputNameValue] = useState(null); // 이름 입력값
   const [inputNicknameValue , setInputNicknameValue] = useState(null); // 닉네임 입력값
@@ -145,6 +145,7 @@ export default function MyInfoCard({ isEditMode }) {
   // 이름 닉네임 변경 로직
   const editProfileSaveButton = async () => {
     try {
+      setIsVerified(1)
       // 변경axios함수 실행
       const response = await getUserApi.uploadProfileInfo(inputNameValue, inputNicknameValue );
       console.log("성공응답1! : " , response);
@@ -172,6 +173,7 @@ export default function MyInfoCard({ isEditMode }) {
           if (userResponse.data) {
             setUserInfo(userResponse.data);
           }
+          setIsEditModeState(false); // save후 editmode해제
         } catch (error) {
           console.error('프로필 정보 갱신 실패:', error);
         }
@@ -379,7 +381,7 @@ export default function MyInfoCard({ isEditMode }) {
                   }`}
                   onClick={inputNameValue ? () => isCorrectNameCheck(inputNameValue) : undefined}
           >
-            이름 확인
+            Check
           </span>
         </div>
         {/* 닉네임 */}

@@ -10,27 +10,6 @@ const api = axios.create({
   },
 });
 
-// api.interceptors.request.use(
-//   (config) => {
-//     // 로그아웃 요청의 경우 별도 처리
-//     if (config.url === '/logout') {
-//       return {
-//         ...config,
-//         headers: {
-//           ...config.headers,
-//           'Content-Type': 'application/json'
-//         }
-//       };
-//     }
-//     if (!config.url.includes('update-profile')) {
-//       config.headers['Content-Type'] = 'application/json';
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
 // ✅ 🔥 추가한 코드: Authorization 헤더 추가 (기존 코드 영향 없음)
 api.interceptors.request.use(
   (config) => {
@@ -45,7 +24,7 @@ api.interceptors.request.use(
   }
 );
 
-export default api;
+
 
 // Response Interceptor - token refresh 처리
 
@@ -63,16 +42,16 @@ export default api;
 //       try {
 //         const refreshToken = document.cookie
 //           .split('; ')
-//           .find(row => row.startsWith('refreshToken='))
+//           .find(row => row.startsWith('refresh_token='))
 //           ?.split('=')[1];
 
-//         // refresh 토큰으로 새로운 access 토큰 발급 요청
+//         // refresh 토큰으로 새로운 access 토큰 발급 요청  
 //         const response = await axios.post(
-//           "http://localhost:8080/auth/refresh",
+//           "http://localhost:8080/refresh",
 //           {},
 //           {
 //             headers: {
-//               'Refresh-Token': `Bearer ${refreshToken}`
+//               'Authorization': `Bearer ${refreshToken}`
 //             }
 //           }
 //         );
@@ -87,6 +66,10 @@ export default api;
 //       } catch (refreshError) {
 //         // refresh 토큰도 만료되었거나 유효하지 않은 경우
 //         localStorage.removeItem("accessToken");
+//         // 사용자에게 알림
+//         alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+//         // 현재 URL을 state로 전달하여 로그인 후 원래 페이지로 돌아올 수 있게 함
+//         window.location.href = `/login?redirect=${window.location.pathname}`;
 //         // 로그인 페이지로 리다이렉트 등 추가 처리
 //         return Promise.reject(refreshError);
 //       }
@@ -95,3 +78,4 @@ export default api;
 //   }
 // );
 
+export default api;
