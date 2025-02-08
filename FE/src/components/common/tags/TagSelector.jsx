@@ -9,7 +9,7 @@ import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 export default function TagSelector() {
   // recoil 상태관리
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
-  const scrollContainerRef = useRef(null);
+  const containerRef = useRef(null);
   const tags = [
     { id: 1, name: "공무원" },
     { id: 2, name: "토익" },
@@ -31,35 +31,33 @@ export default function TagSelector() {
 
   // 가로 스크롤을 위한 이벤트 핸들러
   const handleWheel = (e) => {
-    if (!scrollContainerRef.current) return;
+    if (!containerRef.current) return;
 
-    const container = scrollContainerRef.current;
-    const isScrollable = container.scrollWidth > container.clientWidth;
+    // 내부 스크롤 가능한 요소 찾기
+    const scrollableElement = containerRef.current.querySelector('[class*="flex flex-nowrap"]');
+    if (!scrollableElement) return;
+
+    const isScrollable = scrollableElement.scrollWidth > scrollableElement.clientWidth;
 
     if (isScrollable && e.deltaY !== 0) {
       e.preventDefault(); // 먼저 기본 동작 방지
 
-      // 부드러운 스크롤을 위한 계산
       const scrollAmount = e.deltaY;
-      const currentScroll = container.scrollLeft;
-      const maxScroll = container.scrollWidth - container.clientWidth;
-
-      // 스크롤 범위 제한
-      if (
-        (currentScroll <= 0 && scrollAmount < 0) ||
-        (currentScroll >= maxScroll && scrollAmount > 0)
-      ) {
+      const currentScroll = scrollableElement.scrollLeft;
+      const maxScroll = scrollableElement.scrollWidth - scrollableElement.clientWidth;
+      
+      if ((currentScroll <= 0 && scrollAmount < 0) || 
+          (currentScroll >= maxScroll && scrollAmount > 0)) {
         return;
       }
-
-      container.scrollLeft += scrollAmount;
-      return false; // 이벤트 전파 중지
+      
+      scrollableElement.scrollLeft += scrollAmount;
+      return false;
     }
   };
 
-  // 이벤트 리스너 추가 및 제거
   useEffect(() => {
-    const container = scrollContainerRef.current;
+    const container = containerRef.current;
     if (!container) return;
 
     const preventScroll = (e) => {
@@ -68,10 +66,10 @@ export default function TagSelector() {
       }
     };
 
-    container.addEventListener("wheel", preventScroll, { passive: false });
-
+    container.addEventListener('wheel', preventScroll, { passive: false });
+    
     return () => {
-      container.removeEventListener("wheel", preventScroll);
+      container.removeEventListener('wheel', preventScroll);
     };
   }, []);
 
@@ -86,11 +84,13 @@ export default function TagSelector() {
   };
 
   return (
-    <div className="w-full bg-yellow-50 rounded-lg p-8">
+    <div 
+      ref={containerRef}
+      onWheel={handleWheel}
+      className="w-full bg-yellow-50 rounded-lg p-8"
+    >
       {/* 태그 목록을 map으로 순회하며 버튼 생성 */}
       <div
-        ref={scrollContainerRef}
-        onWheel={handleWheel}
         className={`
           flex flex-nowrap overflow-x-auto overflow-y-hidden gap-2 py-4
           lg:grid lg:grid-cols-8 lg:auto-rows-auto lg:gap-2 lg:overflow-x-auto lg:overflow-y-hidden lg:gap-y-4
