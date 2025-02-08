@@ -11,9 +11,11 @@ const LoginPage = () => {
   };
   const handleNaverLogin = () => {
     console.log("네이버버 로그인!");
+    socialLogin("naver");
   };
   const handleKakaoLogin = () => {
     console.log("카카오오 로그인!");
+    socialLogin("kakao");
   };
   return (
     <>

@@ -1,5 +1,4 @@
-import axios from "axios";
-import api from "./axios";
+import api, { API_BASE_URL } from "./axios";
 
 export const authApi = {
   // 로그인
@@ -173,11 +172,17 @@ export const authApi = {
   },
 };
 
-// 구글로그인 리다이렉션 보내보기 실패실패 (백엔드에서 엔드포인트 파라미터를 처리해줘야함)
 export const socialLogin = (provider) => {
-  const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
-  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+  localStorage.setItem('socialLoginPending', 'true');
+  window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
 };
+
+
+// 구글로그인 리다이렉션 보내보기 실패실패 (백엔드에서 엔드포인트 파라미터를 처리해줘야함) 실패
+// export const socialLogin = (provider) => {
+//   const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
+//   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+// };
 
 
 // 프론트에서 직접 proxy로 해결해보려했는데, 실패

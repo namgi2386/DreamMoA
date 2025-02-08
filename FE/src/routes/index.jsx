@@ -15,7 +15,7 @@ import DocumentsPage from "../pages/User/DocumentsPage";
 import CommunityForm from "../components/community/CommunityForm";
 
 import VideoRoom from '../pages/Video/VideoRoom';
-import OAuth2RedirectHandler from "../pages/User/OAuth2RedirectHandler";
+// import OAuth2RedirectHandler from "../pages/User/OAuth2RedirectHandler";
 
 
 const ChallengeListPage = lazy(() =>
