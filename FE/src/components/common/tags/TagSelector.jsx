@@ -1,4 +1,3 @@
-// components/common/TagSelector.jsx
 import { useRef, useEffect } from "react"; // useRef 추가
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
@@ -34,23 +33,29 @@ export default function TagSelector() {
     if (!containerRef.current) return;
 
     // 내부 스크롤 가능한 요소 찾기
-    const scrollableElement = containerRef.current.querySelector('[class*="flex flex-nowrap"]');
+    const scrollableElement = containerRef.current.querySelector(
+      '[class*="flex flex-nowrap"]'
+    );
     if (!scrollableElement) return;
 
-    const isScrollable = scrollableElement.scrollWidth > scrollableElement.clientWidth;
+    const isScrollable =
+      scrollableElement.scrollWidth > scrollableElement.clientWidth;
 
     if (isScrollable && e.deltaY !== 0) {
       e.preventDefault(); // 먼저 기본 동작 방지
 
       const scrollAmount = e.deltaY;
       const currentScroll = scrollableElement.scrollLeft;
-      const maxScroll = scrollableElement.scrollWidth - scrollableElement.clientWidth;
-      
-      if ((currentScroll <= 0 && scrollAmount < 0) || 
-          (currentScroll >= maxScroll && scrollAmount > 0)) {
+      const maxScroll =
+        scrollableElement.scrollWidth - scrollableElement.clientWidth;
+
+      if (
+        (currentScroll <= 0 && scrollAmount < 0) ||
+        (currentScroll >= maxScroll && scrollAmount > 0)
+      ) {
         return;
       }
-      
+
       scrollableElement.scrollLeft += scrollAmount;
       return false;
     }
@@ -66,25 +71,26 @@ export default function TagSelector() {
       }
     };
 
-    container.addEventListener('wheel', preventScroll, { passive: false });
-    
+    container.addEventListener("wheel", preventScroll, { passive: false });
+
     return () => {
-      container.removeEventListener('wheel', preventScroll);
+      container.removeEventListener("wheel", preventScroll);
     };
   }, []);
 
   // 태그 클릭시!!!!
   const handleTagClick = (tag) => {
-    //selectedTags == 선택한 태그들 저장 중
     if (selectedTags.includes(tag.name)) {
-      setSelectedTags(selectedTags.filter((t) => t !== tag.name)); // 선택했던거 제거 (이름기준->id변경가능)
+      setSelectedTags(selectedTags.filter((t) => t !== tag.name));
     } else {
-      setSelectedTags([...selectedTags, tag.name]); // 안한거면 추가
+      // 3개 이상 선택 방지
+      if (selectedTags.length >= 3) return;
+      setSelectedTags([...selectedTags, tag.name]);
     }
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       onWheel={handleWheel}
       className="w-full bg-yellow-50 rounded-lg p-8"
