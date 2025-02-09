@@ -11,8 +11,9 @@ export default function ChallengeCreateForm() {
     image: null,
     imagePreview: null,
     isPublic: false,
-    startDate: "", // 시작 날짜 추가
-    expireDate: "", // 종료 날짜 추가
+    startDate: "",
+    expireDate: "",
+    standard: 1, // 목표 달성 기준
   });
 
   // 입력 핸들러
@@ -24,11 +25,35 @@ export default function ChallengeCreateForm() {
     }));
   };
 
-  // 날짜 입력 핸들러 추가
+  // 챌린지 기간 일수 계산 함수
+  const calculateDuration = () => {
+    if (!formData.startDate || !formData.expireDate) return 0;
+
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.expireDate);
+    const diffTime = Math.abs(end - start);
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // 시작일과 종료일 포함
+  };
+
+  // 목표 달성 기준 입력 핸들러
+  const handleStandardChange = (e) => {
+    const value = parseInt(e.target.value);
+    const duration = calculateDuration();
+
+    // 입력값이 범위를 벗어나면 경계값으로 설정
+    if (value < 1) {
+      setFormData((prev) => ({ ...prev, standard: 1 }));
+    } else if (value > duration) {
+      setFormData((prev) => ({ ...prev, standard: duration }));
+    } else {
+      setFormData((prev) => ({ ...prev, standard: value }));
+    }
+  };
+
+  // 날짜 변경 시 목표 달성 기준 조정
   const handleDateChange = (e) => {
     const { name, value } = e.target;
 
-    // 시작일이 종료일보다 늦거나, 종료일이 시작일보다 빠른 경우 처리
     if (
       name === "startDate" &&
       formData.expireDate &&
@@ -46,12 +71,16 @@ export default function ChallengeCreateForm() {
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+      // 날짜가 변경되면 목표 달성 기준이 기간을 초과하지 않도록 조정
+      const duration = calculateDuration();
+      if (prev.standard > duration) {
+        updatedData.standard = duration;
+      }
+      return updatedData;
+    });
   };
-
   // 이미지 업로드 핸들러
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -182,6 +211,32 @@ export default function ChallengeCreateForm() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* 목표 달성 기준 입력 */}
+          <div>
+            <label className="block text-gray-700 mb-2">목표 달성 기준</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                name="standard"
+                value={formData.standard}
+                onChange={handleStandardChange}
+                min={1}
+                max={calculateDuration()}
+                className="w-24 px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
+              />
+              <span className="text-gray-600">/ {calculateDuration()}일</span>
+              <span className="ml-2 text-sm text-gray-500">
+                (챌린지 기간 중 목표 달성 일수)
+              </span>
+            </div>
+            {calculateDuration() > 0 && (
+              <p className="mt-1 text-sm text-gray-500">
+                {Math.round((formData.standard / calculateDuration()) * 100)}%
+                달성이 목표입니다.
+              </p>
+            )}
           </div>
 
           {/* 방 설명 입력 */}
