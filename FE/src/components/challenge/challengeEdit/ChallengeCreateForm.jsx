@@ -1,19 +1,30 @@
 // src/components/challenge/ChallengeCreateForm.jsx
 import { useState } from "react";
 import { motion } from "framer-motion";
+// 여기서부터는 tag 컴포넌트를 위한 import
+import { useEffect } from "react";
+// import { useRecoilState, useResetRecoilState } from 'recoil';
+import { useRecoilState } from "recoil";
+import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
+import EditableTagList from "../../common/tags/EditableTagList";
 
 export default function ChallengeCreateForm() {
-  // FormData 상태에 날짜 필드 추가
+  // selectedTags 상태
+  const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
+  // 태그 편집 모드 상태
+  const [isEdittag, setIsEdittag] = useState(true); // 생성 폼에서는 항상 편집 모드
+
   const [formData, setFormData] = useState({
     title: "",
-    maxParticipants: 1,
+    maxParticipants: 6,
     description: "",
+    tags: [],
     image: null,
-    imagePreview: null,
-    isPublic: false,
     startDate: "",
     expireDate: "",
-    standard: 1, // 목표 달성 기준
+    standard: 1,
+    isPublic: false,
+    imagePreview: null,
   });
 
   // 입력 핸들러
@@ -119,11 +130,28 @@ export default function ChallengeCreateForm() {
     e.preventDefault();
     // API 호출 로직 추가
 
+    // selectedTags를 formData에 포함
+    const submitData = {
+      ...formData,
+      tags: selectedTags,
+      isPrivate: !formData.isPublic, // API 스펙에 맞게 변환
+    };
+
     console.log("Form submitted:", formData);
   };
+
   const exitButton = () => {
     console.log("종료");
   };
+
+  // 컴포넌트가 언마운트될 때 selectedTags 초기화
+  useEffect(() => {
+    setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
+
+    return () => {
+      setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
+    };
+  }, [setSelectedTags]);
 
   return (
     <>
@@ -186,6 +214,15 @@ export default function ChallengeCreateForm() {
             />
           </div>
 
+          {/* 태그 선택 컴포넌트 추가 */}
+          <div>
+            <label className="block text-gray-700 mb-2">태그 선택</label>
+            <EditableTagList
+              isEdittag={isEdittag}
+              setIsEdittag={setIsEdittag}
+              initialTags={[]}
+            />
+          </div>
           {/* 참가자 수 선택 */}
           {/* <div>
             <label className="block text-gray-700 mb-2">참가자 수</label>
@@ -202,7 +239,7 @@ export default function ChallengeCreateForm() {
               ))}
             </select>
           </div> */}
-          
+
           {/* 위 내용 혹시 몰라서 주석. 아래 필드 사용 예정 */}
           {/* 참가자 수 입력 */}
           <div>
