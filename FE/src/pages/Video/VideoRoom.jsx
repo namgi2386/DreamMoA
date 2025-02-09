@@ -69,12 +69,6 @@ const VideoRoom = () => {
             onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
             isLoading={isLoading} // 로딩화면
           />
-          <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
-            session={session} // 세션상태
-            sessionTitle={mySessionRoomName} //방이름
-            isChatOpen={isChatOpen} // 채팅창 on off
-            setIsChatOpen={setIsChatOpen} // 채팅창 on off
-          />
         </>
       ) : (
         <div className="h-full">
@@ -88,6 +82,12 @@ const VideoRoom = () => {
             publisher={publisher} // 내 화면
             subscribers={subscribers} // 친구들 화면
             onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
+          />
+          <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
+            session={session} // 세션상태
+            sessionTitle={mySessionRoomName} //방이름
+            isChatOpen={isChatOpen} // 채팅창 on off
+            setIsChatOpen={setIsChatOpen} // 채팅창 on off
           />
         </div>
       )}

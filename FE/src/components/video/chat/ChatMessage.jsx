@@ -1,4 +1,5 @@
 import Filter from "badwords-ko";
+import defaultUserUrl from '/src/assets/default/defaultUserImageGreen.png'
 
   // ☆★☆★☆★ 채팅 단 하나 ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
 
@@ -11,7 +12,7 @@ export default function ChatMessage({ message }) {
       {/* 프로필 이미지 */}
       <div className="flex-shrink-0">
         <img 
-          src={profilePictureUrl || '/default-profile.png'} // 프로필 이미지가 없을 경우 기본 이미지
+          src={profilePictureUrl || defaultUserUrl} // 프로필 이미지가 없을 경우 기본 이미지
           alt={`${nickname}'s profile`}
           className="w-10 h-10 rounded-full object-cover"
         />

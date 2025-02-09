@@ -21,6 +21,7 @@ const useOpenViduChat = (session) => {
     const messageData = {
       type: 'chat',
       userId: userInfo.email,
+      email: userInfo.email,
       nickname: userInfo.nickname,
       profilePictureUrl: userInfo.profilePictureUrl,
       text: text.trim(),

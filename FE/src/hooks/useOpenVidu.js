@@ -12,7 +12,7 @@ const useOpenVidu = () => {
   const [isLoading, setIsLoading] = useState(false); // 로딩상태관리
   const [error, setError] = useState(null); // 에러상태관리 
 
-  // ▽▼▽▼▽ 기본 함수(세션발급+토큰생성 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
+  // ▽▼▽▼▽ 기본 함수(환경설정 및 세션연결 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
   // 에러 초기화 함수
   const clearError = useCallback(() => {
@@ -21,38 +21,16 @@ const useOpenVidu = () => {
 
   // OpenVidu 객체는 useRef로 관리
   const OV = useRef(new OpenVidu());
-
-  // 세션 생성함수 
-  // sessionId - 생성할 세션의 ID
-  // response - 생성된 세션 ID
-  const createSession = async (sessionId) => {
-    try {
-      const response = await videoApi.createSession(sessionId);
-      return response; // sessionId 반환
-    } catch (error) {
-      console.error('세션 생성 오류:', error);
-      throw error;
-    }
-  };
-
-  // 토큰 생성 함수
-  // sessionId - 토큰을 생성할 세션 ID
-  // response - 생성된 토큰
-  const createToken = async (sessionId) => {
-    try {
-      const response = await videoApi.createToken(sessionId);
-      return response;// token 반환
-    } catch (error) {
-      console.error('토큰 생성 오류:', error);
-      throw error;
-    }
-  };
+  // 개발환경인 경우
+  OV.current.setAdvancedConfiguration({
+    websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
+    mediaServer: 'https://localhost:8080'
+})
 
   // 세션참여에 필요한 토큰 가져오기 위에서 정의한 두개의 함수 여기서 사용함 세션만들고 토큰받아오고 토큰 리턴해주고.
   const getToken = async (sessionId) => {
-    const sessionIdResponse = await createSession(sessionId);
-    return await createToken(sessionIdResponse);
-  };
+    return await videoApi.getToken(sessionId);
+};
   
   // ▽▼▽▼▽▼▽▼▽▼▽▼▽▼ 아래 부터가 진짜 기능들 ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
@@ -82,9 +60,11 @@ const useOpenVidu = () => {
       
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
       const token = await getToken(sessionName);
-      console.log("토큰줘", token , userName );
+      console.log("토큰줘", token , userName ); // 토큰 도착 성공
+      console.log("마이세션", mySession);
       
-      await mySession.connect(token, { clientData: userName });
+      
+      await mySession.connect(token, { clientData: userName }); // 
       console.log("컴백");
       
 
