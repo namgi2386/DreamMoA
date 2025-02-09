@@ -310,10 +310,15 @@ export default function ChallengeCreateForm() {
                 value={formData.standard}
                 onChange={handleStandardChange}
                 min={1}
-                max={calculateDuration()}
+                // 챌린지 기간이 0일 때는 max 속성을 설정 X
+                {...(calculateDuration() > 0
+                  ? { max: calculateDuration() }
+                  : {})}
                 className="w-24 px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
               />
-              <span className="text-gray-600">/ {calculateDuration()}일</span>
+              <span className="text-gray-600">
+                {calculateDuration() > 0 ? `/ ${calculateDuration()}일` : "일"}
+              </span>
               <span className="ml-2 text-sm text-gray-500">
                 (챌린지 기간 중 목표 달성 일수)
               </span>
