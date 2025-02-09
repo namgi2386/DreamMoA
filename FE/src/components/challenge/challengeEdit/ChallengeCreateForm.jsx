@@ -6,7 +6,7 @@ export default function ChallengeCreateForm() {
   // FormData 상태에 날짜 필드 추가
   const [formData, setFormData] = useState({
     title: "",
-    maxParticipants: 6,
+    maxParticipants: 1,
     description: "",
     image: null,
     imagePreview: null,
@@ -23,6 +23,18 @@ export default function ChallengeCreateForm() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  // 참가자 수 입력
+  const handleParticipantsChange = (e) => {
+    const value = parseInt(e.target.value);
+
+    // 1 미만의 값이 입력되면 1로 설정
+    if (value < 1) {
+      setFormData((prev) => ({ ...prev, maxParticipants: 1 }));
+    } else {
+      setFormData((prev) => ({ ...prev, maxParticipants: value }));
+    }
   };
 
   // 챌린지 기간 일수 계산 함수
@@ -81,6 +93,7 @@ export default function ChallengeCreateForm() {
       return updatedData;
     });
   };
+
   // 이미지 업로드 핸들러
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -161,8 +174,20 @@ export default function ChallengeCreateForm() {
             />
           </div>
 
-          {/* 참가자 수 선택 */}
+          {/* 방 설명 입력 */}
           <div>
+            <label className="block text-gray-700 mb-2">방 설명</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="SSAFY생을 위한 방입니다. 편하게 참여해 주세요."
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none"
+            />
+          </div>
+
+          {/* 참가자 수 선택 */}
+          {/* <div>
             <label className="block text-gray-700 mb-2">참가자 수</label>
             <select
               name="maxParticipants"
@@ -176,6 +201,31 @@ export default function ChallengeCreateForm() {
                 </option>
               ))}
             </select>
+          </div> */}
+          
+          {/* 위 내용 혹시 몰라서 주석. 아래 필드 사용 예정 */}
+          {/* 참가자 수 입력 */}
+          <div>
+            <label className="block text-gray-700 mb-2">참가자 수</label>
+            {/* flex container로 입력 필드와 알림 메시지를 감싸서 나란히 배치 */}
+            <div className="flex items-center gap-4">
+              {/* 입력 필드 그룹 */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  name="maxParticipants"
+                  value={formData.maxParticipants}
+                  onChange={handleParticipantsChange}
+                  min={1}
+                  className="w-24 px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
+                />
+                <span className="text-sm text-gray-500">명</span>
+              </div>
+              {/* 알림 메시지를 오른쪽으로 배치 */}
+              <p className="text-sm text-gray-500">
+                최소 1명 이상 입력해주세요
+              </p>
+            </div>
           </div>
 
           {/* 챌린지 기간 선택 */}
@@ -237,18 +287,6 @@ export default function ChallengeCreateForm() {
                 달성이 목표입니다.
               </p>
             )}
-          </div>
-
-          {/* 방 설명 입력 */}
-          <div>
-            <label className="block text-gray-700 mb-2">방 설명</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="SSAFY생을 위한 방입니다. 편하게 참여해 주세요."
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none"
-            />
           </div>
 
           {/* 이미지 업로드 */}
