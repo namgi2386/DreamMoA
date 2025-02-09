@@ -7,11 +7,13 @@ import VideoGrid from '/src/components/video/VideoGrid';
 import TestErrorAlert from '/src/components/video/TestErrorAlert';
 import TestLoadingSpinner from '/src/components/video/TestLoadingSpinner';
 import useOpenVidu from '../../hooks/useOpenVidu';
+import ChatPanel from '../../components/video/chat/ChatPanel';
 
 const VideoRoom = () => {
   // 사용자 입력 상태
   const [myUserName, setMyUserName] = useState('');// 방 이름
   const [mySessionRoomName, setMySessionRoomName] = useState('');// 사용자 이름
+  const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
   const {
@@ -58,14 +60,22 @@ const VideoRoom = () => {
       )}
 
       {!session ? (
-        <VideoJoinForm  // 입장화면 
-          myUserName={myUserName} // 내가 입력한 이름
-          mySessionRoomName={mySessionRoomName} // 세션(방)이름
-          onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
-          onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
-          onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
-          isLoading={isLoading} // 로딩화면
-        />
+        <>
+          <VideoJoinForm  // 입장화면 
+            myUserName={myUserName} // 내가 입력한 이름
+            mySessionRoomName={mySessionRoomName} // 세션(방)이름
+            onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
+            onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
+            onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
+            isLoading={isLoading} // 로딩화면
+          />
+          <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
+            session={session} // 세션상태
+            sessionTitle={mySessionRoomName} //방이름
+            isChatOpen={isChatOpen} // 채팅창 on off
+            setIsChatOpen={setIsChatOpen} // 채팅창 on off
+          />
+        </>
       ) : (
         <div className="h-full">
           <VideoControls  // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)

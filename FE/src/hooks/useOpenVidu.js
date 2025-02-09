@@ -82,7 +82,11 @@ const useOpenVidu = () => {
       
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
       const token = await getToken(sessionName);
+      console.log("토큰줘", token , userName );
+      
       await mySession.connect(token, { clientData: userName });
+      console.log("컴백");
+      
 
       // 게시자 초기화 (자신의 비디오 스트림 설정)
       const publisher = await OV.current.initPublisherAsync(undefined, {
@@ -176,17 +180,17 @@ const useOpenVidu = () => {
   }, [mainStreamManager]);
 
   return {
-    session,
-    mainStreamManager,
-    publisher,
-    subscribers,
-    connectSession,
-    disconnectSession,
-    switchCamera,
-    updateMainStreamManager,
-    isLoading,
-    error,
-    clearError
+    session, // OpenVidu 세션 객체
+    mainStreamManager, // // 메인 화면에 표시될 스트림
+    publisher, // 게시자 초기화 (자신의 비디오 스트림 설정)
+    subscribers, // 다른 스트림 유저정보들
+    connectSession, // 세션 연결
+    disconnectSession, // 세션 헤제
+    switchCamera, // 카메라전환
+    updateMainStreamManager, // 메인스트림교체
+    isLoading, // 로딩
+    error, // 에러
+    clearError // 에러초기화
   };
 };
 
