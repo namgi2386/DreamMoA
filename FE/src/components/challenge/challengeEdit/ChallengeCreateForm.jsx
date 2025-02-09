@@ -3,10 +3,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 // 여기서부터는 tag 컴포넌트를 위한 import
 import { useEffect } from "react";
-// import { useRecoilState, useResetRecoilState } from 'recoil';
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import EditableTagList from "../../common/tags/EditableTagList";
+// api 호출을 위한 import
+import challengeApi from "../../../services/api/challengeApi";
 
 export default function ChallengeCreateForm() {
   // selectedTags 상태
@@ -19,12 +20,11 @@ export default function ChallengeCreateForm() {
     maxParticipants: 6,
     description: "",
     tags: [],
-    image: null,
     startDate: "",
     expireDate: "",
     standard: 1,
+    thumbnail: null,
     isPublic: false,
-    imagePreview: null,
   });
 
   // 입력 핸들러
@@ -126,16 +126,28 @@ export default function ChallengeCreateForm() {
   };
 
   // 폼 제출 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // API 호출 로직 추가
 
     // selectedTags를 formData에 포함
     const submitData = {
       ...formData,
       tags: selectedTags,
-      isPrivate: !formData.isPublic, // API 스펙에 맞게 변환
+      isPrivate: !formData.isPublic,
     };
+
+    try {
+      // API 호출
+      const response = await challengeApi.createChallenge(
+        submitData,
+        formData.image
+      );
+      console.log("Challenge created successfully:", response);
+      // TODO: 성공 처리 (예: 알림 표시, 페이지 이동 등)
+    } catch (error) {
+      console.error("Failed to create challenge:", error);
+      // TODO: 에러 처리 (예: 에러 메시지 표시)
+    }
 
     console.log("Form submitted:", formData);
   };
@@ -152,6 +164,7 @@ export default function ChallengeCreateForm() {
       setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
     };
   }, [setSelectedTags]);
+
 
   return (
     <>
