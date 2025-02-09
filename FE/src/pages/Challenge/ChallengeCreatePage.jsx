@@ -1,4 +1,4 @@
-import ChallengeCreateForm from "../../components/test/ChallengeCreateForm";
+import ChallengeCreateForm from "../../components/challenge/challengeEdit/ChallengeCreateForm";
 
 export default function ChallengeCreatePage() {
   return (
