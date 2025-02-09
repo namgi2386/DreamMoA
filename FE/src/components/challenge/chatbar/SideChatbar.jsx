@@ -50,7 +50,7 @@ export default function SideChatbar() {
         initial={{ x: "100%" }} // 기본 100% 길이
         animate={{ x: isOpen ? 0 : "120%" }} // 오픈이면 전부보여줌 닫으면 오른쪽으로 120퍼 이동 
         transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }} //1.2초동안 0.1초딜레이 빠르게나오고늦게들어가기
-        className="fixed top-0 right-0 w-96 h-screen bg-gray-100 rounded-l-3xl z-50 
+        className="fixed top-0 right-0 h-screen w-96 bg-gray-100 rounded-l-3xl z-50 
           flex flex-col "
         // 고정 오른쪽 상단부터 너비96 높이100% 왼쪽라운드많이 zindex50
       >

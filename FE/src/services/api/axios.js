@@ -1,10 +1,12 @@
 import axios from "axios";
 
 // axios 인스턴스 생성
+export const API_BASE_URL = 'http://localhost:8080';
+
 const api = axios.create({
-  baseURL: "http://localhost:8080",
+  baseURL: API_BASE_URL,
   // baseURL: "http://dreammoa.duckdns.org:8080", 배포 url
-  withCredentials: true, 
+  withCredentials: false, 
   headers: {
     Accept: "application/json",
   },
@@ -47,7 +49,7 @@ api.interceptors.response.use(
 
         // refresh 토큰으로 새로운 access 토큰 발급 요청  
         const response = await axios.post(
-          "http://localhost:8080/refresh",
+          `${API_BASE_URL}/refresh`,
           {},
           {
             headers: {

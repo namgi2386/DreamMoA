@@ -1,256 +1,98 @@
-import { OpenVidu } from 'openvidu-browser';
-import { videoApi } from '../../services/api/videoApi';
-import { useState, useEffect, useCallback } from 'react';
-import UserVideoComponent from '../../components/video/UserVideo';
+// components/video/VideoRoom.jsx
 
-// const APPLICATION_SERVER_URL = import.meta.env.VITE_APP_OPENVIDU_URL;
+import { useState, useEffect } from 'react';
+import VideoJoinForm from '/src/components/video/VideoJoinForm';
+import VideoControls from '/src/components/video/VideoControls';
+import VideoGrid from '/src/components/video/VideoGrid';
+import TestErrorAlert from '/src/components/video/TestErrorAlert';
+import TestLoadingSpinner from '/src/components/video/TestLoadingSpinner';
+import useOpenVidu from '../../hooks/useOpenVidu';
+import ChatPanel from '../../components/video/chat/ChatPanel';
 
 const VideoRoom = () => {
-    const [session, setSession] = useState(undefined);
-    const [mainStreamManager, setMainStreamManager] = useState(undefined);
-    const [publisher, setPublisher] = useState(undefined);
-    const [subscribers, setSubscribers] = useState([]);
-    const [currentVideoDevice, setCurrentVideoDevice] = useState(null);
-    
-    // OpenVidu 객체
-    const OV = new OpenVidu();
+  // 사용자 입력 상태
+  const [myUserName, setMyUserName] = useState('');// 방 이름
+  const [mySessionRoomName, setMySessionRoomName] = useState('');// 사용자 이름
+  const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
 
-    const [mySessionId, setMySessionId] = useState('SessionA');
-    const [myUserName, setMyUserName] = useState('Participant' + Math.floor(Math.random() * 100));
+  // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
+  const {
+    session,
+    mainStreamManager,
+    publisher,
+    subscribers,
+    connectSession,
+    disconnectSession,
+    switchCamera,
+    updateMainStreamManager,
+    isLoading,
+    error,
+    clearError
+  } = useOpenVidu();
 
-    // Token 관련 함수들
-    const createSession = async (sessionId) => {
-        try {
-            const response = await videoApi.createSession(sessionId);
-            return response; // sessionId 반환
-        } catch (error) {
-            console.log('Session creation error:', error);
-            throw error;
-        }
+  // 세션 참가 핸들러
+  const handleJoinSession = async () => {
+    try {
+      await connectSession(mySessionRoomName, myUserName); // 내이름 방이름 가져가서 입장시켜줌
+    } catch (error) {
+      // 에러는 useOpenVidu에서 처리됨
+      console.error('세션 참가 실패:', error);
+    }
+  };
+
+  // 언마운트시 세션 정리 (강제종료(크롬창닫음)시 세션 종료)
+  useEffect(() => {
+    return () => {
+      disconnectSession(); 
     };
+  }, [disconnectSession]);
 
-    const createToken = async (sessionId) => {
-        try {
-            const response = await videoApi.createToken(sessionId);
-            return response; // token 반환
-        } catch (error) {
-            console.log('Token creation error:', error);
-            throw error;
-        }
-    };
+  return (
+    <div className="w-full h-screen bg-gray-900 text-white p-4">
+      {/* 로딩페이지 */}
+      {isLoading && <TestLoadingSpinner />}
+      {/* 에러페이지 */}
+      {error && (
+        <TestErrorAlert 
+          message={error}
+          onClose={clearError}
+        />
+      )}
 
-    const getToken = async () => {
-        const sessionId = await createSession(mySessionId);
-        return await createToken(sessionId);
-    };
-
-    // 컴포넌트 마운트/언마운트 처리
-    useEffect(() => {
-        window.addEventListener('beforeunload', onBeforeUnload);
-        return () => {
-            window.removeEventListener('beforeunload', onBeforeUnload);
-            leaveSession();
-        };
-    }, []);
-
-    const onBeforeUnload = useCallback(() => {
-        leaveSession();
-    }, []);
-
-    // 세션 참가
-    const joinSession = useCallback(async () => {
-        const mySession = OV.initSession();
-
-        mySession.on('streamCreated', (event) => {
-            const subscriber = mySession.subscribe(event.stream, undefined);
-            setSubscribers(prev => [...prev, subscriber]);
-        });
-
-        mySession.on('streamDestroyed', (event) => {
-            deleteSubscriber(event.stream.streamManager);
-        });
-
-        mySession.on('exception', (exception) => {
-            console.warn(exception);
-        });
-
-        try {
-            const token = await getToken();
-            await mySession.connect(token, { clientData: myUserName });
-
-            const publisher = await OV.initPublisherAsync(undefined, {
-                audioSource: undefined,
-                videoSource: undefined,
-                publishAudio: true,
-                publishVideo: true,
-                resolution: '640x480',
-                frameRate: 30,
-                insertMode: 'APPEND',
-                mirror: false,
-            });
-
-            mySession.publish(publisher);
-
-            const devices = await OV.getDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
-            const currentVideoDeviceId = publisher.stream.getMediaStream()
-                .getVideoTracks()[0].getSettings().deviceId;
-            const currentVideoDevice = videoDevices.find(device => device.deviceId === currentVideoDeviceId);
-
-            setCurrentVideoDevice(currentVideoDevice);
-            setMainStreamManager(publisher);
-            setPublisher(publisher);
-            setSession(mySession);
-
-        } catch (error) {
-            console.log('Error:', error);
-        }
-    }, [myUserName, mySessionId]);
-
-    // 세션 나가기
-    const leaveSession = useCallback(() => {
-        if (session) {
-            session.disconnect();
-        }
-
-        setSession(undefined);
-        setSubscribers([]);
-        setMySessionId('SessionA');
-        setMyUserName('Participant' + Math.floor(Math.random() * 100));
-        setMainStreamManager(undefined);
-        setPublisher(undefined);
-    }, [session]);
-
-    // 카메라 전환
-    const switchCamera = useCallback(async () => {
-        try {
-            const devices = await OV.getDevices();
-            const videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-            if (videoDevices && videoDevices.length > 1) {
-                const newVideoDevice = videoDevices.find(
-                    device => device.deviceId !== currentVideoDevice.deviceId
-                );
-
-                if (newVideoDevice) {
-                    const newPublisher = OV.initPublisher(undefined, {
-                        videoSource: newVideoDevice.deviceId,
-                        publishAudio: true,
-                        publishVideo: true,
-                        mirror: true
-                    });
-
-                    await session.unpublish(mainStreamManager);
-                    await session.publish(newPublisher);
-
-                    setCurrentVideoDevice(newVideoDevice);
-                    setMainStreamManager(newPublisher);
-                    setPublisher(newPublisher);
-                }
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    }, [session, currentVideoDevice, mainStreamManager]);
-
-    // 구독자 삭제
-    const deleteSubscriber = useCallback((streamManager) => {
-        setSubscribers(prev => prev.filter(sub => sub !== streamManager));
-    }, []);
-
-    // 메인 비디오 스트림 변경
-    const handleMainVideoStream = useCallback((stream) => {
-        if (mainStreamManager !== stream) {
-            setMainStreamManager(stream);
-        }
-    }, [mainStreamManager]);
-
-    return (
-        <div className="w-full h-screen bg-gray-900 text-white p-4">
-            {!session ? (
-                <div className="flex flex-col items-center justify-center h-full">
-                    <h1 className="text-2xl mb-8">화상 채팅 참가하기</h1>
-                    <div className="w-96 p-6 bg-gray-800 rounded-lg">
-                        <form onSubmit={(e) => {
-                            e.preventDefault();
-                            joinSession();
-                        }}>
-                            <div className="mb-4">
-                                <label className="block mb-2">이름:</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 bg-gray-700 rounded"
-                                    value={myUserName}
-                                    onChange={(e) => setMyUserName(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-6">
-                                <label className="block mb-2">세션:</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2 bg-gray-700 rounded"
-                                    value={mySessionId}
-                                    onChange={(e) => setMySessionId(e.target.value)}
-                                />
-                            </div>
-                            <button 
-                                type="submit"
-                                className="w-full bg-blue-600 p-2 rounded hover:bg-blue-700"
-                            >
-                                참가하기
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            ) : (
-                <div className="h-full">
-                    <div className="flex justify-between items-center mb-4">
-                        <h1 className="text-xl">세션: {mySessionId}</h1>
-                        <div className="space-x-4">
-                            <button
-                                onClick={switchCamera}
-                                className="bg-green-600 px-4 py-2 rounded"
-                            >
-                                카메라 전환
-                            </button>
-                            <button
-                                onClick={leaveSession}
-                                className="bg-red-600 px-4 py-2 rounded"
-                            >
-                                나가기
-                            </button>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 h-[calc(100%-80px)]">
-                        {mainStreamManager && (
-                            <div className="col-span-2 bg-gray-800 rounded">
-                                <UserVideoComponent streamManager={mainStreamManager} />
-                            </div>
-                        )}
-                        <div className="space-y-4">
-                            {publisher && (
-                                <div 
-                                    onClick={() => handleMainVideoStream(publisher)}
-                                    className="bg-gray-800 rounded cursor-pointer"
-                                >
-                                    <UserVideoComponent streamManager={publisher} />
-                                </div>
-                            )}
-                            {subscribers.map((sub) => (
-                                <div
-                                    key={sub.stream.connection.connectionId}
-                                    onClick={() => handleMainVideoStream(sub)}
-                                    className="bg-gray-800 rounded cursor-pointer"
-                                >
-                                    <UserVideoComponent streamManager={sub} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+      {!session ? (
+        <>
+          <VideoJoinForm  // 입장화면 
+            myUserName={myUserName} // 내가 입력한 이름
+            mySessionRoomName={mySessionRoomName} // 세션(방)이름
+            onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
+            onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
+            onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
+            isLoading={isLoading} // 로딩화면
+          />
+        </>
+      ) : (
+        <div className="h-full">
+          <VideoControls  // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
+            sessionName={mySessionRoomName} // 세션이름
+            onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
+            onLeaveSession={disconnectSession}  // 나가기 함수 매개변수로 넘겨줌
+          />
+          <VideoGrid  // 너와나의 비디오 위치 크기 등등
+            mainStreamManager={mainStreamManager}
+            publisher={publisher} // 내 화면
+            subscribers={subscribers} // 친구들 화면
+            onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
+          />
+          <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
+            session={session} // 세션상태
+            sessionTitle={mySessionRoomName} //방이름
+            isChatOpen={isChatOpen} // 채팅창 on off
+            setIsChatOpen={setIsChatOpen} // 채팅창 on off
+          />
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default VideoRoom;

@@ -1,23 +1,13 @@
-import api from "./axios";
+import api, { API_BASE_URL } from "./axios";
 
 export const authApi = {
   // 로그인
   login: async (credentials) => {
-    // console.log("login inner 01");
-
     try {
-      console.log("로그인 test1");
-      console.log(credentials); // {email: 'namgi@ssafy.com', password: '1234'} 잘들어있음
-
       const response = await api.post("/login", credentials, {
         withCredentials: true  // 이 요청에만 특별히 적용
       });
-      console.log("로그인 test2");
-      console.log(response);
-
       if (response.data && response.data.accessToken) {
-        console.log(" acc");
-
         localStorage.setItem("accessToken", response.data.accessToken);
         return response.data;
       }
@@ -32,8 +22,6 @@ export const authApi = {
   logout: async () => {
     try {
       console.log("로그아웃1");
-      
-      // localStorage에서 userInfo를 가져와서 파싱
       const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       
       // role에 따른 로그아웃 URL 설정
@@ -172,16 +160,23 @@ export const authApi = {
   },
 };
 
-// 구글로그인 리다이렉션 보내보기 실패실패 (백엔드에서 엔드포인트 파라미터를 처리해줘야함)
+export const socialLogin = (provider) => {
+  localStorage.setItem('socialLoginPending', 'true');
+  window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
+};
+
+
+// 구글로그인 리다이렉션 보내보기 실패실패 (백엔드에서 엔드포인트 파라미터를 처리해줘야함) 실패
 // export const socialLogin = (provider) => {
 //   const REDIRECT_URI = 'http://localhost:3000/oauth/callback';
 //   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}?redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
 // };
 
-export const socialLogin = (provider) => {
-  localStorage.setItem('socialLoginPending', 'true');
-  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
-};
+
+// 프론트에서 직접 proxy로 해결해보려했는데, 실패
 // export const socialLogin = (provider) => {
-//   window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+//   localStorage.setItem('socialLoginPending', 'true');
+//   console.log("소셜로그1");
+//   window.location.href = `/oauth2/authorization/${provider}`;
+//   console.log("소셜로그2");
 // };

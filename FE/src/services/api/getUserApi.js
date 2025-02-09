@@ -5,8 +5,6 @@ const getUserApi = {
   getUserInfo: () => api.post('/user-info')
   .then(response => {
     console.log('회원정보조회');
-    
-    console.log('응답 데이터:', response.data);
     return response;
   })
   .catch(error => {
