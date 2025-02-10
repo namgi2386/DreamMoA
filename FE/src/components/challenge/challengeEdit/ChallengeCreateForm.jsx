@@ -27,6 +27,20 @@ export default function ChallengeCreateForm() {
     isPublic: false,
   });
 
+  // 필수 필드 검증 함수 추가
+  const isFormValid = () => {
+    return (
+      // tag, 이미지지 제외하고 다 필수
+      formData.title.trim() !== "" && // 제목 필수
+      formData.description.trim() !== "" && // 설명 필수
+      formData.maxParticipants >= 1 && // 참가자 수 필수
+      formData.startDate !== "" && // 시작일 필수
+      formData.expireDate !== "" && // 종료일 필수
+      formData.standard >= 1 && // 목표 달성 기준 필수
+      selectedTags.length > 0 // 태그 필수 - 최소 1개 이상
+    );
+  };
+
   // 입력 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -205,7 +219,9 @@ export default function ChallengeCreateForm() {
 
           {/* 챌린지 이름 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">챌린지 이름</label>
+            <label className="block text-gray-700 mb-2">
+              챌린지 이름<span className="text-red-500 ml-1">*</span>
+            </label>
             <input
               type="text"
               name="title"
@@ -218,7 +234,9 @@ export default function ChallengeCreateForm() {
 
           {/* 방 설명 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">방 설명</label>
+            <label className="block text-gray-700 mb-2">
+              방 설명<span className="text-red-500 ml-1">*</span>
+            </label>
             <textarea
               name="description"
               value={formData.description}
@@ -228,19 +246,28 @@ export default function ChallengeCreateForm() {
             />
           </div>
 
-          {/* 태그 선택 컴포넌트 추가 */}
+          {/* 태그 선택 컴포넌트 불러옴 */}
           <div>
-            <label className="block text-gray-700 mb-2">태그 선택</label>
+            <label className="block text-gray-700 mb-2">
+              태그 선택<span className="text-red-500 ml-1">*</span>
+            </label>
             <EditableTagList
               isEdittag={isEdittag}
               setIsEdittag={setIsEdittag}
               initialTags={[]}
             />
+            {selectedTags.length === 0 && (
+              <p className="text-sm text-red-500 mt-1">
+                하나 이상의 태그를 선택해주세요
+              </p>
+            )}
           </div>
 
           {/* 참가자 수 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">참가자 수</label>
+            <label className="block text-gray-700 mb-2">
+              참가자 수<span className="text-red-500 ml-1">*</span>
+            </label>
             {/* flex container -> 입력 필드와 알림 메시지를 나란히 배치 */}
             <div className="flex items-center gap-4">
               {/* 입력 필드 그룹 */}
@@ -265,7 +292,9 @@ export default function ChallengeCreateForm() {
 
           {/* 챌린지 기간 선택 */}
           <div className="space-y-4">
-            <label className="block text-gray-700 mb-2">챌린지 기간</label>
+            <label className="block text-gray-700 mb-2">
+              챌린지 기간<span className="text-red-500 ml-1">*</span>
+            </label>
             <div className="flex gap-4">
               <div className="flex-1">
                 <label className="block text-sm text-gray-600 mb-1">
@@ -300,7 +329,9 @@ export default function ChallengeCreateForm() {
 
           {/* 목표 달성 기준 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">목표 달성 기준</label>
+            <label className="block text-gray-700 mb-2">
+              목표 달성 기준<span className="text-red-500 ml-1">*</span>
+            </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -377,7 +408,12 @@ export default function ChallengeCreateForm() {
           {/* 제출 버튼 */}
           <button
             type="submit"
-            className="w-full bg-my-blue-2 text-white py-2 rounded-lg hover:bg-hmy-blue-2 transition-colors"
+            disabled={!isFormValid()}
+            className={`w-full py-2 rounded-lg transition-colors ${
+              isFormValid()
+                ? "bg-my-blue-2 text-white hover:bg-hmy-blue-2"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
             챌린지 시작하기
           </button>
