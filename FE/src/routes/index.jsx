@@ -53,8 +53,6 @@ const AdminPage = lazy(() => import("../pages/Admin/AdminPage"));
 const MyPage = lazy(() => import("../pages/User/MyPage"));
 const DashBoardPage = lazy(() => import("../pages/User/DashBoardPage"));
 
-const TestPage = lazy(() => import("../pages/TestPage"));
-
 export default function AppRoutes() {
   return (
     <Routes>
@@ -70,7 +68,6 @@ export default function AppRoutes() {
       {/* 회원 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/join" element={<JoinPage />} />
-      <Route path="/TestPage" element={<TestPage />} />
       <Route
         path="/mypage"
         element={
