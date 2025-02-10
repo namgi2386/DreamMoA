@@ -4,7 +4,7 @@ import UserVideoComponent from './UserVideo';
 // publisher         : 자신의 스트림
 // subscribers       : 다른 참가자들의 스트림
 // onStreamClick     : 스트림 클릭 핸들러
-export default function VideoGrid({mainStreamManager, publisher, subscribers, onStreamClick}) {
+export default function VideoGrid({mainStreamManager, publisher, subscribers, onStreamClick,myUserName,mySessionRoomName}) {
   return (
     <div className="grid grid-cols-3 gap-4 h-[calc(100%-80px)]">
       {/* 메인 스트림 영역 */}
@@ -22,7 +22,7 @@ export default function VideoGrid({mainStreamManager, publisher, subscribers, on
             onClick={() => onStreamClick(publisher)}
             className="bg-gray-800 rounded cursor-pointer"
           >
-            <UserVideoComponent streamManager={publisher} />
+            <UserVideoComponent streamManager={publisher} isMyVideo={true} myUserName={myUserName} mySessionRoomName={mySessionRoomName}/>
           </div>
         )}
         
@@ -33,7 +33,7 @@ export default function VideoGrid({mainStreamManager, publisher, subscribers, on
             onClick={() => onStreamClick(sub)}
             className="bg-gray-800 rounded cursor-pointer"
           >
-            <UserVideoComponent streamManager={sub} />
+            <UserVideoComponent streamManager={sub} isMyVideo={false} myUserName={null} mySessionRoomName={null}/>
           </div>
         ))}
       </div>

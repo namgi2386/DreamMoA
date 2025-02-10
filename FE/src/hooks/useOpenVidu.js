@@ -91,7 +91,6 @@ const useOpenVidu = () => {
           volume: 1.0            // 초기 볼륨
         }
       });
-      
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
       await mySession.publish(publisher);
 

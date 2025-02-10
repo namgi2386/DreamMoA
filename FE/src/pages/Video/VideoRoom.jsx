@@ -1,13 +1,14 @@
 // components/video/VideoRoom.jsx
 
 import { useState, useEffect } from 'react';
-import VideoJoinForm from '/src/components/video/VideoJoinForm';
+
 import VideoControls from '/src/components/video/VideoControls';
 import VideoGrid from '/src/components/video/VideoGrid';
 import TestErrorAlert from '/src/components/video/TestErrorAlert';
 import TestLoadingSpinner from '/src/components/video/TestLoadingSpinner';
 import useOpenVidu from '../../hooks/useOpenVidu';
 import ChatPanel from '../../components/video/chat/ChatPanel';
+import VideoJoinForm from '../../components/video/VideoJoinForm';
 
 const VideoRoom = () => {
   // 사용자 입력 상태
@@ -23,7 +24,7 @@ const VideoRoom = () => {
     subscribers,
     connectSession,
     disconnectSession,
-    switchCamera,
+    // switchCamera,
     updateMainStreamManager,
     isLoading,
     error,
@@ -73,10 +74,10 @@ const VideoRoom = () => {
       ) : (
         <div className="h-full">
           <VideoControls  // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
-            sessionName={mySessionRoomName} // 세션이름
+            // sessionName={mySessionRoomName} // 세션이름
             publisher={publisher} // 나의 셋팅정보
             subscribers={subscribers}  // subscribers prop 추가
-            onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
+            // onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
             onLeaveSession={disconnectSession}  // 나가기 함수 매개변수로 넘겨줌
           />
           <VideoGrid  // 너와나의 비디오 위치 크기 등등
@@ -84,8 +85,6 @@ const VideoRoom = () => {
             publisher={publisher} // 내 화면
             subscribers={subscribers} // 친구들 화면
             onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
-            myUserName={myUserName} // 내가 입력한 이름
-            mySessionRoomName={mySessionRoomName} // 세션(방)이름
           />
           <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
             session={session} // 세션상태

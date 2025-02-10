@@ -2,77 +2,90 @@
 import { useState, useCallback } from 'react';
 
 const useOpenViduSetting = (publisher, subscribers) => {
-  const [speakerVolume, setSpeakerVolume] = useState(1);
-  const [micVolume, setMicVolume] = useState(1);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  // 마이크와 스피커 볼륨 상태 관리 (0~1 사이 값)
+  const [micVolume, setMicVolume] = useState(1.0);
+  const [speakerVolume, setSpeakerVolume] = useState(1.0);
 
-  // 스피커 볼륨 조절
-  const handleSpeakerVolume = useCallback((volume) => {
-    try { 
-      if (subscribers && subscribers.length > 0) {
-        subscribers.forEach(subscriber => {
-          // RTCPeerConnection의 볼륨 조절
-          const audioTrack = subscriber.stream.getMediaStream().getAudioTracks()[0];
-          if (audioTrack) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const source = audioContext.createMediaStreamSource(subscriber.stream.getMediaStream());
-            const gainNode = audioContext.createGain();
-            
-            source.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            gainNode.gain.value = volume;
-          }
-        });
-        setSpeakerVolume(volume);
-      }
-    } catch (error) {
-      console.error('스피커 볼륨 조절 오류:', error);
-    }
-  }, [subscribers]);
+  // 마이크 음소거 상태 관리
+  const [isMicMuted, setIsMicMuted] = useState(false);
 
-  // 마이크 음량 조절
-  const handleMicVolume = useCallback((volume) => {
+  // 마이크 볼륨 조절 함수
+  const adjustMicVolume = useCallback((value) => {
+    if (!publisher) return;
+
     try {
-      if (publisher && publisher.stream) {
-        // WebRTC 네이티브 API 사용
-        const audioTrack = publisher.stream.getMediaStream().getAudioTracks()[0];
-        if (audioTrack) {
-          // AudioContext 사용
-          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-          const source = audioContext.createMediaStreamSource(publisher.stream.getMediaStream());
-          const gainNode = audioContext.createGain();
-          
-          source.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          gainNode.gain.value = volume;
-        }
-        setMicVolume(volume);
-      }
+      // 0~1 사이의 값으로 정규화
+      const normalizedValue = Math.max(0, Math.min(1, value));
+      
+      // Publisher의 오디오 트랙 가져오기
+      const audioTrack = publisher.stream.getMediaStream()
+        .getAudioTracks()[0];
+
+      // 오디오 제약조건 설정
+      const constraints = {
+        advanced: [{
+          volume: normalizedValue
+        }]
+      };
+
+      // 새로운 볼륨 값 적용
+      audioTrack.applyConstraints(constraints);
+      
+      // 상태 업데이트
+      setMicVolume(normalizedValue);
     } catch (error) {
-      console.error('마이크 음량 조절 오류:', error);
+      console.error('마이크 볼륨 조절 실패:', error);
     }
   }, [publisher]);
 
-  // 카메라 ON/OFF 토글 (이 부분은 잘 작동하므로 유지)
-  const toggleVideo = useCallback(async () => {
+  // 스피커 볼륨 조절 함수
+  const adjustSpeakerVolume = useCallback((value) => {
+    if (!subscribers.length) return;
+
     try {
-      if (publisher) {
-        const newVideoState = !isVideoEnabled;
-        await publisher.publishVideo(newVideoState);
-        setIsVideoEnabled(newVideoState);
-      }
+      // 0~1 사이의 값으로 정규화
+      const normalizedValue = Math.max(0, Math.min(1, value));
+      
+      // 모든 구독자(다른 참가자)의 비디오 엘리먼트 볼륨 조절
+      subscribers.forEach(subscriber => {
+        const videoElement = subscriber.videos[0].video;
+        if (videoElement) {
+          videoElement.volume = normalizedValue;
+        }
+      });
+
+      // 상태 업데이트
+      setSpeakerVolume(normalizedValue);
     } catch (error) {
-      console.error('카메라 상태 변경 오류:', error);
+      console.error('스피커 볼륨 조절 실패:', error);
     }
-  }, [publisher, isVideoEnabled]);
+  }, [subscribers]);
+
+  // 마이크 음소거 토글 함수
+  const toggleMicMute = useCallback(() => {
+    if (!publisher) return;
+
+    try {
+      // 현재 상태의 반대값으로 설정
+      const newMuteState = !isMicMuted;
+      
+      // Publisher의 오디오 상태 변경
+      publisher.publishAudio(!newMuteState);
+      
+      // 상태 업데이트
+      setIsMicMuted(newMuteState);
+    } catch (error) {
+      console.error('마이크 음소거 토글 실패:', error);
+    }
+  }, [publisher, isMicMuted]);
 
   return {
-    speakerVolume,
     micVolume,
-    isVideoEnabled,
-    handleSpeakerVolume,
-    handleMicVolume,
-    toggleVideo
+    speakerVolume,
+    isMicMuted,
+    adjustMicVolume,
+    adjustSpeakerVolume,
+    toggleMicMute
   };
 };
 
