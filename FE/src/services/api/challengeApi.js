@@ -52,6 +52,11 @@ const challengeApi = {
       throw error;
     }
   },
+
+  getRunningChallengeList: async() => {
+    const response = await api.get("/challenges/ongoing")
+    return response
+  }
 };
 
 export default challengeApi;

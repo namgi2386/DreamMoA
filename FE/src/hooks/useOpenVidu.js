@@ -22,15 +22,15 @@ const useOpenVidu = () => {
   // OpenVidu 객체는 useRef로 관리
   const OV = useRef(new OpenVidu());
   // 개발환경인 경우
-//   OV.current.setAdvancedConfiguration({
-//     websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
-//     mediaServer: 'https://localhost:8080'
-// })
-  // 배포 환경
   OV.current.setAdvancedConfiguration({
     websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
-    mediaServer: 'http://dreammoa.duckdns.org:8080'
-  });
+    mediaServer: 'https://localhost:8080'
+  })
+  // 배포 환경
+  // OV.current.setAdvancedConfiguration({
+  //   websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
+  //   mediaServer: 'http://dreammoa.duckdns.org:8080'
+  // });
 
   // 세션참여에 필요한 토큰 가져오기 위에서 정의한 두개의 함수 여기서 사용함 세션만들고 토큰받아오고 토큰 리턴해주고.
   const getToken = async (sessionId) => {

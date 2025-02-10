@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // axios 인스턴스 생성
-export const API_BASE_URL = 'http://dreammoa.duckdns.org:8080';
+export const API_BASE_URL = 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

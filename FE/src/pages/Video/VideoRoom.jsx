@@ -11,8 +11,8 @@ import ChatPanel from '../../components/video/chat/ChatPanel';
 
 const VideoRoom = () => {
   // 사용자 입력 상태
-  const [myUserName, setMyUserName] = useState('');// 방 이름
-  const [mySessionRoomName, setMySessionRoomName] = useState('');// 사용자 이름
+  const [myUserName, setMyUserName] = useState('');// 유저이름 
+  const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
