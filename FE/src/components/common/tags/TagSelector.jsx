@@ -1,10 +1,8 @@
-// common/tags/TagSelector.js
 import { useRef, useEffect, useState, useCallback } from "react"; // useState 추가
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 
 export default function TagSelector() {
-  // recoil 상태관리
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
   const containerRef = useRef(null);
   // 직접 입력을 위한 상태 추가
@@ -27,10 +25,11 @@ export default function TagSelector() {
     { id: 12, name: "습관" },
     { id: 13, name: "개발자" },
     { id: 14, name: "미라클모닝" },
-    { id: 15, name: "직접 입력" }, // 마지막 태그를 직접 입력으로 변경
+    { id: 15, name: "취준생" },
+    { id: 16, name: "직접 입력" }, // 마지막 태그는 직접 입력 필드
   ];
 
-  // 가로 스크롤을 위한 이벤트 핸들러
+  // 가로 스크롤
   const handleWheel = useCallback((e) => {
     if (!containerRef.current) return;
 
@@ -84,7 +83,7 @@ export default function TagSelector() {
     }, 0);
   };
 
-  // 커스텀 태그 입력 처리
+  // 태그 직접 입력 처리
   const handleCustomTagSubmit = (e) => {
     if (e.key === "Enter" && customTag.trim()) {
       // 띄어쓰기 제거
