@@ -3,13 +3,18 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 // 여기서부터는 tag 컴포넌트를 위한 import
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import EditableTagList from "../../common/tags/EditableTagList";
 // api 호출을 위한 import
 import challengeApi from "../../../services/api/challengeApi";
+// successModal을 위한 import
+// import SuccessModal from "../../common/modal/SuccessModal";
+import { successModalState } from "/src/recoil/atoms/modalState";
 
 export default function ChallengeCreateForm() {
+  // successModal 상태
+  const setSuccessModalState = useSetRecoilState(successModalState);
   // selectedTags 상태
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
   // 태그 편집 모드 상태
@@ -141,6 +146,19 @@ export default function ChallengeCreateForm() {
     }));
   };
 
+  const handleSuccess = (myMessage) => {
+    // 작업 완료 후
+    setSuccessModalState({
+      isOpen: true,
+      message: myMessage,
+      onCancel: () => {
+        // 실행 취소 시 수행할 작업
+        console.log("작업 취소됨");
+      },
+      isCancellable: false, // 실행 취소 버튼 표시 여부
+    });
+  };
+
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -158,11 +176,22 @@ export default function ChallengeCreateForm() {
         submitData,
         formData.image
       );
-      console.log("Challenge created successfully:", response);
-      // TODO: 성공 처리 (예: 알림 표시, 페이지 이동 등)
+
+      // 응답 구조 확인을 위한 로그
+      console.log("전체 응답 구조:", response);
+
+      // Axios 응답의 경우 response.data에 실제 서버 응답이 있을 수 있음
+      if (response?.data?.challengeId) {
+        // 챌린지 ID가 있다면 성공으로 간주
+        handleSuccess("챌린지가 생성되었습니다");
+      }
+      // 또는
+      if (response.challengeId) {
+        // 직접 응답 데이터를 받는 경우
+        handleSuccess("챌린지가 생성되었습니다");
+      }
     } catch (error) {
-      console.error("Failed to create challenge:", error);
-      // TODO: 에러 처리 (예: 에러 메시지 표시)
+      // 에러 처리
     }
 
     console.log("Form submitted:", formData);
