@@ -12,6 +12,7 @@ export const selectedTagsState = atom({
         try {
           const localTags = localStorage.getItem("selectedTags");
           if (localTags) {
+            console.log('로컬 스토리지에 저장된 tags:', localTags);  // 이거 콘솔에 찍히면 tags가 로컬스토리지에 저장된 거임
             setSelf(JSON.parse(localTags));
             return;
           }
