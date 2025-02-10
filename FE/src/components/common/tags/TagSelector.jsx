@@ -1,15 +1,13 @@
-// common/tags/TagSelector.js
-import { useRef, useEffect, useState } from "react"; // useState 추가
+import { useRef, useEffect, useState, useCallback } from "react"; // useState 추가
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 
 export default function TagSelector() {
-  // recoil 상태관리
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
   const containerRef = useRef(null);
   // 직접 입력을 위한 상태 추가
   const [isCustomInput, setIsCustomInput] = useState(false);
-  const [customTag, setCustomTag] = useState('');
+  const [customTag, setCustomTag] = useState("");
   const inputRef = useRef(null);
 
   const tags = [
@@ -18,7 +16,7 @@ export default function TagSelector() {
     { id: 3, name: "자격증" },
     { id: 4, name: "공시생" },
     { id: 5, name: "NCS" },
-    { id: 6, name: "9 to 6" },
+    { id: 6, name: "9to6" },
     { id: 7, name: "직장인" },
     { id: 8, name: "학생" },
     { id: 9, name: "30일챌린지" },
@@ -27,14 +25,14 @@ export default function TagSelector() {
     { id: 12, name: "습관" },
     { id: 13, name: "개발자" },
     { id: 14, name: "미라클모닝" },
-    { id: 15, name: "직접 입력" }, // 마지막 태그를 직접 입력으로 변경
+    { id: 15, name: "취준생" },
+    { id: 16, name: "직접 입력" }, // 마지막 태그는 직접 입력 필드
   ];
 
-  // 가로 스크롤을 위한 이벤트 핸들러
-  const handleWheel = (e) => {
+  // 가로 스크롤
+  const handleWheel = useCallback((e) => {
     if (!containerRef.current) return;
 
-    // 내부 스크롤 가능한 요소 찾기
     const scrollableElement = containerRef.current.querySelector(
       '[class*="flex flex-nowrap"]'
     );
@@ -44,8 +42,6 @@ export default function TagSelector() {
       scrollableElement.scrollWidth > scrollableElement.clientWidth;
 
     if (isScrollable && e.deltaY !== 0) {
-      e.preventDefault(); // 먼저 기본 동작 방지
-
       const scrollAmount = e.deltaY;
       const currentScroll = scrollableElement.scrollLeft;
       const maxScroll =
@@ -59,9 +55,8 @@ export default function TagSelector() {
       }
 
       scrollableElement.scrollLeft += scrollAmount;
-      return false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -88,17 +83,20 @@ export default function TagSelector() {
     }, 0);
   };
 
-  // 커스텀 태그 입력 처리
+  // 태그 직접 입력 처리
   const handleCustomTagSubmit = (e) => {
-    if (e.key === 'Enter' && customTag.trim()) {
+    if (e.key === "Enter" && customTag.trim()) {
+      // 띄어쓰기 제거
+      const formattedTag = customTag.trim().replace(/\s+/g, "");
+
       if (selectedTags.length < 3) {
-        setSelectedTags([...selectedTags, customTag.trim()]);
-        setCustomTag('');
+        setSelectedTags([...selectedTags, formattedTag]);
+        setCustomTag("");
         setIsCustomInput(false);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsCustomInput(false);
-      setCustomTag('');
+      setCustomTag("");
     }
   };
 
@@ -152,7 +150,7 @@ export default function TagSelector() {
               </div>
             );
           }
-          
+
           return (
             <button
               key={tag.id}
