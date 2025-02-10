@@ -74,6 +74,8 @@ const VideoRoom = () => {
         <div className="h-full">
           <VideoControls  // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
             sessionName={mySessionRoomName} // 세션이름
+            publisher={publisher} // 나의 셋팅정보
+            subscribers={subscribers}  // subscribers prop 추가
             onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
             onLeaveSession={disconnectSession}  // 나가기 함수 매개변수로 넘겨줌
           />

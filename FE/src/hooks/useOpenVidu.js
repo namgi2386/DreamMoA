@@ -83,8 +83,15 @@ const useOpenVidu = () => {
         frameRate: 30,           // FPS
         insertMode: 'APPEND',    
         mirror: false,           // 미러링 비활성화
+        audioConstraints: {       // 오디오 제약조건 추가
+          echoCancellation: true, // 에코 제거
+          noiseSuppression: true, // 노이즈 제거
+          autoGainControl: true,  // 자동 게인 제어
+          sampleRate: 44100,      // 샘플레이트
+          volume: 1.0            // 초기 볼륨
+        }
       });
-
+      
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
       await mySession.publish(publisher);
 
