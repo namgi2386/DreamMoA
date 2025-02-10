@@ -18,7 +18,7 @@ export default function TagSelector() {
     { id: 3, name: "자격증" },
     { id: 4, name: "공시생" },
     { id: 5, name: "NCS" },
-    { id: 6, name: "9 to 6" },
+    { id: 6, name: "9to6" },
     { id: 7, name: "직장인" },
     { id: 8, name: "학생" },
     { id: 9, name: "30일챌린지" },
@@ -58,7 +58,7 @@ export default function TagSelector() {
       scrollableElement.scrollLeft += scrollAmount;
     }
   }, []);
-  
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -87,8 +87,11 @@ export default function TagSelector() {
   // 커스텀 태그 입력 처리
   const handleCustomTagSubmit = (e) => {
     if (e.key === "Enter" && customTag.trim()) {
+      // 띄어쓰기 제거
+      const formattedTag = customTag.trim().replace(/\s+/g, "");
+
       if (selectedTags.length < 3) {
-        setSelectedTags([...selectedTags, customTag.trim()]);
+        setSelectedTags([...selectedTags, formattedTag]);
         setCustomTag("");
         setIsCustomInput(false);
       }
