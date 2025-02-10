@@ -84,6 +84,8 @@ const VideoRoom = () => {
             publisher={publisher} // 내 화면
             subscribers={subscribers} // 친구들 화면
             onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
+            myUserName={myUserName} // 내가 입력한 이름
+            mySessionRoomName={mySessionRoomName} // 세션(방)이름
           />
           <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
             session={session} // 세션상태
