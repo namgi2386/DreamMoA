@@ -42,7 +42,7 @@ export default function EditableTagList({
   };
 
   const tagVariants = {
-    hidden: { opacity: 0},
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       // y: 0,
@@ -66,10 +66,7 @@ export default function EditableTagList({
     // 태그가 없고 edit 모드가 아닐 때
     if (!isEdittag && selectedTags.length === 0) {
       return (
-        <motion.p
-          variants={tagVariants}
-          className="text-gray-500 text-lg"
-        >
+        <motion.p variants={tagVariants} className="text-gray-500 text-lg">
           관심있는 태그를 설정해보세요.
         </motion.p>
       );
@@ -102,11 +99,7 @@ export default function EditableTagList({
         );
       }
     }
-    return (
-      <div className="flex gap-2">
-        {tags}
-      </div>
-    );
+    return <div className="flex gap-2">{tags}</div>;
   };
 
   return (
@@ -119,10 +112,8 @@ export default function EditableTagList({
         exit="exit"
       >
         <div className="w-full bg-white rounded-3xl border-2 border-gray-300 p-4">
-          <div className="mb-4">
-            {renderTagContent()}
-          </div>
-          
+          <div className="mb-4">{renderTagContent()}</div>
+
           <AnimatePresence mode="wait">
             {isEdittag && (
               <motion.div
