@@ -10,11 +10,13 @@ import EditableTagList from "../../common/tags/EditableTagList";
 import challengeApi from "../../../services/api/challengeApi";
 // successModal을 위한 import
 // import SuccessModal from "../../common/modal/SuccessModal";
-import { successModalState } from "/src/recoil/atoms/modalState";
+import { successModalState, errorModalState } from "/src/recoil/atoms/modalState";
 
 export default function ChallengeCreateForm() {
   // successModal 상태
   const setSuccessModalState = useSetRecoilState(successModalState);
+  const setErrorModalState = useSetRecoilState(errorModalState);
+
   // selectedTags 상태
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
   // 태그 편집 모드 상태
@@ -32,7 +34,7 @@ export default function ChallengeCreateForm() {
     isPublic: false,
   });
 
-  // 필수 필드 검증 함수 추가
+  // 필수 필드 검증
   const isFormValid = () => {
     return (
       // tag, 이미지지 제외하고 다 필수
@@ -159,6 +161,18 @@ export default function ChallengeCreateForm() {
     });
   };
 
+  // 에러 처리를 위한 핸들러
+  const handleError = (message) => {
+    setErrorModalState({
+      isOpen: true,
+      message: message,
+      onCancel: () => {
+        console.log("에러 모달 닫힘");
+      },
+      isCancellable: true,
+    });
+  };
+
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -191,7 +205,28 @@ export default function ChallengeCreateForm() {
         handleSuccess("챌린지가 생성되었습니다");
       }
     } catch (error) {
-      // 에러 처리
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            handleError("잘못된 요청입니다. 입력을 확인해주세요.");
+            break;
+          case 401:
+            handleError("로그인이 필요합니다.");
+            break;
+          // case 403:
+          //   handleError("권한이 없습니다.");
+          //   break;
+          default:
+            handleError("챌린지 생성에 실패했습니다.");
+        }
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우
+        handleError("서버와 통신할 수 없습니다.");
+      } else {
+        // 요청 설정 중 오류 발생
+        handleError("요청 중 오류가 발생했습니다.");
+      }
+      console.error("Error:", error);
     }
 
     console.log("Form submitted:", formData);
@@ -201,7 +236,6 @@ export default function ChallengeCreateForm() {
     console.log("종료");
   };
 
-  // 컴포넌트가 언마운트될 때 selectedTags 초기화
   useEffect(() => {
     setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
 
@@ -297,7 +331,7 @@ export default function ChallengeCreateForm() {
             <label className="block text-gray-700 mb-2">
               참가자 수<span className="text-red-500 ml-1">*</span>
             </label>
-            {/* flex container -> 입력 필드와 알림 메시지를 나란히 배치 */}
+            {/* flex container -> 입력 필드와 알림 메시지를 나란히 */}
             <div className="flex items-center gap-4">
               {/* 입력 필드 그룹 */}
               <div className="flex items-center gap-2">
