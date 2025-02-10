@@ -186,11 +186,11 @@ export default function ChallengeCreateForm() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-6"
+        className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8"
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold cursor-default">
-            챌린지 시작하기
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-4xl text-my-blue-1 font-semibold cursor-default">
+            ⭐Create Your Challenge !
           </h2>
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -200,10 +200,10 @@ export default function ChallengeCreateForm() {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* 공개 여부 토글 */}
           <div className="flex justify-between items-center">
-            <span className="text-gray-700 cursor-default">공개 여부</span>
+            <span className="text-gray-700 cursor-default mr-3">공개 여부</span>
             <button
               type="button"
               onClick={handlePublicToggle}
@@ -257,7 +257,7 @@ export default function ChallengeCreateForm() {
               initialTags={[]}
             />
             {selectedTags.length === 0 && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="text-sm text-my-blue-4 mt-1">
                 하나 이상의 태그를 선택해주세요
               </p>
             )}
