@@ -1,5 +1,5 @@
 // common/tags/TagSelector.js
-import { useRef, useEffect, useState } from "react"; // useState 추가
+import { useRef, useEffect, useState, useCallback } from "react"; // useState 추가
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 
@@ -9,7 +9,7 @@ export default function TagSelector() {
   const containerRef = useRef(null);
   // 직접 입력을 위한 상태 추가
   const [isCustomInput, setIsCustomInput] = useState(false);
-  const [customTag, setCustomTag] = useState('');
+  const [customTag, setCustomTag] = useState("");
   const inputRef = useRef(null);
 
   const tags = [
@@ -31,10 +31,9 @@ export default function TagSelector() {
   ];
 
   // 가로 스크롤을 위한 이벤트 핸들러
-  const handleWheel = (e) => {
+  const handleWheel = useCallback((e) => {
     if (!containerRef.current) return;
 
-    // 내부 스크롤 가능한 요소 찾기
     const scrollableElement = containerRef.current.querySelector(
       '[class*="flex flex-nowrap"]'
     );
@@ -44,8 +43,6 @@ export default function TagSelector() {
       scrollableElement.scrollWidth > scrollableElement.clientWidth;
 
     if (isScrollable && e.deltaY !== 0) {
-      e.preventDefault(); // 먼저 기본 동작 방지
-
       const scrollAmount = e.deltaY;
       const currentScroll = scrollableElement.scrollLeft;
       const maxScroll =
@@ -59,10 +56,9 @@ export default function TagSelector() {
       }
 
       scrollableElement.scrollLeft += scrollAmount;
-      return false;
     }
-  };
-
+  }, []);
+  
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -90,15 +86,15 @@ export default function TagSelector() {
 
   // 커스텀 태그 입력 처리
   const handleCustomTagSubmit = (e) => {
-    if (e.key === 'Enter' && customTag.trim()) {
+    if (e.key === "Enter" && customTag.trim()) {
       if (selectedTags.length < 3) {
         setSelectedTags([...selectedTags, customTag.trim()]);
-        setCustomTag('');
+        setCustomTag("");
         setIsCustomInput(false);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setIsCustomInput(false);
-      setCustomTag('');
+      setCustomTag("");
     }
   };
 
@@ -152,7 +148,7 @@ export default function TagSelector() {
               </div>
             );
           }
-          
+
           return (
             <button
               key={tag.id}
