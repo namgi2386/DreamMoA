@@ -1,5 +1,4 @@
-// src/components/challenge/ChallengeCreateForm.jsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 // 여기서부터는 tag 컴포넌트를 위한 import
@@ -10,18 +9,16 @@ import EditableTagList from "../../common/tags/EditableTagList";
 // api 호출을 위한 import
 import challengeApi from "../../../services/api/challengeApi";
 // successModal을 위한 import
-// import SuccessModal from "../../common/modal/SuccessModal";
 import {
   successModalState,
   errorModalState,
 } from "/src/recoil/atoms/modalState";
 
 export default function ChallengeCreateForm() {
-  // [수정사항 1] navigate와 state 선언들을 컴포넌트 최상단으로 이동
   const navigate = useNavigate();
-  const [isFormDirty, setIsFormDirty] = useState(false);
+  const location = useLocation();
 
-  // successModal 상태도 상단으로 이동
+  // successModal 상태
   const setSuccessModalState = useSetRecoilState(successModalState);
   const setErrorModalState = useSetRecoilState(errorModalState);
 
@@ -42,53 +39,24 @@ export default function ChallengeCreateForm() {
     isPublic: false,
   });
 
-  // [수정사항 2] useEffect들을 state 선언 직후로 이동
-  // 폼 데이터가 변경될 때마다 isFormDirty를 true로
-  useEffect(() => {
-    // 초기 상태가 아닌 경우에만 dirty로
-    if (
-      formData.title !== "" ||
-      formData.description !== "" ||
-      formData.maxParticipants !== 6 ||
-      selectedTags.length > 0 ||
-      formData.startDate !== "" ||
-      formData.expireDate !== "" ||
-      formData.standard !== 1 ||
-      formData.image !== null
-    ) {
-      setIsFormDirty(true);
-    }
-  }, [formData, selectedTags]);
-
-  // 브라우저 창 닫기/새로고침 시 경고
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isFormDirty) {
-        e.preventDefault();
-        e.returnValue = ""; // Chrome에서 필요
-        return ""; // 표준 브라우저에서 필요
-      }
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [isFormDirty]);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   // 컴포넌트 마운트/언마운트 시 태그 초기화
   useEffect(() => {
     setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
-
-    return () => {
-      setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
-    };
+    return () => setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
   }, [setSelectedTags]);
 
   // 필수 필드 검증
   const isFormValid = () => {
     return (
-      // tag, 이미지지 제외하고 다 필수
+      // tag, 이미지 제외하고 다 필수
       formData.title.trim() !== "" && // 제목 필수
       formData.description.trim() !== "" && // 설명 필수
       formData.maxParticipants >= 1 && // 참가자 수 필수
@@ -99,33 +67,18 @@ export default function ChallengeCreateForm() {
     );
   };
 
-  // 입력 핸들러
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   // 참가자 수 입력
   const handleParticipantsChange = (e) => {
     const value = parseInt(e.target.value);
-
-    // 1 미만이면 1로, 12 초과면 12로 설정
-    if (value < 1) {
-      setFormData((prev) => ({ ...prev, maxParticipants: 1 }));
-    } else if (value > 12) {
-      setFormData((prev) => ({ ...prev, maxParticipants: 12 }));
-    } else {
-      setFormData((prev) => ({ ...prev, maxParticipants: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      maxParticipants: Math.min(Math.max(value, 1), 12),
+    }));
   };
 
   // 챌린지 기간 일수 계산 함수
   const calculateDuration = () => {
     if (!formData.startDate || !formData.expireDate) return 0;
-
     const start = new Date(formData.startDate);
     const end = new Date(formData.expireDate);
     const diffTime = Math.abs(end - start);
@@ -136,15 +89,10 @@ export default function ChallengeCreateForm() {
   const handleStandardChange = (e) => {
     const value = parseInt(e.target.value);
     const duration = calculateDuration();
-
-    // 입력값이 범위를 벗어나면 경계값으로 설정
-    if (value < 1) {
-      setFormData((prev) => ({ ...prev, standard: 1 }));
-    } else if (value > duration) {
-      setFormData((prev) => ({ ...prev, standard: duration }));
-    } else {
-      setFormData((prev) => ({ ...prev, standard: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      standard: Math.min(Math.max(value, 1), duration || value),
+    }));
   };
 
   // 날짜 변경 시 목표 달성 기준 조정
@@ -170,7 +118,6 @@ export default function ChallengeCreateForm() {
 
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: value };
-      // 날짜가 변경되면 목표 달성 기준이 기간을 초과하지 않도록 조정
       const duration = calculateDuration();
       if (prev.standard > duration) {
         updatedData.standard = duration;
@@ -200,15 +147,13 @@ export default function ChallengeCreateForm() {
   };
 
   const handleSuccess = (myMessage) => {
-    // 작업 완료 후
     setSuccessModalState({
       isOpen: true,
       message: myMessage,
       onCancel: () => {
-        // 실행 취소 시 수행할 작업
         console.log("작업 취소됨");
       },
-      isCancellable: false, // 실행 취소 버튼 표시 여부
+      isCancellable: false,
     });
   };
 
@@ -228,7 +173,6 @@ export default function ChallengeCreateForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // selectedTags를 formData에 포함
     const submitData = {
       ...formData,
       tags: selectedTags,
@@ -236,26 +180,16 @@ export default function ChallengeCreateForm() {
     };
 
     try {
-      // API 호출
       const response = await challengeApi.createChallenge(
         submitData,
         formData.image
       );
 
-      // 응답 구조 확인을 위한 로그
       console.log("전체 응답 구조:", response);
 
-      // Axios 응답의 경우 response.data에 실제 서버 응답이 있을 수 있음
-      if (response?.data?.challengeId) {
-        // 챌린지 ID가 있다면 성공으로 간주
+      if (response?.data?.challengeId || response.challengeId) {
         handleSuccess("챌린지가 생성되었습니다");
-        setIsFormDirty(false); // 폼이 제출되면 dirty 상태 해제
         navigate("/mypage");
-      }
-
-      if (response.challengeId) {
-        // 직접 응답 데이터를 받는 경우
-        handleSuccess("챌린지가 생성되었습니다");
       }
     } catch (error) {
       if (error.response) {
@@ -266,35 +200,15 @@ export default function ChallengeCreateForm() {
           case 401:
             handleError("로그인이 필요합니다.");
             break;
-          // case 403:
-          //   handleError("권한이 없습니다.");
-          //   break;
           default:
             handleError("챌린지 생성에 실패했습니다.");
         }
       } else if (error.request) {
-        // 요청은 보냈지만 응답을 받지 못한 경우
         handleError("서버와 통신할 수 없습니다.");
       } else {
-        // 요청 설정 중 오류 발생
         handleError("요청 중 오류가 발생했습니다.");
       }
       console.error("Error:", error);
-    }
-
-    console.log("Form submitted:", formData);
-  };
-
-  // exitButton 핸들러 수정
-  const exitButton = () => {
-    if (isFormDirty) {
-      if (
-        window.confirm("작성 중인 내용이 있습니다. 페이지를 나가시겠습니까?")
-      ) {
-        navigate(-1); // 이전 페이지로 이동
-      }
-    } else {
-      navigate(-1);
     }
   };
 
@@ -311,7 +225,7 @@ export default function ChallengeCreateForm() {
           </h2>
           <button
             className="text-gray-500 hover:text-gray-700"
-            onClick={exitButton}
+            onClick={() => navigate(-1)}
           >
             <span className="text-2xl">&times;</span>
           </button>
@@ -385,9 +299,7 @@ export default function ChallengeCreateForm() {
             <label className="block text-gray-700 mb-2">
               참가자 수<span className="text-red-500 ml-1">*</span>
             </label>
-            {/* flex container -> 입력 필드와 알림 메시지를 나란히 */}
             <div className="flex items-center gap-4">
-              {/* 입력 필드 그룹 */}
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -400,7 +312,6 @@ export default function ChallengeCreateForm() {
                 />
                 <span className="text-sm text-gray-500">명</span>
               </div>
-              {/* 알림 메시지를 오른쪽으로 배치 */}
               <p className="text-sm text-gray-500">
                 1 ~ 12명 사이로 입력해주세요
               </p>
@@ -422,7 +333,7 @@ export default function ChallengeCreateForm() {
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleDateChange}
-                  min={new Date().toISOString().split("T")[0]} // 오늘 이후만 선택 가능
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 cursor-pointer"
                 />
               </div>
@@ -437,7 +348,7 @@ export default function ChallengeCreateForm() {
                   onChange={handleDateChange}
                   min={
                     formData.startDate || new Date().toISOString().split("T")[0]
-                  } // 시작일 이후만 선택 가능
+                  }
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 cursor-pointer"
                 />
               </div>
