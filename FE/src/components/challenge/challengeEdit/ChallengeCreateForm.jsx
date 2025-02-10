@@ -1,4 +1,5 @@
 // src/components/challenge/ChallengeCreateForm.jsx
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 // 여기서부터는 tag 컴포넌트를 위한 import
@@ -10,10 +11,17 @@ import EditableTagList from "../../common/tags/EditableTagList";
 import challengeApi from "../../../services/api/challengeApi";
 // successModal을 위한 import
 // import SuccessModal from "../../common/modal/SuccessModal";
-import { successModalState, errorModalState } from "/src/recoil/atoms/modalState";
+import {
+  successModalState,
+  errorModalState,
+} from "/src/recoil/atoms/modalState";
 
 export default function ChallengeCreateForm() {
-  // successModal 상태
+  // [수정사항 1] navigate와 state 선언들을 컴포넌트 최상단으로 이동
+  const navigate = useNavigate();
+  const [isFormDirty, setIsFormDirty] = useState(false);
+
+  // successModal 상태도 상단으로 이동
   const setSuccessModalState = useSetRecoilState(successModalState);
   const setErrorModalState = useSetRecoilState(errorModalState);
 
@@ -33,6 +41,49 @@ export default function ChallengeCreateForm() {
     thumbnail: null,
     isPublic: false,
   });
+
+  // [수정사항 2] useEffect들을 state 선언 직후로 이동
+  // 폼 데이터가 변경될 때마다 isFormDirty를 true로
+  useEffect(() => {
+    // 초기 상태가 아닌 경우에만 dirty로
+    if (
+      formData.title !== "" ||
+      formData.description !== "" ||
+      formData.maxParticipants !== 6 ||
+      selectedTags.length > 0 ||
+      formData.startDate !== "" ||
+      formData.expireDate !== "" ||
+      formData.standard !== 1 ||
+      formData.image !== null
+    ) {
+      setIsFormDirty(true);
+    }
+  }, [formData, selectedTags]);
+
+  // 브라우저 창 닫기/새로고침 시 경고
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isFormDirty) {
+        e.preventDefault();
+        e.returnValue = ""; // Chrome에서 필요
+        return ""; // 표준 브라우저에서 필요
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isFormDirty]);
+
+  // 컴포넌트 마운트/언마운트 시 태그 초기화
+  useEffect(() => {
+    setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
+
+    return () => {
+      setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
+    };
+  }, [setSelectedTags]);
 
   // 필수 필드 검증
   const isFormValid = () => {
@@ -198,8 +249,10 @@ export default function ChallengeCreateForm() {
       if (response?.data?.challengeId) {
         // 챌린지 ID가 있다면 성공으로 간주
         handleSuccess("챌린지가 생성되었습니다");
+        setIsFormDirty(false); // 폼이 제출되면 dirty 상태 해제
+        navigate("/mypage");
       }
-      // 또는
+
       if (response.challengeId) {
         // 직접 응답 데이터를 받는 경우
         handleSuccess("챌린지가 생성되었습니다");
@@ -232,17 +285,18 @@ export default function ChallengeCreateForm() {
     console.log("Form submitted:", formData);
   };
 
+  // exitButton 핸들러 수정
   const exitButton = () => {
-    console.log("종료");
+    if (isFormDirty) {
+      if (
+        window.confirm("작성 중인 내용이 있습니다. 페이지를 나가시겠습니까?")
+      ) {
+        navigate(-1); // 이전 페이지로 이동
+      }
+    } else {
+      navigate(-1);
+    }
   };
-
-  useEffect(() => {
-    setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
-
-    return () => {
-      setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
-    };
-  }, [setSelectedTags]);
 
   return (
     <>
