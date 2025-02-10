@@ -259,7 +259,7 @@ export default function ChallengeCreateForm() {
               value={formData.title}
               onChange={handleInputChange}
               placeholder="SSAFY 알고리즘 스터디 방"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 font-user-input"
             />
           </div>
 
@@ -273,7 +273,7 @@ export default function ChallengeCreateForm() {
               value={formData.description}
               onChange={handleInputChange}
               placeholder="SSAFY생을 위한 방입니다. 편하게 참여해 주세요."
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none font-user-input"
             />
           </div>
 
