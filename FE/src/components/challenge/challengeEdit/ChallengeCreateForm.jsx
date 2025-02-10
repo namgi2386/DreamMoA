@@ -1,15 +1,27 @@
-// src/components/challenge/ChallengeCreateForm.jsx
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { motion } from "framer-motion";
 // 여기서부터는 tag 컴포넌트를 위한 import
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import EditableTagList from "../../common/tags/EditableTagList";
 // api 호출을 위한 import
 import challengeApi from "../../../services/api/challengeApi";
+// successModal을 위한 import
+import {
+  successModalState,
+  errorModalState,
+} from "/src/recoil/atoms/modalState";
 
 export default function ChallengeCreateForm() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // successModal 상태
+  const setSuccessModalState = useSetRecoilState(successModalState);
+  const setErrorModalState = useSetRecoilState(errorModalState);
+
   // selectedTags 상태
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
   // 태그 편집 모드 상태
@@ -27,7 +39,6 @@ export default function ChallengeCreateForm() {
     isPublic: false,
   });
 
-  // 입력 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -36,22 +47,38 @@ export default function ChallengeCreateForm() {
     }));
   };
 
+  // 컴포넌트 마운트/언마운트 시 태그 초기화
+  useEffect(() => {
+    setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
+    return () => setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
+  }, [setSelectedTags]);
+
+  // 필수 필드 검증
+  const isFormValid = () => {
+    return (
+      // tag, 이미지 제외하고 다 필수
+      formData.title.trim() !== "" && // 제목 필수
+      formData.description.trim() !== "" && // 설명 필수
+      formData.maxParticipants >= 1 && // 참가자 수 필수
+      formData.startDate !== "" && // 시작일 필수
+      formData.expireDate !== "" && // 종료일 필수
+      formData.standard >= 1 && // 목표 달성 기준 필수
+      selectedTags.length > 0 // 태그 필수 - 최소 1개 이상
+    );
+  };
+
   // 참가자 수 입력
   const handleParticipantsChange = (e) => {
     const value = parseInt(e.target.value);
-
-    // 1 미만의 값이 입력되면 1로 설정
-    if (value < 1) {
-      setFormData((prev) => ({ ...prev, maxParticipants: 1 }));
-    } else {
-      setFormData((prev) => ({ ...prev, maxParticipants: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      maxParticipants: Math.min(Math.max(value, 1), 12),
+    }));
   };
 
   // 챌린지 기간 일수 계산 함수
   const calculateDuration = () => {
     if (!formData.startDate || !formData.expireDate) return 0;
-
     const start = new Date(formData.startDate);
     const end = new Date(formData.expireDate);
     const diffTime = Math.abs(end - start);
@@ -62,15 +89,10 @@ export default function ChallengeCreateForm() {
   const handleStandardChange = (e) => {
     const value = parseInt(e.target.value);
     const duration = calculateDuration();
-
-    // 입력값이 범위를 벗어나면 경계값으로 설정
-    if (value < 1) {
-      setFormData((prev) => ({ ...prev, standard: 1 }));
-    } else if (value > duration) {
-      setFormData((prev) => ({ ...prev, standard: duration }));
-    } else {
-      setFormData((prev) => ({ ...prev, standard: value }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      standard: Math.min(Math.max(value, 1), duration || value),
+    }));
   };
 
   // 날짜 변경 시 목표 달성 기준 조정
@@ -96,7 +118,6 @@ export default function ChallengeCreateForm() {
 
     setFormData((prev) => {
       const updatedData = { ...prev, [name]: value };
-      // 날짜가 변경되면 목표 달성 기준이 기간을 초과하지 않도록 조정
       const duration = calculateDuration();
       if (prev.standard > duration) {
         updatedData.standard = duration;
@@ -125,11 +146,33 @@ export default function ChallengeCreateForm() {
     }));
   };
 
+  const handleSuccess = (myMessage) => {
+    setSuccessModalState({
+      isOpen: true,
+      message: myMessage,
+      onCancel: () => {
+        console.log("작업 취소됨");
+      },
+      isCancellable: false,
+    });
+  };
+
+  // 에러 처리를 위한 핸들러
+  const handleError = (message) => {
+    setErrorModalState({
+      isOpen: true,
+      message: message,
+      onCancel: () => {
+        console.log("에러 모달 닫힘");
+      },
+      isCancellable: true,
+    });
+  };
+
   // 폼 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // selectedTags를 formData에 포함
     const submitData = {
       ...formData,
       tags: selectedTags,
@@ -137,58 +180,61 @@ export default function ChallengeCreateForm() {
     };
 
     try {
-      // API 호출
       const response = await challengeApi.createChallenge(
         submitData,
         formData.image
       );
-      console.log("Challenge created successfully:", response);
-      // TODO: 성공 처리 (예: 알림 표시, 페이지 이동 등)
+
+      console.log("전체 응답 구조:", response);
+
+      if (response?.data?.challengeId || response.challengeId) {
+        handleSuccess("챌린지가 생성되었습니다");
+        navigate("/mypage");
+      }
     } catch (error) {
-      console.error("Failed to create challenge:", error);
-      // TODO: 에러 처리 (예: 에러 메시지 표시)
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            handleError("잘못된 요청입니다. 입력을 확인해주세요.");
+            break;
+          case 401:
+            handleError("로그인이 필요합니다.");
+            break;
+          default:
+            handleError("챌린지 생성에 실패했습니다.");
+        }
+      } else if (error.request) {
+        handleError("서버와 통신할 수 없습니다.");
+      } else {
+        handleError("요청 중 오류가 발생했습니다.");
+      }
+      console.error("Error:", error);
     }
-
-    console.log("Form submitted:", formData);
   };
-
-  const exitButton = () => {
-    console.log("종료");
-  };
-
-  // 컴포넌트가 언마운트될 때 selectedTags 초기화
-  useEffect(() => {
-    setSelectedTags([]); // 컴포넌트 마운트 시 태그 초기화
-
-    return () => {
-      setSelectedTags([]); // 컴포넌트 언마운트 시 태그 초기화
-    };
-  }, [setSelectedTags]);
-
 
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-6"
+        className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8"
       >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold cursor-default">
-            챌린지 시작하기
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-4xl text-my-blue-1 font-semibold cursor-default">
+            ⭐Create Your Challenge !
           </h2>
           <button
             className="text-gray-500 hover:text-gray-700"
-            onClick={exitButton}
+            onClick={() => navigate(-1)}
           >
             <span className="text-2xl">&times;</span>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* 공개 여부 토글 */}
           <div className="flex justify-between items-center">
-            <span className="text-gray-700 cursor-default">공개 여부</span>
+            <span className="text-gray-700 cursor-default mr-3">공개 여부</span>
             <button
               type="button"
               onClick={handlePublicToggle}
@@ -204,62 +250,56 @@ export default function ChallengeCreateForm() {
 
           {/* 챌린지 이름 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">챌린지 이름</label>
+            <label className="block text-gray-700 mb-2">
+              챌린지 이름<span className="text-red-500 ml-1">*</span>
+            </label>
             <input
               type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
               placeholder="SSAFY 알고리즘 스터디 방"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 font-user-input"
             />
           </div>
 
           {/* 방 설명 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">방 설명</label>
+            <label className="block text-gray-700 mb-2">
+              방 설명<span className="text-red-500 ml-1">*</span>
+            </label>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleInputChange}
               placeholder="SSAFY생을 위한 방입니다. 편하게 참여해 주세요."
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 h-24 resize-none font-user-input"
             />
           </div>
 
-          {/* 태그 선택 컴포넌트 추가 */}
+          {/* 태그 선택 컴포넌트 불러옴 */}
           <div>
-            <label className="block text-gray-700 mb-2">태그 선택</label>
+            <label className="block text-gray-700 mb-2">
+              태그 선택<span className="text-red-500 ml-1">*</span>
+            </label>
             <EditableTagList
               isEdittag={isEdittag}
               setIsEdittag={setIsEdittag}
               initialTags={[]}
             />
+            {selectedTags.length === 0 && (
+              <p className="text-sm text-my-blue-4 mt-1">
+                하나 이상의 태그를 선택해주세요
+              </p>
+            )}
           </div>
-          {/* 참가자 수 선택 */}
-          {/* <div>
-            <label className="block text-gray-700 mb-2">참가자 수</label>
-            <select
-              name="maxParticipants"
-              value={formData.maxParticipants}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 cursor-pointer"
-            >
-              {[2, 3, 4, 5, 6].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
-              ))}
-            </select>
-          </div> */}
 
-          {/* 위 내용 혹시 몰라서 주석. 아래 필드 사용 예정 */}
           {/* 참가자 수 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">참가자 수</label>
-            {/* flex container로 입력 필드와 알림 메시지를 감싸서 나란히 배치 */}
+            <label className="block text-gray-700 mb-2">
+              참가자 수<span className="text-red-500 ml-1">*</span>
+            </label>
             <div className="flex items-center gap-4">
-              {/* 입력 필드 그룹 */}
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -267,20 +307,22 @@ export default function ChallengeCreateForm() {
                   value={formData.maxParticipants}
                   onChange={handleParticipantsChange}
                   min={1}
+                  max={12}
                   className="w-24 px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4"
                 />
                 <span className="text-sm text-gray-500">명</span>
               </div>
-              {/* 알림 메시지를 오른쪽으로 배치 */}
               <p className="text-sm text-gray-500">
-                최소 1명 이상 입력해주세요
+                1 ~ 12명 사이로 입력해주세요
               </p>
             </div>
           </div>
 
           {/* 챌린지 기간 선택 */}
           <div className="space-y-4">
-            <label className="block text-gray-700 mb-2">챌린지 기간</label>
+            <label className="block text-gray-700 mb-2">
+              챌린지 기간<span className="text-red-500 ml-1">*</span>
+            </label>
             <div className="flex gap-4">
               <div className="flex-1">
                 <label className="block text-sm text-gray-600 mb-1">
@@ -291,7 +333,7 @@ export default function ChallengeCreateForm() {
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleDateChange}
-                  min={new Date().toISOString().split("T")[0]} // 오늘 이후만 선택 가능
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 cursor-pointer"
                 />
               </div>
@@ -306,7 +348,7 @@ export default function ChallengeCreateForm() {
                   onChange={handleDateChange}
                   min={
                     formData.startDate || new Date().toISOString().split("T")[0]
-                  } // 시작일 이후만 선택 가능
+                  }
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-my-blue-4 cursor-pointer"
                 />
               </div>
@@ -315,7 +357,9 @@ export default function ChallengeCreateForm() {
 
           {/* 목표 달성 기준 입력 */}
           <div>
-            <label className="block text-gray-700 mb-2">목표 달성 기준</label>
+            <label className="block text-gray-700 mb-2">
+              목표 달성 기준<span className="text-red-500 ml-1">*</span>
+            </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -392,7 +436,12 @@ export default function ChallengeCreateForm() {
           {/* 제출 버튼 */}
           <button
             type="submit"
-            className="w-full bg-my-blue-2 text-white py-2 rounded-lg hover:bg-hmy-blue-2 transition-colors"
+            disabled={!isFormValid()}
+            className={`w-full py-2 rounded-lg transition-colors ${
+              isFormValid()
+                ? "bg-my-blue-2 text-white hover:bg-hmy-blue-2"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
             챌린지 시작하기
           </button>
