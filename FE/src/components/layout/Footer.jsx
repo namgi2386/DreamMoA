@@ -1,45 +1,70 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, Star, Users, Book, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { getTopViewedDeterminations } from "../../services/api/footerApi";
 
 const ConstellationFooter = () => {
   const [activeDream, setActiveDream] = useState(null);
-  const [userDeterminations] = useState([
+  const [userDeterminations, setUserDeterminations] = useState([
     { id: 1, text: "오늘의 나는 어제의 나와 싸운다", x: 30, y: 30 },
     { id: 2, text: "영어 시험 900점!", x: 60, y: 60 },
-    { id: 3, text: "프로그래머 되기", x: 20, y: 70 },
+    { id: 3, text: "프로그래머 되기", x: 20, y: 70 },    
   ]);
+
+
+  useEffect(() => {
+    const fetchDeterminations = async () => {
+      try {
+        const data = await getTopViewedDeterminations();
+        setUserDeterminations(data);
+      } catch (error) {
+        console.error("Failed to fetch determinations:", error);
+        // 에러 시 기본 데이터 사용
+        setUserDeterminations([
+          { id: 1, text: "오늘의 나는 어제의 나와 싸운다", x: 30, y: 30 },
+          { id: 2, text: "영어 시험 900점!", x: 60, y: 60 },
+          { id: 3, text: "프로그래머 되기", x: 20, y: 70 },
+        ]);
+      }
+    };
+
+    fetchDeterminations();
+  }, []);
 
   // 메뉴 별자리 연결 선
   const renderConstellationLines = () => (
     <svg className="absolute inset-0 pointer-events-none">
-      <line
-        x1="30%"
-        y1="40%"
-        x2="60%"
-        y2="70%"
-        stroke="#F5CBA7"
-        strokeWidth="2"
-        opacity="0.5"
-      />
-      <line
-        x1="60%"
-        y1="70%"
-        x2="20%"
-        y2="80%"
-        stroke="#F5CBA7"
-        strokeWidth="2"
-        opacity="0.5"
-      />
-      <line
-        x1="20%"
-        y1="80%"
-        x2="30%"
-        y2="40%"
-        stroke="#F5CBA7"
-        strokeWidth="2"
-        opacity="0.5"
-      />
+      {userDeterminations.length === 3 && (
+        <>
+          <line
+            x1={`${userDeterminations[0].x}%`}
+            y1={`${userDeterminations[0].y}%`}
+            x2={`${userDeterminations[1].x}%`}
+            y2={`${userDeterminations[1].y}%`}
+            stroke="#F5CBA7"
+            strokeWidth="2"
+            opacity="0.5"
+          />
+          <line
+            x1={`${userDeterminations[1].x}%`}
+            y1={`${userDeterminations[1].y}%`}
+            x2={`${userDeterminations[2].x}%`}
+            y2={`${userDeterminations[2].y}%`}
+            stroke="#F5CBA7"
+            strokeWidth="2"
+            opacity="0.5"
+          />
+          <line
+            x1={`${userDeterminations[2].x}%`}
+            y1={`${userDeterminations[2].y}%`}
+            x2={`${userDeterminations[0].x}%`}
+            y2={`${userDeterminations[0].y}%`}
+            stroke="#F5CBA7"
+            strokeWidth="2"
+            opacity="0.5"
+          />
+        </>
+      )}
     </svg>
   );
 
