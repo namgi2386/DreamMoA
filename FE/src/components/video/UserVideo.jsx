@@ -1,20 +1,25 @@
-import { useEffect, useRef } from 'react';
+import OvVideo from './OvVideo';
 
-// 하나의 화면에 대한 컴포넌트 : VideoGrid.jsx 에서 사용함
-// streamManager === 해당유저(나혹은친구들)의 비디오 스트림 설정값 hooks/useOpenVodu 88line 참고
-export default function UserVideoComponent({ streamManager }) {
-  const videoRef = useRef();
-
-  useEffect(() => {
-    // streamManager가 존재하고 video 요소가 마운트되었을 때
-    if (streamManager && videoRef.current) {
-      streamManager.addVideoElement(videoRef.current); // addVideoElement(내장함수) : openVidu가 관리하는 스트림에 추가해줌
-    }
-  }, [streamManager]);
+const UserVideo = ({ streamManager }) => {
+  // streamManager로부터 사용자 이름 추출하는 헬퍼 함수
+  const getNicknameTag = () => {
+    // 연결된 클라이언트 데이터에서 사용자 이름을 가져옴
+    if (!streamManager) return '';
+    const { clientData } = JSON.parse(streamManager.stream.connection.data);
+    return clientData;
+  };
 
   return (
-    // autoPlay: 스트림 연결 시 자동 재생
-    // ref: OpenVidu가 이 video 요소를 제어하기 위한 참조
-    <video autoPlay={true} ref={videoRef} className="w-full h-full rounded" />
+    <div className="relative w-full h-full">
+      {/* 기본 비디오 스트림 표시 */}
+      <OvVideo streamManager={streamManager} />
+      
+      {/* 사용자 이름 오버레이 */}
+      <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 px-2 py-1 rounded text-white">
+        {getNicknameTag()}
+      </div>
+    </div>
   );
 };
+
+export default UserVideo;
