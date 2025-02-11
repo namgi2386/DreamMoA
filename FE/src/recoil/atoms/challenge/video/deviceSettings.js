@@ -35,7 +35,7 @@ export const micVolumeState = atom({
 // 카메라 관련 atoms
 export const cameraOnState = atom({
   key: 'cameraOnState',
-  default: true
+  default: false
 });
 
 export const selectedCameraState = atom({

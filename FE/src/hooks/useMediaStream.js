@@ -1,57 +1,84 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const useMediaStream = (cameraOn, selectedCamera) => {
+const useMediaStream = (cameraOn, selectedCamera, micOn, selectedMic) => {
   // 비디오 스트림 상태 관리
   const [stream, setStream] = useState(null);
   const [error, setError] = useState(null);
 
-  // 미디어 스트림 가져오기
+  // 마이크 스트림 가져오기 로직 추가
   const getStream = useCallback(async () => {
-    // 이전 스트림이 있다면 트랙들을 중지
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
     }
 
-    if (!cameraOn) {
-      setStream(null);
-      return;
-    }
-
     try {
-      // 미디어 스트림 요청
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: selectedCamera ? { exact: selectedCamera } : undefined
-        }
-      });
+      const constraints = {
+        video: cameraOn ? {
+          deviceId: selectedCamera && selectedCamera !== 'default' 
+            ? { ideal: selectedCamera } // exact 대신 ideal 사용
+            : undefined
+        } : false,
+        audio: micOn ? {
+          deviceId: selectedMic && selectedMic !== 'default'
+            ? { ideal: selectedMic }
+            : undefined
+        } : false
+      };
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       setError(null);
     } catch (err) {
       console.error('Error accessing media devices:', err);
       setError(err.message);
       setStream(null);
+      // 에러 발생 시 기본 장치로 재시도
+      if (err.name === 'OverconstrainedError') {
+        try {
+          const mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: cameraOn,
+            audio: micOn
+          });
+          setStream(mediaStream);
+          setError(null);
+        } catch (retryErr) {
+          console.error('기본 장치로 재시도 중 에러:', retryErr);
+          setError(retryErr.message);
+        }
+      }
     }
-  }, [cameraOn, selectedCamera]);
+  }, [cameraOn, selectedCamera, micOn, selectedMic]);
 
   // 사용 가능한 미디어 디바이스 가져오기
   const [devices, setDevices] = useState({
-    videoDevices: []
+    videoDevices: [], // 카메라 장치
+    audioInputDevices: [],  // 마이크 장치
+    audioOutputDevices: []  // 스피커 장치
   });
 
   const getDevices = useCallback(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
       
-      // 비디오 디바이스만 필터링
-      const videoDevices = devices.filter(
-        device => device.kind === 'videoinput'
-      );
-
       setDevices({
-        videoDevices: videoDevices.map(device => ({
-          deviceId: device.deviceId,
-          label: device.label || `Camera ${videoDevices.indexOf(device) + 1}`
-        }))
+        videoDevices: devices
+          .filter(device => device.kind === 'videoinput')
+          .map(device => ({
+            deviceId: device.deviceId,
+            label: device.label || `Camera ${devices.indexOf(device) + 1}`
+          })),
+        audioInputDevices: devices
+          .filter(device => device.kind === 'audioinput')
+          .map(device => ({
+            deviceId: device.deviceId,
+            label: device.label || `Microphone ${devices.indexOf(device) + 1}`
+          })),
+        audioOutputDevices: devices
+          .filter(device => device.kind === 'audiooutput')
+          .map(device => ({
+            deviceId: device.deviceId,
+            label: device.label || `Speaker ${devices.indexOf(device) + 1}`
+          }))
       });
     } catch (err) {
       console.error('Error getting media devices:', err);

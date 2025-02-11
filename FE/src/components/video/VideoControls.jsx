@@ -14,7 +14,7 @@ const VideoControls = ({ publisher, subscribers,onLeaveSession }) => {
   } = useOpenViduSetting(publisher, subscribers);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex  gap-4 p-4">
       {/* 마이크 컨트롤 섹션 */}
       <div className="flex items-center gap-4">
         <button

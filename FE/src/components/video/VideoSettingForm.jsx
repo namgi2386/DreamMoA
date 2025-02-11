@@ -1,4 +1,7 @@
 import { useRecoilState } from 'recoil';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 import {
   speakerOnState,
   selectedSpeakerState,
@@ -9,9 +12,9 @@ import {
   cameraOnState,
   selectedCameraState
 } from '../../recoil/atoms/challenge/video/deviceSettings';
-import { useNavigate } from 'react-router-dom';
+
 import useMediaStream  from '../../hooks/useMediaStream';
-import { useEffect } from 'react';
+import useAudioTest from '../../hooks/useAudioTest';
 
 import { IoVideocam } from "react-icons/io5";
 import { IoVideocamOff } from "react-icons/io5";
@@ -29,7 +32,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
   const navigate = useNavigate();
 
   // useMediaStream 훅 사용
-  const { stream, error, devices } = useMediaStream(cameraOn, selectedCamera);
+  const { stream, error, devices } = useMediaStream(cameraOn, selectedCamera, micOn, selectedMic);
   // 컴포넌트가 언마운트될 때 스트림 정리
   useEffect(() => {
     return () => {
@@ -38,21 +41,27 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
       }
     };
   }, [stream]);
+  
+  const { playTestSound } = useAudioTest(
+    speakerOn, 
+    selectedSpeaker, 
+    speakerVolume
+  );
 
   // 더미 디바이스 리스트
-  const dummyDevices = {
-    speakers: ['기본값 - 스피커', 'USB 스피커', 'Bluetooth 스피커'],
-    mics: ['기본값 - 마이크', 'USB 마이크', 'Bluetooth 마이크'],
-    cameras: ['720p HD camera', '1080p FHD camera', 'USB 웹캠']
-  };
-  // 더미 디바이스 리스트를 실제 디바이스로 교체
-  const devicesList = {
-    // 스피커와 마이크는 기존 더미 데이터 유지
-    speakers: dummyDevices.speakers,
-    mics: dummyDevices.mics,
-    // 카메라는 실제 디바이스 사용
-    cameras: devices.videoDevices
-  };
+  // const dummyDevices = {
+  //   speakers: ['기본값 - 스피커', 'USB 스피커', 'Bluetooth 스피커'],
+  //   mics: ['기본값 - 마이크', 'USB 마이크', 'Bluetooth 마이크'],
+  //   cameras: ['720p HD camera', '1080p FHD camera', 'USB 웹캠']
+  // };
+  // // 더미 디바이스 리스트를 실제 디바이스로 교체
+  // const devicesList = {
+  //   // 스피커와 마이크는 기존 더미 데이터 유지
+  //   speakers: dummyDevices.speakers,
+  //   mics: dummyDevices.mics,
+  //   // 카메라는 실제 디바이스 사용
+  //   cameras: devices.videoDevices
+  // };
   
 
   // 핸들러 함수들
@@ -122,19 +131,29 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
                 onChange={(e) => setSelectedSpeaker(e.target.value)}
                 className="w-full p-2 rounded bg-gray-700 text-white"
               >
-                {dummyDevices.speakers.map((device) => (
-                  <option key={device} value={device}>{device}</option>
+                {devices.audioOutputDevices.map((device) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label}
+                  </option>
                 ))}
               </select>
               <input
                 type="range"
                 min="0"
                 max="1"
+                step="0.1"
                 value={speakerVolume}
                 onChange={(e) => setSpeakerVolume(Number(e.target.value))}
                 className="w-full"
                 disabled={isLoading}
               />
+              <button
+                onClick={playTestSound}
+                className="w-full p-2 bg-blue-500 text-white rounded"
+                disabled={!speakerOn}
+              >
+                테스트 사운드 재생
+              </button>
             </div>
 
             {/* 마이크 설정 */}
@@ -153,19 +172,27 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
                 onChange={(e) => setSelectedMic(e.target.value)}
                 className="w-full p-2 rounded bg-gray-700 text-white"
               >
-                {dummyDevices.mics.map((device) => (
-                  <option key={device} value={device}>{device}</option>
+                {devices.audioInputDevices.map((device) => (
+                  <option key={device.deviceId} value={device.deviceId}>
+                    {device.label}
+                  </option>
                 ))}
               </select>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                value={micVolume}
-                onChange={(e) => setMicVolume(Number(e.target.value))}
-                className="w-full"
-                disabled={isLoading}
-              />
+              <div className="flex gap-3 ">
+                <span className="w-3 ">
+                {micVolume}
+                </span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={micVolume}
+                  onChange={(e) => setMicVolume(Number(e.target.value))}
+                  className="w-full"
+                  disabled={isLoading}
+                />
+              </div>
             </div>
 
             {/* 카메라 설정 - 스피커와 유사한 구조 */}
