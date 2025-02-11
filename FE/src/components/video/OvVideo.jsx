@@ -1,5 +1,5 @@
 // 기본 비디오 스트림 컴포넌트
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const OvVideo = ({ streamManager }) => {
   const videoRef = useRef(null);
@@ -18,6 +18,8 @@ const OvVideo = ({ streamManager }) => {
       autoPlay={true}
       ref={videoRef}
       className="w-full h-full object-cover"
+      // className="w-full h-full object-contain bg-black"
+      // className="w-full h-full object-contain bg-black aspect-video"
     />
   );
 };

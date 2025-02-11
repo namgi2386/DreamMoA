@@ -11,21 +11,20 @@ const VideoGrid = ({
   onStreamClick,
   currentLayout,
 }) => {
-
   const renderLayout = () => {
     switch (currentLayout) {
       case "grid":
         return (
-          <DynamicGridLayout                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+          <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
             onStreamClick={onStreamClick}
           />
         );
-        case "vertical-grid":
+      case "vertical-grid":
         return (
-          <GridMatrixLayout  // 2분할 그리드 레이아웃
+          <GridMatrixLayout // 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
@@ -64,7 +63,9 @@ const VideoGrid = ({
     }
   };
 
-  return <div className="w-full h-[calc(100%-80px)]">{renderLayout()}</div>;
+  // return <div className="w-full h-[calc(100%-80px)]">{renderLayout()}</div>;  // 부모 요소의 높이
+  // return <div className="w-full h-[calc(100vh-200px]">{renderLayout()}</div>;  // viewport 높이 기준으로
+  return <div className="w-full h-full">{renderLayout()}</div>; // 이렇게 하니까 비디오 밑부분 안 짤리고 스크롤은 되어버림(흰부분 보임)
 };
 
 export default VideoGrid;

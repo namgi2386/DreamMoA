@@ -1,6 +1,6 @@
 import UserVideo from "../UserVideo";
 
-const GridMatrixLayout = ({
+const DynamicGridLayou = ({
   mainStreamManager,
   publisher,
   subscribers,
@@ -68,4 +68,4 @@ const GridMatrixLayout = ({
   );
 };
 
-export default GridMatrixLayout;
+export default DynamicGridLayou;
