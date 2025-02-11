@@ -1,16 +1,19 @@
 // components/video/VideoGrid.jsx
-import { useState } from 'react';
-import GridMatrixLayout from './layouts/GridMatrixLayout';
-import SpotlightLayout from './layouts/SpotlightLayout';
-import LayoutController from './layouts/LayoutController';
+import { useState } from "react";
+import GridMatrixLayout from "./layouts/GridMatrixLayout";
+import SpotlightLayout from "./layouts/SpotlightLayout";
 
-const VideoGrid = ({ mainStreamManager, publisher, subscribers, onStreamClick }) => {
-  // 기본 레이아웃은 그리드
-  const [currentLayout, setCurrentLayout] = useState('grid');
+const VideoGrid = ({
+  mainStreamManager,
+  publisher,
+  subscribers,
+  onStreamClick,
+  currentLayout,
+}) => {
 
   const renderLayout = () => {
     switch (currentLayout) {
-      case 'grid':
+      case "grid":
         return (
           <GridMatrixLayout
             mainStreamManager={mainStreamManager}
@@ -19,7 +22,7 @@ const VideoGrid = ({ mainStreamManager, publisher, subscribers, onStreamClick })
             onStreamClick={onStreamClick}
           />
         );
-      case 'spotlight':
+      case "spotlight":
         return (
           <SpotlightLayout
             mainStreamManager={mainStreamManager}
@@ -41,15 +44,7 @@ const VideoGrid = ({ mainStreamManager, publisher, subscribers, onStreamClick })
     }
   };
 
-  return (
-    <div className="relative w-full h-[calc(100%-80px)]">
-      <LayoutController
-        currentLayout={currentLayout}
-        onLayoutChange={setCurrentLayout}
-      />
-      {renderLayout()}
-    </div>
-  );
+  return <div className="w-full h-[calc(100%-80px)]">{renderLayout()}</div>;
 };
 
 export default VideoGrid;

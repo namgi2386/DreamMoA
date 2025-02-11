@@ -14,6 +14,7 @@ const VideoRoom = () => {
   const [myUserName, setMyUserName] = useState('');// 방 이름
   const [mySessionRoomName, setMySessionRoomName] = useState('');// 사용자 이름
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
+  const [currentLayout, setCurrentLayout] = useState('grid');  // 레이아웃 상태
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
   const {
@@ -76,13 +77,16 @@ const VideoRoom = () => {
             sessionName={mySessionRoomName} // 세션이름
             onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
             onLeaveSession={disconnectSession}  // 나가기 함수 매개변수로 넘겨줌
+            currentLayout={currentLayout}
+            onLayoutChange={setCurrentLayout}
           />
           <VideoGrid  // 너와나의 비디오 위치 크기 등등
             mainStreamManager={mainStreamManager}
             publisher={publisher} // 내 화면
             subscribers={subscribers} // 친구들 화면
             onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
-          />
+            currentLayout={currentLayout}
+        />
           <ChatPanel  // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
             session={session} // 세션상태
             sessionTitle={mySessionRoomName} //방이름

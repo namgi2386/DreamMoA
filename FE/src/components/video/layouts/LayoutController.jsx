@@ -10,7 +10,7 @@ const LayoutController = ({ currentLayout, onLayoutChange }) => {
   ];
 
   return (
-    <div className="absolute top-4 right-4 flex gap-2 bg-gray-800 bg-opacity-50 p-2 rounded-lg">
+    <div className="absolute top-4 right-4 flex gap-2 bg-gray-800 bg-opacity-50 p-2 rounded-lg shadow-lg">
       {layouts.map(({ id, icon: Icon, label }) => (
         <button
           key={id}
