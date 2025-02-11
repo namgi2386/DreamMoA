@@ -18,6 +18,7 @@ export default function CommunityQnAListPage() {
   const currentPage = Number(queryParams.get("page")) || 1;
   const currentSort = queryParams.get("sort") || "최신순";
   const searchQuery = queryParams.get("search") || "";
+  const tagQuery = queryParams.get("tag") || "";
 
   const [sortOption, setSortOption] = useState(currentSort);
   const [totalPages, setTotalPages] = useState(1);
@@ -34,13 +35,13 @@ export default function CommunityQnAListPage() {
   // 정렬 옵션이 변경되면 `URL` 업데이트
   const handleSortChange = (newSort) => {
     setSortOption(newSort);
-    navigate(`/community/qna?page=1&sort=${newSort}`); // 정렬 변경 시 1페이지로 이동
+    navigate(`/community/qna?page=1&sort=${newSort}&search=${searchQuery}&size=5`); // 정렬 변경 시 1페이지로 이동
   };
 
   // 페이지 변경 시 `URL` 업데이트
   const handlePageChange = (newPage) => {
     console.log("📌 페이지 변경:", newPage, "현재 정렬:", sortOption); // ✅ 디버깅 로그 추가
-    navigate(`/community/qna?page=${newPage}&sort=${sortOption}`);
+    navigate(`/community/qna?page=${newPage}&sort=${sortOption}&search=${searchQuery}&size=5`);
   };
 
   // `sortOption`이나 `currentPage`가 변경될 때 API 호출
@@ -59,13 +60,14 @@ export default function CommunityQnAListPage() {
       setTotalPages,
       searchQuery,
       setAiRecommended, // AI 추천 여부 전달
-      setAiPosts
+      setAiPosts,
+      tagQuery
     );
-  }, [sortOption, currentPage, searchQuery]); // currentPage 의존성 추가
+  }, [sortOption, currentPage, searchQuery, tagQuery]); // currentPage 의존성 추가
 
   // 검색 실행 시 URL 업데이트
-  const handleSearch = (query) => {
-    navigate(`/community/qna?page=1&sort=${sortOption}&search=${query}`);
+  const handleSearch = (query, tag) => {
+    navigate(`/community/qna?page=1&sort=${sortOption}&search=${query}&tag=${tag}`);
   };
 
   return (
