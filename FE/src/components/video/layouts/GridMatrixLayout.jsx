@@ -1,3 +1,4 @@
+// conponents/video/layouts/GridMatrixLayout.jsx
 import UserVideo from "../UserVideo";
 
 // mainStreamManager : 메인 스트림

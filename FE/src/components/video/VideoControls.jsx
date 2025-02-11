@@ -3,7 +3,7 @@
 // onLeaveSession : 세션 나가기 함수
 
 import { IoIosSquareOutline } from "react-icons/io";
-import { CiGrid41, CiGrid2H, CiGrid42 } from "react-icons/ci";
+import { CiGrid41, CiGrid2H, CiGrid42, CiGrid2V } from "react-icons/ci";
 
 export default function VideoControls({
   sessionName,
@@ -13,6 +13,7 @@ export default function VideoControls({
   onLayoutChange
 }) {
   const layouts = [
+    { id: 'vertical-grid', icon: CiGrid2V, label: '2분할 그리드' },
     { id: 'grid', icon: CiGrid41, label: '그리드' },
     { id: 'spotlight', icon: IoIosSquareOutline, label: '스포트라이트' },
     { id: 'teaching', icon: CiGrid2H, label: '티칭' },

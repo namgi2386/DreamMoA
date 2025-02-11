@@ -49,7 +49,7 @@ const VideoRoom = () => {
   }, [disconnectSession]);
 
   return (
-    <div className="w-full h-screen bg-gray-900 text-white p-4">
+    <div className="w-full h-full bg-gray-900 text-white p-4">
       {/* 로딩페이지 */}
       {isLoading && <TestLoadingSpinner />}
       {/* 에러페이지 */}

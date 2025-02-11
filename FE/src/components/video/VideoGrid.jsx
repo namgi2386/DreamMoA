@@ -1,7 +1,8 @@
 // components/video/VideoGrid.jsx
-import { useState } from "react";
+import VerticalGridLayout from "./layouts/VerticalGridLayout";
 import GridMatrixLayout from "./layouts/GridMatrixLayout";
 import SpotlightLayout from "./layouts/SpotlightLayout";
+import DynamicGridLayout from "./layouts/DynamicGridLayout";
 
 const VideoGrid = ({
   mainStreamManager,
@@ -15,7 +16,16 @@ const VideoGrid = ({
     switch (currentLayout) {
       case "grid":
         return (
-          <GridMatrixLayout
+          <DynamicGridLayout                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+        case "vertical-grid":
+        return (
+          <GridMatrixLayout  // 기존의 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
@@ -31,7 +41,17 @@ const VideoGrid = ({
             onStreamClick={onStreamClick}
           />
         );
-      // 다른 레이아웃들은 추후 추가
+      // teaching 레이아웃은 화면 공유 기능 구현 후 추가 예정
+      case "mosaic":
+        return (
+          <GridMatrixLayout  // 기존 GridMatrixLayout을 mosaic 용도로 활용
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+
       default:
         return (
           <GridMatrixLayout

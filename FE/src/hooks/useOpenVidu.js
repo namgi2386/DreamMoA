@@ -1,3 +1,4 @@
+// hooks/useOpenVidu.js
 import { useState, useCallback, useRef } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import { videoApi } from '../services/api/videoApi';
