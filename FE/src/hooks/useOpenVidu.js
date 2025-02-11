@@ -77,7 +77,7 @@ const useOpenVidu = () => {
         resolution: '640x480',   // 해상도
         frameRate: 30,           // FPS
         insertMode: 'APPEND',    
-        mirror: false,           // 미러링 비활성화
+        mirror: true,           // 미러링 비활성화
       });
 
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
