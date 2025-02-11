@@ -12,18 +12,18 @@ console.log("CommunityEditPage 렌더링");
 export default function CommunityEditPage() {
   console.log("CommunityEditPage 렌더링");
 
-  const { id } = useParams();
+  const { postId } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
-      const response = await communityApi.getDetail(id);
-      console.log("CommunityEditPage - Fetched post:", response.data); // 응답 전체 로그 찍기
-      setPost(response.data);
+      const data = await communityApi.getDetail(postId);
+      console.log("CommunityEditPage - Fetched post:", data); // 응답 전체 로그 찍기
+      setPost(data);
     };
     fetchPost();
-  }, [id]);
+  }, [postId]);
 
   if (!post) return null;
 

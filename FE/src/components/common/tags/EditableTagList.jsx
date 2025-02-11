@@ -1,3 +1,4 @@
+// src\components\common\tags\EditableTagList.jsx
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import { motion, AnimatePresence } from "framer-motion";
