@@ -2,6 +2,7 @@
 import GridMatrixLayout from "./layouts/GridMatrixLayout";
 import SpotlightLayout from "./layouts/SpotlightLayout";
 import DynamicGridLayout from "./layouts/DynamicGridLayout";
+import MosaicLayout from "./layouts/MosaicLayout";
 
 const VideoGrid = ({
   mainStreamManager,
@@ -43,7 +44,7 @@ const VideoGrid = ({
       // teaching 레이아웃은 화면 공유 기능 구현 후 추가 예정
       case "mosaic":
         return (
-          <GridMatrixLayout  // 기존 GridMatrixLayout을 mosaic 용도로 활용
+          <MosaicLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
@@ -53,7 +54,7 @@ const VideoGrid = ({
 
       default:
         return (
-          <GridMatrixLayout
+          <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
