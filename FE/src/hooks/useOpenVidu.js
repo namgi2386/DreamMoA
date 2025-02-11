@@ -25,7 +25,12 @@ const useOpenVidu = () => {
   OV.current.setAdvancedConfiguration({
     websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
     mediaServer: 'https://localhost:8080'
-})
+  })
+  // 배포 환경
+  // OV.current.setAdvancedConfiguration({
+  //   websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
+  //   mediaServer: 'http://dreammoa.duckdns.org:8080'
+  // });
 
   // 세션참여에 필요한 토큰 가져오기 위에서 정의한 두개의 함수 여기서 사용함 세션만들고 토큰받아오고 토큰 리턴해주고.
   const getToken = async (sessionId) => {
@@ -41,6 +46,8 @@ const useOpenVidu = () => {
     
     try {
       const mySession = OV.current.initSession();
+      // Base64로 userName 인코딩
+      const encodedUserName = btoa(unescape(encodeURIComponent(userName)));
   
       // 다른 참가자의 스트림이 생성될 때 : 스트림 생성 이벤트 핸들러
       mySession.on('streamCreated', (event) => {
@@ -60,11 +67,17 @@ const useOpenVidu = () => {
       
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
       const token = await getToken(sessionName);
-      console.log("토큰줘", token , userName ); // 토큰 도착 성공
+      console.log("토큰줘", token , userName, encodedUserName ); // 토큰 도착 성공
       console.log("마이세션", mySession);
       
       
-      await mySession.connect(token, { clientData: userName }); // 
+      // clientData에 원본 userName과 인코딩된 userName 모두 포함
+      await mySession.connect(token, { 
+        clientData: JSON.stringify({
+          originalName: userName,
+          encodedName: encodedUserName
+        })
+      });
       console.log("컴백");
       
 
@@ -78,8 +91,14 @@ const useOpenVidu = () => {
         frameRate: 30,           // FPS
         insertMode: 'APPEND',    
         mirror: false,           // 미러링 비활성화
+        audioConstraints: {       // 오디오 제약조건 추가
+          echoCancellation: true, // 에코 제거
+          noiseSuppression: true, // 노이즈 제거
+          autoGainControl: true,  // 자동 게인 제어
+          sampleRate: 44100,      // 샘플레이트
+          volume: 1.0            // 초기 볼륨
+        }
       });
-
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
       await mySession.publish(publisher);
 
