@@ -11,7 +11,7 @@ export default function PostStats({ postId, likes = 0, comments = 0 }) {
       {/* 댓글 부분은 그대로 유지 */}
       <span className="flex items-center gap-1">
         <FaRegComment />
-        {comments || 0} 댓글
+        {typeof comments === "number" ? comments : 0} 댓글
       </span>
     </div>
   );

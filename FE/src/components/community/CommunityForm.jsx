@@ -9,9 +9,11 @@ import ReactQuill from "react-quill";
 import { Quill } from "react-quill";
 import { ImageActions } from "@xeger/quill-image-actions";
 import { ImageFormats } from "@xeger/quill-image-formats";
+import { modules, formats} from "../../components/community/quillModules";
+import PostTags from "./PostTags";
 
-Quill.register("modules/imageActions", ImageActions);
-Quill.register("modules/imageFormats", ImageFormats);
+// Quill.register("modules/imageActions", ImageActions);
+// Quill.register("modules/imageFormats", ImageFormats);
 
 export default function CommunityForm({
   boardCategory,
@@ -24,24 +26,32 @@ export default function CommunityForm({
   console.log("현재 로그인된 사용자 정보:", currentUser);
 
   const [formData, setFormData] = useState(() => ({
-    category: initialData?.category || boardCategory || "", 
+    category: initialData?.category || boardCategory || "",
     title: initialData?.title || "",
     content: initialData?.content || "",
+    tags: initialData?.tags || [], // 🟢 기존 태그 유지
   }));
+
+  const [tags, setTags] = useState([]); //태그 리스트 상태 추가
 
   useEffect(() => {
     if (mode === "edit" && initialData) {
-      console.log("🔄 CommunityForm useEffect - initialData 업데이트됨:", initialData);
+      console.log(
+        "🔄 CommunityForm useEffect - initialData 업데이트됨:",
+        initialData
+      );
       setFormData({
         category: initialData.category || "",
         title: initialData.title || "",
         content: initialData.content || "",
+        tags: initialData.tags || [], // 🟢 기존 태그 유지
       });
     }
   }, [mode, initialData]);
 
   console.log("📌 현재 formData:", formData);
-
+  console.log("🏷 현재 태그 목록:", tags);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -52,9 +62,11 @@ export default function CommunityForm({
     }
 
     try {
+      console.log("🚀 전송할 데이터:", formData); // 🟢 formData 확인 로그
+
       await (mode === "create"
-        ? communityApi.create(formData)
-        : communityApi.update(initialData.postId, formData));
+        ? communityApi.create({ ...formData, tags }) // 태그 포함하여 저장
+        : communityApi.update(initialData.postId, { ...formData, tags }));
 
       if (mode === "edit") {
         navigate(`/community/detail/${initialData.postId}`);
@@ -68,41 +80,41 @@ export default function CommunityForm({
     }
   };
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image"],
-      [{ align: [] }],
-      ["clean"],
-    ],
-    imageActions: {},
-    imageFormats: {},
-  };
+  // const modules = {
+  //   toolbar: [
+  //     [{ header: [1, 2, false] }],
+  //     ["bold", "italic", "underline", "strike", "blockquote"],
+  //     [
+  //       { list: "ordered" },
+  //       { list: "bullet" },
+  //       { indent: "-1" },
+  //       { indent: "+1" },
+  //     ],
+  //     ["link", "image"],
+  //     [{ align: [] }],
+  //     ["clean"],
+  //   ],
+  //   imageActions: {},
+  //   imageFormats: {},
+  // };
 
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "height",
-    "width",
-    "align",
-    "float",
-  ];
+  // const formats = [
+  //   "header",
+  //   "bold",
+  //   "italic",
+  //   "underline",
+  //   "strike",
+  //   "blockquote",
+  //   "list",
+  //   "bullet",
+  //   "indent",
+  //   "link",
+  //   "image",
+  //   "height",
+  //   "width",
+  //   "align",
+  //   "float",
+  // ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,6 +128,7 @@ export default function CommunityForm({
         placeholder="제목"
       />
 
+      {/* 🟢 Quill 에디터 */}
       <div className="bg-white border border-gray-300 rounded-lg shadow-md">
         <ReactQuill
           value={formData.content}
@@ -127,7 +140,24 @@ export default function CommunityForm({
         />
       </div>
 
-      <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+      {/* 🟢 태그 입력 컴포넌트 추가 */}
+      <PostTags tags={formData.tags} setTags={(newTags) => setFormData({ ...formData, tags: newTags })} className="w-full"/>
+
+      {/* <div className="bg-white border border-gray-300 rounded-lg shadow-md">
+        <ReactQuill
+          value={formData.content}
+          onChange={(content) => setFormData({ ...formData, content })}
+          modules={modules}
+          formats={formats}
+          placeholder="내용을 입력하세요"
+          className="custom-quill-editor font-user-input"
+        />
+      </div> */}
+
+      <button
+        type="submit"
+        className="px-4 py-2 bg-blue-500 text-white rounded"
+      >
         {mode === "create" ? "작성하기" : "수정하기"}
       </button>
     </form>

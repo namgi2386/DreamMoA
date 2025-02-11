@@ -11,7 +11,7 @@ export default function SearchBar({ onSearch }) {
         <span className="text-blue-500 mr-2">🔍</span>
         <input
           type="text"
-          placeholder="제목 검색"
+          placeholder="키워드 검색"
           className="bg-transparent outline-none flex-1 text-sm"
           value={titleQuery}
           onChange={(e) => setTitleQuery(e.target.value)}
