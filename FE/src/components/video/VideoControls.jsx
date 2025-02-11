@@ -6,9 +6,11 @@ const VideoControls = ({ publisher, subscribers,onLeaveSession }) => {
     micVolume,
     speakerVolume,
     isMicMuted,
+    isCameraOff,
     adjustMicVolume,
     adjustSpeakerVolume,
-    toggleMicMute
+    toggleMicMute,
+    toggleCamera   
   } = useOpenViduSetting(publisher, subscribers);
 
   return (
@@ -53,6 +55,19 @@ const VideoControls = ({ publisher, subscribers,onLeaveSession }) => {
           />
         </div>
       </div>
+
+      {/* 카메라 컨트롤 섹션 추가 */}
+      <div className="flex items-center gap-4">
+        <button
+          onClick={toggleCamera}
+          className={`p-2 rounded ${
+            isCameraOff ? 'bg-red-500' : 'bg-blue-500'
+          } text-white`}
+        >
+          {isCameraOff ? '카메라 켜기' : '카메라 끄기'}
+        </button>
+      </div>
+
       <button
           onClick={onLeaveSession}
           className="bg-red-600 px-4 py-2 rounded"

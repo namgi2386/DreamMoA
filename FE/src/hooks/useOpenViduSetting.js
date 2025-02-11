@@ -1,13 +1,13 @@
-// hooks/useOpenViduSetting.js
 import { useState, useCallback } from 'react';
 
 const useOpenViduSetting = (publisher, subscribers) => {
   // 마이크와 스피커 볼륨 상태 관리 (0~1 사이 값)
   const [micVolume, setMicVolume] = useState(1.0);
   const [speakerVolume, setSpeakerVolume] = useState(1.0);
-
   // 마이크 음소거 상태 관리
   const [isMicMuted, setIsMicMuted] = useState(false);
+  // 카메라 상태 관리 추가
+  const [isCameraOff, setIsCameraOff] = useState(false);
 
   // 마이크 볼륨 조절 함수
   const adjustMicVolume = useCallback((value) => {
@@ -79,13 +79,33 @@ const useOpenViduSetting = (publisher, subscribers) => {
     }
   }, [publisher, isMicMuted]);
 
+  // 카메라 on/off 토글 함수
+  const toggleCamera = useCallback(() => {
+    if (!publisher) return;
+
+    try {
+      // 현재 상태의 반대값으로 설정
+      const newCameraState = !isCameraOff;
+      
+      // Publisher의 비디오 상태 변경
+      publisher.publishVideo(!newCameraState);
+      
+      // 상태 업데이트
+      setIsCameraOff(newCameraState);
+    } catch (error) {
+      console.error('카메라 토글 실패:', error);
+    }
+  }, [publisher, isCameraOff]);
+
   return {
     micVolume,
     speakerVolume,
     isMicMuted,
     adjustMicVolume,
     adjustSpeakerVolume,
-    toggleMicMute
+    toggleMicMute,
+    isCameraOff,
+    toggleCamera
   };
 };
 

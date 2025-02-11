@@ -46,6 +46,8 @@ const useOpenVidu = () => {
     
     try {
       const mySession = OV.current.initSession();
+      // Base64로 userName 인코딩
+      const encodedUserName = btoa(unescape(encodeURIComponent(userName)));
   
       // 다른 참가자의 스트림이 생성될 때 : 스트림 생성 이벤트 핸들러
       mySession.on('streamCreated', (event) => {
@@ -65,11 +67,17 @@ const useOpenVidu = () => {
       
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
       const token = await getToken(sessionName);
-      console.log("토큰줘", token , userName ); // 토큰 도착 성공
+      console.log("토큰줘", token , userName, encodedUserName ); // 토큰 도착 성공
       console.log("마이세션", mySession);
       
       
-      await mySession.connect(token, { clientData: userName }); // 
+      // clientData에 원본 userName과 인코딩된 userName 모두 포함
+      await mySession.connect(token, { 
+        clientData: JSON.stringify({
+          originalName: userName,
+          encodedName: encodedUserName
+        })
+      });
       console.log("컴백");
       
 
