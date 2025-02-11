@@ -1,4 +1,3 @@
-// src/components/common/SuccessModal.jsx
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRecoilState } from 'recoil';
 import { useEffect } from 'react';

@@ -7,8 +7,7 @@ import MyInfoCard from "../../components/mypage/MyInfoCard";
 import ChallengeImages from "../../components/mypage/ChallengeImages";
 import PasswordVerificationModal from "/src/components/common/modal/PasswordVerificationModal";
 import authChangeApi from "../../services/api/authChangeApi";
-
-import EditableTagList from "../../components/common/tags/EdittableTagList";
+import EditableTagList from "../../components/common/tags/EditableTagList";
 
 export default function MyPage() {
   const userInfo = useRecoilValue(userState);
