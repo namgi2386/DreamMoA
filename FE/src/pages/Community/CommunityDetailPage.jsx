@@ -90,7 +90,7 @@ export default function CommunityDetailPage() {
         content={post.content}
       />
 
-      {/* 🟢 등록된 태그만 표시 */}
+      {/* 등록된 태그만 표시 */}
       {post.tags && post.tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-4">
           {post.tags.map((tag, index) => (

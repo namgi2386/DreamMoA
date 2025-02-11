@@ -29,7 +29,7 @@ export default function CommunityForm({
     category: initialData?.category || boardCategory || "",
     title: initialData?.title || "",
     content: initialData?.content || "",
-    tags: initialData?.tags || [], // 🟢 기존 태그 유지
+    tags: initialData?.tags || [], //기존 태그 유지
   }));
 
   const [tags, setTags] = useState([]); //태그 리스트 상태 추가
@@ -44,7 +44,7 @@ export default function CommunityForm({
         category: initialData.category || "",
         title: initialData.title || "",
         content: initialData.content || "",
-        tags: initialData.tags || [], // 🟢 기존 태그 유지
+        tags: initialData.tags || [], //기존 태그 유지
       });
     }
   }, [mode, initialData]);
@@ -65,8 +65,8 @@ export default function CommunityForm({
       console.log("🚀 전송할 데이터:", formData); // 🟢 formData 확인 로그
 
       await (mode === "create"
-        ? communityApi.create({ ...formData, tags }) // 태그 포함하여 저장
-        : communityApi.update(initialData.postId, { ...formData, tags }));
+        ? communityApi.create(formData) // 태그 포함하여 저장
+        : communityApi.update(initialData.postId, formData));
 
       if (mode === "edit") {
         navigate(`/community/detail/${initialData.postId}`);

@@ -18,6 +18,7 @@ export default function CommunityFreeListPage() {
   const currentPage = Number(queryParams.get("page")) || 1;
   const currentSort = queryParams.get("sort") || "최신순";
   const searchQuery = queryParams.get("search") || "";
+  const tagQuery = queryParams.get("tag") || "";
 
   const [sortOption, setSortOption] = useState(currentSort);
   const [totalPages, setTotalPages] = useState(1);
@@ -49,13 +50,14 @@ export default function CommunityFreeListPage() {
       setTotalPages,
       searchQuery,
       setAiRecommended, // AI 추천 여부 전달
-      setAiPosts
+      setAiPosts,
+      tagQuery
     );
-  }, [sortOption, currentPage, searchQuery]);
+  }, [sortOption, currentPage, searchQuery, tagQuery]);
 
   // 검색 실행 시 URL 업데이트
-  const handleSearch = (query) => {
-    navigate(`/community/free?page=1&sort=${sortOption}&search=${query}`);
+  const handleSearch = (query, tag) => {
+    navigate(`/community/free?page=1&sort=${sortOption}&search=${query}&tag=${tag}`);
   };
 
   return (
