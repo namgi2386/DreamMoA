@@ -1,4 +1,4 @@
-// components/video/VideoRoom.jsx
+// pages/video/VideoRoom.jsx
 
 import { useState, useEffect } from 'react';
 import VideoJoinForm from '/src/components/video/VideoJoinForm';
