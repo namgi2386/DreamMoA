@@ -13,7 +13,7 @@ export default function VideoControls({
   onLayoutChange
 }) {
   const layouts = [
-    { id: 'vertical-grid', icon: CiGrid2V, label: '2분할 그리드' },
+    { id: 'vertical-grid', icon: CiGrid2V, label: '기본' },
     { id: 'grid', icon: CiGrid41, label: '그리드' },
     { id: 'spotlight', icon: IoIosSquareOutline, label: '스포트라이트' },
     { id: 'teaching', icon: CiGrid2H, label: '티칭' },

@@ -1,5 +1,5 @@
 import { IoIosSquareOutline } from "react-icons/io";
-import { CiGrid41, CiGrid2H, CiGrid42 } from "react-icons/ci";
+import { CiGrid41, CiGrid2H, CiGrid42, BsGrid1X2 } from "react-icons/ci";
 
 const LayoutController = ({ currentLayout, onLayoutChange }) => {
   const layouts = [

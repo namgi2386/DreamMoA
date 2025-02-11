@@ -1,5 +1,4 @@
 // components/video/VideoGrid.jsx
-import VerticalGridLayout from "./layouts/VerticalGridLayout";
 import GridMatrixLayout from "./layouts/GridMatrixLayout";
 import SpotlightLayout from "./layouts/SpotlightLayout";
 import DynamicGridLayout from "./layouts/DynamicGridLayout";
@@ -25,7 +24,7 @@ const VideoGrid = ({
         );
         case "vertical-grid":
         return (
-          <GridMatrixLayout  // 기존의 2분할 그리드 레이아웃
+          <GridMatrixLayout  // 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}

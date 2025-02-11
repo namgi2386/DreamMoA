@@ -1,6 +1,6 @@
 import UserVideo from '../UserVideo';
 
-const SpotlightLayout = ({ mainStreamManager, publisher, subscribers }) => {
+const SpotlightLayout = ({ mainStreamManager, publisher, subscribers, onStreamClick }) => {
   // 스포트라이트에 표시될 참가자들 (자신 + 다른 참가자들)
   const allParticipants = publisher 
     ? [publisher, ...subscribers]
