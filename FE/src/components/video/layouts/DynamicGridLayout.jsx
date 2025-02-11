@@ -56,11 +56,11 @@ const GridMatrixLayout = ({
           >
             <UserVideo streamManager={stream} />
             {/* 사용자 이름 오버레이 */}
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm">
+            {/* <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm">
               {stream.stream?.connection?.data
                 ? JSON.parse(stream.stream.connection.data).clientData
                 : '나'}
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

@@ -4,6 +4,7 @@
 
 import { IoIosSquareOutline } from "react-icons/io";
 import { CiGrid41, CiGrid2H, CiGrid42, CiGrid2V } from "react-icons/ci";
+import { BsGrid1X2 } from "react-icons/bs";
 
 export default function VideoControls({
   sessionName,
@@ -13,7 +14,7 @@ export default function VideoControls({
   onLayoutChange
 }) {
   const layouts = [
-    { id: 'vertical-grid', icon: CiGrid2V, label: '기본' },
+    { id: 'vertical-grid', icon: BsGrid1X2, label: '기본' },
     { id: 'grid', icon: CiGrid41, label: '그리드' },
     { id: 'spotlight', icon: IoIosSquareOutline, label: '스포트라이트' },
     { id: 'teaching', icon: CiGrid2H, label: '티칭' },
