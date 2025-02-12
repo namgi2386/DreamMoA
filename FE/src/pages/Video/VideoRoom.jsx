@@ -15,7 +15,7 @@ const VideoRoom = () => {
   // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const dummySessionRoomName = "12" // 이거 챌린지 선택했을때 가져와야됨.
+  const dummySessionRoomName = "13" // 이거 챌린지 선택했을때 가져와야됨.
   const dummyUserName = userInfo?.nickname || "testUser"
   // const dummyUserName = "namhui"
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
@@ -85,7 +85,7 @@ const VideoRoom = () => {
             
           </div>
           {/* ☆★ 중앙 화면 영역 ☆★ */}
-          <div className="w-full flex-grow bg-yellow-200 overflow-auto">
+          <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
             <VideoGrid // 너와나의 비디오 위치 크기 등등
               mainStreamManager={mainStreamManager}
               publisher={publisher} // 내 화면
