@@ -13,18 +13,18 @@ const VideoGrid = ({
 }) => {
   const renderLayout = () => {
     switch (currentLayout) {
-      case "Dynamic":
+      case "default":
         return (
-          <DynamicGridLayout
+          <GridMatrixLayout // 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}
             onStreamClick={onStreamClick}
           />
         );
-      case "default":
+      case "Dynamic":
         return (
-          <GridMatrixLayout // 2분할 그리드 레이아웃
+          <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={subscribers}

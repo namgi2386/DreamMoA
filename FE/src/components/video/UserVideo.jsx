@@ -7,7 +7,7 @@ const UserVideo = ({ streamManager }) => {
     if (!streamManager) return '';
     const { clientData } = JSON.parse(streamManager.stream.connection.data);
       // clientData를 파싱하여 originalName만 추출
-  const userData = JSON.parse(clientData);
+    const userData = JSON.parse(clientData);
   return userData.originalName;
   };
  
