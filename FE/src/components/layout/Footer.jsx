@@ -125,7 +125,7 @@ const ConstellationFooter = () => {
               >
                 <Star
                   className="text-yellow-400"
-                  fill={activeDream?.id === pin.id ? "#F5CBA7" : "none"}
+                  fill={activeDream?.id === pin.id ? "#facc15" : "none"}
                 />
               </div>
             ))}
