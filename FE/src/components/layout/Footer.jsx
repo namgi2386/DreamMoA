@@ -8,9 +8,8 @@ const ConstellationFooter = () => {
   const [userDeterminations, setUserDeterminations] = useState([
     { id: 1, text: "오늘의 나는 어제의 나와 싸운다", x: 30, y: 30 },
     { id: 2, text: "영어 시험 900점!", x: 60, y: 60 },
-    { id: 3, text: "프로그래머 되기", x: 20, y: 70 },    
+    { id: 3, text: "프로그래머 되기", x: 20, y: 70 },
   ]);
-
 
   useEffect(() => {
     const fetchDeterminations = async () => {
@@ -103,9 +102,9 @@ const ConstellationFooter = () => {
             모든 학습자의 꿈을 함께 모아 이루는 공간
           </p>
           <div className="flex space-x-4 mt-4">
-            <Users className="text-[#C4C4C4]" />
+            {/* <Users className="text-[#C4C4C4]" />
             <Book className="text-[#C4C4C4]" />
-            <MapPin className="text-[#C4C4C4]" />
+            <MapPin className="text-[#C4C4C4]" /> */}
           </div>
         </div>
 
@@ -148,12 +147,12 @@ const ConstellationFooter = () => {
         </div>
 
         {/* Quick Links */}
-        <div>
+        <div className="text-right pr-4">
+          {" "}
+          {/* pr-8을 pr-4로 수정 */}
           <h3 className="text-xl mb-4 text-[#F5CBA7]">바로가기</h3>
           <ul className="space-y-2">
             {[
-              { name: "이용약관", icon: <ChevronRight size={16} /> },
-              { name: "FAQ", icon: <ChevronRight size={16} /> },
               {
                 name: "QnA게시판",
                 icon: <ChevronRight size={16} />,
@@ -164,21 +163,22 @@ const ConstellationFooter = () => {
                 icon: <ChevronRight size={16} />,
                 path: "/community/free",
               },
-              { name: "개인정보처리방침", icon: <ChevronRight size={16} /> },
+              // { name: "이용약관", icon: <ChevronRight size={16} /> },
+              // { name: "FAQ", icon: <ChevronRight size={16} /> },
+              // { name: "개인정보처리방침", icon: <ChevronRight size={16} /> },
             ].map((link) => (
               <li
                 key={link.name}
-                className="flex items-center space-x-2 hover:text-[#F5CBA7] cursor-pointer"
+                className="flex items-center justify-end space-x-2 hover:text-[#F5CBA7] cursor-pointer"
               >
                 {link.icon}
                 {link.path ? (
                   <Link to={link.path} className="hover:underline">
                     {link.name}
-                  </Link> // ✅ Link 적용
+                  </Link>
                 ) : (
                   <span>{link.name}</span>
                 )}
-                {/* <span>{link.name}</span> */}
               </li>
             ))}
           </ul>
