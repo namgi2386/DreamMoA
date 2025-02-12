@@ -3,7 +3,7 @@ import api from './axios';
 // 상위 조회수 결심 가져오기 (첫 3개만 사용)
 export const getTopViewedDeterminations = async () => {
   try {
-    const response = await api.get('/top-viewed');
+    const response = await api.get('/random-determinations');
     
     // 응답 데이터가 비어있거나 3개 미만인 경우 기본 데이터 반환
     if (!response.data || response.data.length < 3) {
