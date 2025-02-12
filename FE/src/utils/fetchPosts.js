@@ -20,7 +20,7 @@ export const fetchPosts = async (
   setTotalPages = null,
   searchQuery = "",
   setAiRecommended = null,
-  setAiPosts = null, // ✅ AI 게시글 목록 상태 추가
+  setAiPosts = null, //AI 게시글 목록 상태 추가
   tagQuery = ""
 ) => {
   console.log(`${category} 게시판 데이터를 불러옵니다...`);
@@ -29,7 +29,19 @@ export const fetchPosts = async (
     let posts = [];
     let totalPages = 1; // 기본값
 
-    if (searchQuery.trim()) {
+    if (tagQuery.trim()) {
+      // ✅ 태그 검색 실행
+      console.log("🔍 태그 검색 실행:", tagQuery);
+      response = await communityApi.searchByTag(tagQuery, currentPage - 1, 5);
+
+      if (response && response.content && response.content.length > 0) {
+        posts = response.content;
+        totalPages = response.totalPages || 1;
+        console.log(`✅ 태그 검색 결과 ${posts.length}개 발견`);
+      } else {
+        console.log("❌ 태그 검색 결과 없음.");
+      }
+    } else if (searchQuery.trim()) {
       // 🔹 1. 기본 키워드 검색 실행
       console.log("🔍 키워드 검색 실행:", searchQuery);
       response = await communityApi.searchPosts(searchQuery, currentPage - 1, 5);
@@ -100,15 +112,3 @@ export const fetchPosts = async (
     console.error("📌 게시글 데이터 가져오기 에러:", error);
   }
 };
-
-// 정렬 함수
-// const sortPosts = (posts, option) => {
-//   switch (option) {
-//     case "조회순":
-//       return [...posts].sort((a, b) => b.viewCount - a.viewCount);
-//     case "좋아요순":
-//       return [...posts].sort((a, b) => b.likes - a.likes);
-//     default: // 최신순
-//       return [...posts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-//   }
-// };

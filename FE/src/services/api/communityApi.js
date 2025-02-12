@@ -165,6 +165,16 @@ const communityApi = {
         return { content: [], totalPages: 1 }; // ✅ AI 검색 에러 발생 시 빈 배열 반환
       }),
 
+  //태그 검색 api
+  searchByTag: (tag, page, size) =>
+    api
+      .get(`${COMMUNITY_URL}/search-by-tag`, { params: { tag, page, size } })
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error("태그 검색 에러:", error);
+        throw error;
+      }),
+
 };
 
 export default communityApi;
