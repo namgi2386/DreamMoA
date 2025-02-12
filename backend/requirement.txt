@@ -1,0 +1,9 @@
+fastapi[all]
+torch
+torchvision
+torchaudio
+scikit-learn
+numpy
+pandas
+uvicorn
+python-dotenv
