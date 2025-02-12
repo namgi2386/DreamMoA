@@ -6,9 +6,11 @@ const UserVideo = ({ streamManager }) => {
     // 연결된 클라이언트 데이터에서 사용자 이름을 가져옴
     if (!streamManager) return '';
     const { clientData } = JSON.parse(streamManager.stream.connection.data);
-    return clientData;
+      // clientData를 파싱하여 originalName만 추출
+  const userData = JSON.parse(clientData);
+  return userData.originalName;
   };
-
+ 
   return (
     <div className="relative w-full h-full">
       {/* 기본 비디오 스트림 표시 */}

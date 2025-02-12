@@ -17,6 +17,7 @@ const VideoRoom = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
   const dummySessionRoomName = "12" // 이거 챌린지 선택했을때 가져와야됨.
   const dummyUserName = userInfo.nickname
+  // const dummyUserName = "namhui"
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
@@ -80,8 +81,8 @@ const VideoRoom = () => {
         // <div className="h-full">
         <div className="h-[calc(100vh-32px)]"> {/* h-full -> h-[calc(100vh-32px)]로 변경 (p-4의 상하 패딩 고려) */}
           <VideoControls // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
-            sessionName={mySessionRoomName} // 세션이름
-            onSwitchCamera={switchCamera} // 카메라 전환 함수 매개변수로 넘겨줌
+            publisher={publisher} // 내 화면
+            subscribers={subscribers} // 친구들 화면
             onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
             currentLayout={currentLayout}
             onLayoutChange={setCurrentLayout}

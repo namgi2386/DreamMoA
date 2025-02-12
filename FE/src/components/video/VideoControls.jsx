@@ -4,10 +4,9 @@ import { BsGrid1X2 } from "react-icons/bs";
 import useOpenViduSetting from "../../hooks/useOpenViduSetting";
 
 export default function VideoControls({
-  sessionName,
+  // sessionName,
   publisher,
   subscribers,
-  onSwitchCamera,
   onLeaveSession,
   currentLayout,
   onLayoutChange,
@@ -37,7 +36,7 @@ export default function VideoControls({
     <div className="flex flex-col gap-4">
       {/* 상단 섹션: 세션명과 레이아웃 컨트롤 */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl">세션: {sessionName}</h1>
+        <h1 className="text-xl">세션: ??</h1>
         <div className="flex items-center gap-4">
           {/* 레이아웃 컨트롤 버튼들 */}
           <div className="flex gap-2 bg-gray-800 p-2 rounded-lg">
