@@ -9,8 +9,8 @@ import ChatPanel from "../../components/video/chat/ChatPanel";
 import VideoSettingForm from "../../components/video/VideoSettingForm";
 
 // ✅ 추가된 WebSocket 훅
-import { useFocusSocket } from "../../hooks/useFocusSocket"; // 🔥 FastAPI WebSocket 통신 훅
-import DataCollector from "../../components/video/analysis/DataCollector"; // 🔥 Mediapipe & YOLO 데이터 수집
+import  useFocusSocket  from "../../hooks/useFocusSocket"; // 🔥 FastAPI WebSocket 통신 훅
+import FocusAnalysis from "../../components/video/analysis/FocusAnalyzer";
 
 const SERVER_URL = "ws://localhost:8000/focus"; // ✅ FastAPI WebSocket 서버 주소
 
@@ -111,7 +111,7 @@ const VideoRoom = () => {
           </div>
 
           {/* ✅ WebSocket 데이터 수집기 (Mediapipe + YOLO) */}
-          <DataCollector videoRef={videoRef} socket={socket} />
+          <FocusAnalysis videoRef={videoRef} socket={socket} />
 
           {/* ☆★ z-index 걸린 모달 영역 ☆★ */}
           <ChatPanel 

@@ -11,7 +11,6 @@ import VideoSettingForm from "../../components/video/VideoSettingForm";
 
 // ✅ 추가된 파일
 import { useFocusSocket } from "../../hooks/useFocusSocket"; // 🔥 FastAPI WebSocket 통신 훅
-import DataCollector from "../../components/video/analysis/DataCollector"; // 🔥 Mediapipe & YOLO 데이터 수집
 
 const SERVER_URL = "ws://localhost:8000/focus"; // ✅ FastAPI WebSocket 서버 주소
 
