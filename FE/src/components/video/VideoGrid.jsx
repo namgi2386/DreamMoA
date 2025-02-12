@@ -8,17 +8,33 @@ const VideoGrid = ({
   mainStreamManager,
   publisher,
   subscribers,
+  screenPublisher,
   onStreamClick,
   currentLayout,
 }) => {
+  console.log("VideoGrid received props:", {
+    mainStreamManager,
+    publisher,
+    subscribers,
+    screenPublisher,
+    currentLayout,
+  });
+
   const renderLayout = () => {
+    // 모든 스트림 포함하는 배열
+    const allStreams = [
+      ...(screenPublisher ? [screenPublisher] : []),
+      ...subscribers,
+    ];
+    console.log('Combined streams:', allStreams);
+
     switch (currentLayout) {
       case "Dynamic":
         return (
           <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
-            subscribers={subscribers}
+            subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
@@ -27,7 +43,7 @@ const VideoGrid = ({
           <GridMatrixLayout // 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
-            subscribers={subscribers}
+            subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
@@ -36,7 +52,7 @@ const VideoGrid = ({
           <SpotlightLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
-            subscribers={subscribers}
+            subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
@@ -46,7 +62,7 @@ const VideoGrid = ({
           <MosaicLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
-            subscribers={subscribers}
+            subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
@@ -56,7 +72,7 @@ const VideoGrid = ({
           <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
-            subscribers={subscribers}
+            subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
