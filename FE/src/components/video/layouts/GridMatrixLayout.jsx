@@ -13,14 +13,14 @@ const GridMatrixLayout = ({
   onStreamClick, // 스트림 클릭 시 메인 화면 전환 핸들러
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full p-4">
+    <div className="w-full flex flex-col md:flex-row gap-4 h-full px-10">
       {/* 메인 스트림 영역 */}
-      <div className="md:col-span-2 bg-gray-800 rounded-lg overflow-hidden h-[calc(100vh-200px)]">
+      <div className="w-full md:w-4/5 bg-blue-200  rounded-lg overflow-hidden h-[calc(100vh-200px)] ">
         {mainStreamManager && <UserVideo streamManager={mainStreamManager} />}
       </div>
 
       {/* 참가자 목록 영역 */}
-      <div className="space-y-4 overflow-y-auto h-[calc(100vh-200px)]">
+      <div className="hidden md:block md:w-1/5 bg-green-200 space-y-4 overflow-y-auto h-[calc(100vh-200px)]">
         {/* 자신의 스트림 */}
         {publisher && (
           <div
