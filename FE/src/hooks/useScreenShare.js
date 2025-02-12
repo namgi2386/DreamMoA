@@ -1,92 +1,103 @@
 // hooks/useScreenShare.js
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
+import { videoApi } from "../services/api/videoApi"; // 추가
 
 const useScreenShare = (session, publisher, OV) => {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [screenPublisher, setScreenPublisher] = useState(null);
-  const [savedVideoState, setSavedVideoState] = useState(null);
-  
+  const [screenSession, setScreenSession] = useState(null); // 화면공유 세션 상태 추가
+
   const startScreenShare = useCallback(async () => {
     if (!session || isScreenSharing) return;
 
     try {
-      // 현재 비디오 상태 저장
-      const currentVideoState = publisher.stream.videoActive;
-      setSavedVideoState(currentVideoState);
+      // 1. 화면공유용 더미 세션 생성
+      const screenSession = OV.current.initSession();
 
-      // 기존 비디오 스트림 중지
-      await publisher.publishVideo(false);
+      // 2. 화면공유용 토큰 발급 (더미 유저용)
+      const screenToken = await videoApi.getToken(session.sessionId);
 
-      // 화면 공유 스트림 가져오기
-      const mediaStream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: false
+      // 3. 화면공유용 Publisher 초기화
+      const screenPublisher = await OV.current.initPublisherAsync(undefined, {
+        videoSource: "screen",
+        audioSource: false,
+        publishVideo: true,
+        publishAudio: false,
+        resolution: "1920x1080",
+        frameRate: 30,
+        insertMode: "APPEND",
+        mirror: false,
       });
 
-      // 화면 공유 트랙으로 교체
-      await publisher.replaceTrack(mediaStream.getVideoTracks()[0]);
-      await publisher.publishVideo(true);
+      // 4. 화면 공유 권한 허용 시 처리
+      screenPublisher.once("accessAllowed", async () => {
+        try {
+          // 화면 공유 중단 감지
+          screenPublisher.stream
+            .getMediaStream()
+            .getVideoTracks()[0]
+            .addEventListener("ended", () => {
+              console.log("사용자가 화면 공유를 중지했습니다");
+              stopScreenShare();
+            });
 
-      // 화면 공유 중단 감지
-      mediaStream.getVideoTracks()[0].addEventListener('ended', () => {
-        stopScreenShare();
+          // 5. 더미 유저로 세션 연결
+          await screenSession.connect(screenToken, {
+            clientData: JSON.stringify({
+              isScreenShare: true,
+              originalUserName: JSON.parse(session.connection.data).clientData,
+            }),
+          });
+
+          // 6. 화면 공유 스트림 게시
+          await screenSession.publish(screenPublisher);
+
+          setIsScreenSharing(true);
+          setScreenPublisher(screenPublisher);
+          setScreenSession(screenSession);
+        } catch (error) {
+          console.error("화면 공유 게시 중 오류:", error);
+          await stopScreenShare();
+        }
       });
 
-      setIsScreenSharing(true);
-      setScreenPublisher(publisher);
-
+      screenPublisher.once("accessDenied", async (error) => {
+        console.warn("화면 공유가 거부됨:", error);
+        await stopScreenShare();
+      });
     } catch (error) {
-      console.error('화면 공유 시작 중 오류:', error);
-      // 오류 발생 시 원래 상태로 복구
-      if (publisher && savedVideoState !== null) {
-        await publisher.publishVideo(savedVideoState);
-      }
+      console.error("화면 공유 시작 중 오류:", error);
       await stopScreenShare();
     }
-  }, [session, publisher, isScreenSharing]);
+  }, [session, isScreenSharing, OV]);
 
   const stopScreenShare = useCallback(async () => {
     try {
-      if (publisher) {
-        // 현재 트랙 중지
-        const currentTrack = publisher.stream.getMediaStream().getVideoTracks()[0];
-        if (currentTrack) {
-          currentTrack.stop();
-        }
+      if (screenPublisher && screenSession) {
+        // 화면 공유 트랙 중지
+        screenPublisher.stream
+          .getMediaStream()
+          .getTracks()
+          .forEach((track) => track.stop());
 
-        // 원래 카메라 스트림으로 복구
-        const devices = await OV.current.getDevices();
-        const videoDevices = devices.filter(device => device.kind === 'videoinput');
-        
-        if (videoDevices.length > 0) {
-          const newMediaStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              deviceId: videoDevices[0].deviceId
-            }
-          });
-          
-          await publisher.replaceTrack(newMediaStream.getVideoTracks()[0]);
-          
-          // 이전 비디오 상태로 복구
-          if (savedVideoState !== null) {
-            await publisher.publishVideo(savedVideoState);
-          }
-        }
+        // 세션에서 발행 중단 및 연결 해제
+        await screenSession.unpublish(screenPublisher);
+        screenSession.disconnect();
       }
     } catch (error) {
-      console.error('화면 공유 중지 중 오류:', error);
+      console.error("화면 공유 중지 중 오류:", error);
     } finally {
       setIsScreenSharing(false);
       setScreenPublisher(null);
-      setSavedVideoState(null);
+      setScreenSession(null);
     }
-  }, [publisher, OV, savedVideoState]);
+  }, [screenSession, screenPublisher]);
 
   return {
     isScreenSharing,
     startScreenShare,
     stopScreenShare,
-    screenPublisher
+    screenPublisher,
   };
 };
 
