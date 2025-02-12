@@ -1,6 +1,6 @@
 import "./App.css";
 import { RecoilRoot } from "recoil";
-import { Suspense } from "react";
+import { Suspense, useEffect  } from "react";
 import { useLocation } from "react-router-dom";
 import AppRoutes from "./routes";
 import Loading from "./components/common/Loading";
@@ -17,6 +17,11 @@ export default function App() {
   const hideFooterPaths = ["/join","/findpw","/findid", "/login","/documents","/challenge/create", "/video"];
   const hideSideNavbarPaths = ["/join","/findpw","/findid", "/login","/documents", "/video"];
   const hideHeaderPaths = ["/login","/findpw","/findid", "/documents", "/video"];
+
+  // 페이지 전환 시 스크롤 초기화
+  useEffect(() => {
+    window.scrollTo(0, 0); // (x, y) 좌표로 스크롤 이동. (0, 0)은 페이지 최상단
+  }, [location.pathname]); // location.pathname이 변경될 때마다 실행
 
   const shouldHideFooter = hideFooterPaths.includes(location.pathname);
   const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname);

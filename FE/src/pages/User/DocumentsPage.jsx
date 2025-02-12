@@ -2,7 +2,9 @@ import SideChatbar from "../../components/challenge/chatbar/SideChatbar";
 import EndButton from "../../components/challenge/finish/EndButton";
 import { Link } from "react-router-dom";
 import testlogo from "../../assets/logo/testlogo.png";
+import testlogochallengecreate from "../../assets/default/defaultChallengePicture.png";
 import testlogoforopenvidu from "../../assets/logo/testlogoforopenvidu.png";
+import testlogochallengelist from "../../assets/stars/star7.png";
 import CallThePoliceModal from "../../components/common/modal/CallThePoliceModal";
 import { useState } from "react";
 import { useRecoilValue } from 'recoil';
@@ -19,7 +21,10 @@ export default function DocumentsPage() {
           <img src={testlogo} alt="로고" className="h-10 w-auto" />
         </Link>
         <Link to="/challenge/create">
-          <img src={testlogo} alt="챌린지 만들기 바로가기" className="h-10 w-auto" />
+          <img src={testlogochallengecreate} alt="챌린지 만들기 바로가기" className="h-10 w-auto" />
+        </Link>
+        <Link to="/challenge/list">
+          <img src={testlogochallengelist} alt="챌린지 리스트 바로가기" className="h-10 w-auto" />
         </Link>
         <Link to="/video">
           <img src={testlogoforopenvidu} alt="openvidu바로가기" className="h-10 w-auto" />

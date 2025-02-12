@@ -1,16 +1,26 @@
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function Button({ type, postId, onDelete, category, page, sortOption }) {
+export default function Button({
+  type,
+  postId,
+  onDelete,
+  category,
+  // page,
+  // sortOption,
+  // searchQuery,
+}) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const urlSort = new URLSearchParams(location.search).get("sort") || "최신순";
-  const pageToNavigate = page !== undefined ? page : Number(new URLSearchParams(location.search).get("page")) || 1;
-  const sortToNavigate = sortOption || urlSort; // ✅ sortOption 유지
+  // const queryParams = new URLSearchParams(location.search);
+  // const urlSort = queryParams.get("sort") || "최신순";
+  // const urlSearch = queryParams.get("search") || "";
 
+  // const pageToNavigate = page ?? Number(queryParams.get("page")) ?? 1;
+  // const sortToNavigate = sortOption || urlSort;
+  // const searchToNavigate = searchQuery || urlSearch;
 
-  console.log("📌 목록보기 버튼 클릭 시 이동할 페이지:", pageToNavigate, "정렬 기준:", sortToNavigate); // ✅ 디버깅 로그 추가
-
+  // console.log("📌 목록보기 버튼 클릭 시 이동할 페이지:", pageToNavigate, "정렬 기준:", sortToNavigate, "검색어:", searchToNavigate);
 
   const handleClick = () => {
     switch (type) {
@@ -23,30 +33,29 @@ export default function Button({ type, postId, onDelete, category, page, sortOpt
         }
         break;
       case "back":
-        // ✅ page 값이 없으면 기본 1페이지로 설정
-        let listUrl = "/community";
-        if (category === "자유") listUrl = "/community/free";
-        if (category === "질문") listUrl = "/community/qna";
-
-        navigate(`${listUrl}?page=${pageToNavigate}&sort=${sortToNavigate}`); // ✅ page 값이 undefined 방지
+        // 전달된 state가 있고, from 값이 "list"인 경우에는 history.back()
+        if (location.state && location.state.from === "list") {
+          window.history.back();
+        } else {
+          let listUrl = "/community";
+          if (category === "자유") listUrl = "/community/free";
+          if (category === "질문") listUrl = "/community/qna";
+          navigate(listUrl);
+        }
         break;
       default:
         console.warn("Button type이 잘못 설정됨:", type);
     }
   };
 
-  const buttonConfig = {
-    edit: { label: "수정", style: "bg-blue-500" },
-    delete: { label: "삭제", style: "bg-red-500" },
-    back: { label: "목록보기", style: "bg-gray-500" },
-  };
-
   return (
     <button
       onClick={handleClick}
-      className={`px-4 py-2 text-white rounded ${buttonConfig[type]?.style || "bg-gray-400"}`}
+      className={`px-4 py-2 text-white rounded ${
+        type === "edit" ? "bg-blue-500" : type === "delete" ? "bg-red-500" : "bg-gray-500"
+      }`}
     >
-      {buttonConfig[type]?.label || "버튼"}
+      {type === "edit" ? "수정" : type === "delete" ? "삭제" : "목록보기"}
     </button>
   );
 }
