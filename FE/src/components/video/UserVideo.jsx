@@ -12,7 +12,7 @@ const UserVideo = ({ streamManager }) => {
   };
  
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-blue-400 flex justify-center ">
       {/* 기본 비디오 스트림 표시 */}
       <OvVideo streamManager={streamManager} />
       
