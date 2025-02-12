@@ -12,7 +12,7 @@ const DynamicGridLayou = ({
   // 참가자 수에 따른 그리드 열 수 계산
   const getGridColumns = (count) => {
     if (count <= 1) return 1;
-    if (count <= 4) return 2;
+    if (1 < count <= 2) return 2;
     if (count <= 9) return 3;
     return 4; // 10-12명
   };
