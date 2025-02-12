@@ -61,26 +61,19 @@ const VideoRoom = () => {
   const handleToggleScreenShare = async () => {
     try {
       if (isScreenSharing) {
-        console.log("Stopping screen share...");
+        console.log("스크린 공유 그만");
         await stopScreenShare();
       } else {
-        console.log("Starting screen share...");
+        console.log("스크린 공유 시작");
         await startScreenShare();
       }
-      console.log("Screen sharing state:", isScreenSharing);
-      console.log("Screen publisher:", screenPublisher);
+      console.log(isScreenSharing);
+      console.log(screenPublisher);
     } catch (error) {
       console.error("화면 공유 토글 실패:", error);
     }
   };
 
-  // VideoGrid에 전달할 때 로그 추가
-  console.log("Rendering VideoGrid with:", {
-    mainStreamManager,
-    publisher,
-    subscribers,
-    screenPublisher,
-  });
   return (
     // <div className="w-full h-full bg-gray-900 text-white p-4">
     // <div className="w-full h-screen bg-gray-900 text-white p-4">

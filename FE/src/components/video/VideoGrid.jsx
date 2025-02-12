@@ -12,14 +12,6 @@ const VideoGrid = ({
   onStreamClick,
   currentLayout,
 }) => {
-  console.log("VideoGrid received props:", {
-    mainStreamManager,
-    publisher,
-    subscribers,
-    screenPublisher,
-    currentLayout,
-  });
-
   const renderLayout = () => {
     // 모든 스트림 포함하는 배열
     const allStreams = [
