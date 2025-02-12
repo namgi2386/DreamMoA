@@ -53,10 +53,27 @@ const challengeApi = {
     }
   },
 
-  getRunningChallengeList: async() => {
-    const response = await api.get("/challenges/ongoing")
-    return response
-  }
+  /**
+   * 진행 중인 챌린지 목록 조회
+   * @returns {Promise} - 진행 중인 챌린지 목록
+   */
+  getRunningChallengeList: async () => {
+    const response = await api.get("/challenges/ongoing");
+    return response;
+  },
+  /**
+   * 사용자가 참여 중인 챌린지 목록 조회 (최대 7개)
+   * @returns {Promise} - 참여 중인 챌린지 목록
+   */
+  getMyParticipatingChallenges: async () => {
+    try {
+      const response = await api.get("/challenges/my-challenges");
+      return response.data;
+    } catch (error) {
+      console.error("참여 중인 챌린지 조회 실패:", error);
+      throw error;
+    }
+  },
 };
 
 export default challengeApi;
