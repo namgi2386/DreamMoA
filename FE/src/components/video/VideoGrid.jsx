@@ -1,42 +1,71 @@
-import UserVideoComponent from './UserVideo';
+// components/video/VideoGrid.jsx
+import GridMatrixLayout from "./layouts/GridMatrixLayout";
+import SpotlightLayout from "./layouts/SpotlightLayout";
+import DynamicGridLayout from "./layouts/DynamicGridLayout";
+import MosaicLayout from "./layouts/MosaicLayout";
 
-// mainStreamManager : 메인 스트림
-// publisher         : 자신의 스트림
-// subscribers       : 다른 참가자들의 스트림
-// onStreamClick     : 스트림 클릭 핸들러
-export default function VideoGrid({mainStreamManager, publisher, subscribers, onStreamClick}) {
-  return (
-    <div className="grid grid-cols-3 gap-4 h-[calc(100%-80px)]">
-      {/* 메인 스트림 영역 */}
-      {mainStreamManager && (
-        <div className="col-span-2 bg-gray-800 rounded">
-          <UserVideoComponent streamManager={mainStreamManager} />
-        </div>
-      )}
-      
-      {/* 참가자 목록 영역 */}
-      <div className="space-y-4">
-        {/* 자신의 스트림 */}
-        {publisher && (
-          <div
-            onClick={() => onStreamClick(publisher)}
-            className="bg-gray-800 rounded cursor-pointer"
-          >
-            <UserVideoComponent streamManager={publisher} />
-          </div>
-        )}
-        
-        {/* 다른 참가자들의 스트림 */}
-        {subscribers.map((sub) => (
-          <div
-            key={sub.stream.connection.connectionId}
-            onClick={() => onStreamClick(sub)}
-            className="bg-gray-800 rounded cursor-pointer"
-          >
-            <UserVideoComponent streamManager={sub} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const VideoGrid = ({
+  mainStreamManager,
+  publisher,
+  subscribers,
+  onStreamClick,
+  currentLayout,
+}) => {
+  const renderLayout = () => {
+    switch (currentLayout) {
+      case "grid":
+        return (
+          <DynamicGridLayout
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+      case "vertical-grid":
+        return (
+          <GridMatrixLayout // 2분할 그리드 레이아웃
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+      case "spotlight":
+        return (
+          <SpotlightLayout
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+      // teaching 레이아웃은 화면 공유 기능 구현 후 추가 예정
+      case "mosaic":
+        return (
+          <MosaicLayout
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+
+      default:
+        return (
+          <DynamicGridLayout
+            mainStreamManager={mainStreamManager}
+            publisher={publisher}
+            subscribers={subscribers}
+            onStreamClick={onStreamClick}
+          />
+        );
+    }
+  };
+
+  // return <div className="w-full h-[calc(100%-80px)]">{renderLayout()}</div>;  // 부모 요소의 높이
+  // return <div className="w-full h-[calc(100vh-200px]">{renderLayout()}</div>;  // viewport 높이 기준으로
+  return <div className="w-full h-full">{renderLayout()}</div>; // 이렇게 하니까 비디오 밑부분 안 짤리고 스크롤은 되어버림(흰부분 보임)
 };
+
+export default VideoGrid;
