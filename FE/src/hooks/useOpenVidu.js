@@ -25,8 +25,14 @@ const useOpenVidu = () => {
   const OV = useRef(new OpenVidu());
   // 개발환경인 경우
   OV.current.setAdvancedConfiguration({
-    websocket: `wss://dreammoa.duckdns.org:443/openvidu`,
-    mediaServer: "https://localhost:8080",
+    websocket: `wss://dreammoa.duckdns.org/openvidu`,  // /443 제거
+    mediaServer: "https://dreammoa.duckdns.org:8443",  // 포트 수정
+    iceServers: [
+      { urls: ['stun:stun.l.google.com:19302'] },
+      // TURN 서버 추가가 필요할 수 있습니다
+    ],
+    forceTurn: false,
+    timeout: 60000  // 타임아웃 시간 증가
   });
   // 배포 환경
   // OV.current.setAdvancedConfiguration({
@@ -102,6 +108,11 @@ const useOpenVidu = () => {
           sampleRate: 44100, // 샘플레이트
           volume: 1.0, // 초기 볼륨
         },
+        videoConstraints: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 30 }
+        }
       });
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
       await mySession.publish(publisher);
@@ -191,7 +202,7 @@ const useOpenVidu = () => {
     [mainStreamManager]
   );
 
-  // 화면공유
+  // 화면공유 커스텀 훅 사용
   const {
     isScreenSharing,
     startScreenShare,

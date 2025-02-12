@@ -11,8 +11,8 @@ export default function VideoControls({
   onLeaveSession,
   currentLayout,
   onLayoutChange,
-  isScreenSharing, // 화면공유 여부
-  onToggleScreenShare, // 화면공유 토글
+  isScreenSharing, // 화면 공유 상태
+  onToggleScreenShare, // 화면 공유 토글 함수
 }) {
   // 레이아웃 설정
   const layouts = [
@@ -127,9 +127,10 @@ export default function VideoControls({
         {/* 화면 공유 버튼 추가 */}
         <button
           onClick={onToggleScreenShare}
-          className={`px-4 py-2 rounded ${
-            isScreenSharing ? "bg-red-600" : "bg-blue-600"
-          }`}
+          className={`p-2 rounded-lg transition-all ${
+            isScreenSharing ? "bg-red-500" : "bg-blue-500"
+          } text-white`}
+          title={isScreenSharing ? "화면 공유 중지" : "화면 공유 시작"}
         >
           {isScreenSharing ? (
             <LuScreenShareOff className="w-6 h-6" />

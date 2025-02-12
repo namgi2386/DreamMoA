@@ -14,11 +14,12 @@ const VideoRoom = () => {
   // const [myUserName, setMyUserName] = useState('');// 유저이름  VideoJoinForm 버전
   // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off
+  const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
+
+  // 사용자 정보
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const dummySessionRoomName = "12"; // 이거 챌린지 선택했을때 가져와야됨.
   const dummyUserName = userInfo?.nickname || "testUser";
-  // const dummyUserName = "namhui"
-  const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
   const {
@@ -50,29 +51,25 @@ const VideoRoom = () => {
     }
   };
 
+  // 화면 공유 토글 핸들러
+  const handleToggleScreenShare = async () => {
+    try {
+      if (isScreenSharing) {
+        await stopScreenShare();
+      } else {
+        await startScreenShare();
+      }
+    } catch (error) {
+      console.error("화면 공유 토글 실패:", error);
+    }
+  };
+  
   // 언마운트시 세션 정리 (강제종료(크롬창닫음)시 세션 종료)
   useEffect(() => {
     return () => {
       disconnectSession();
     };
   }, [disconnectSession]);
-
-  // 화면 공유 토글 핸들러
-  const handleToggleScreenShare = async () => {
-    try {
-      if (isScreenSharing) {
-        console.log("스크린 공유 그만");
-        await stopScreenShare();
-      } else {
-        console.log("스크린 공유 시작");
-        await startScreenShare();
-      }
-      console.log(isScreenSharing);
-      console.log(screenPublisher);
-    } catch (error) {
-      console.error("화면 공유 토글 실패:", error);
-    }
-  };
 
   return (
     // <div className="w-full h-full bg-gray-900 text-white p-4">
@@ -85,21 +82,21 @@ const VideoRoom = () => {
       {/* 에러페이지 */}
       {error && <TestErrorAlert message={error} onClose={clearError} />}
       {!session ? (
-        <>
-          {/* <VideoJoinForm  // 입장화면 
-            myUserName={myUserName} // 내가 입력한 이름
-            mySessionRoomName={mySessionRoomName} // 세션(방)이름
-            onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
-            onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
-            onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
-            isLoading={isLoading} // 로딩화면
-          /> */}
+        // 세션 연결 전: 설정 화면 표시
           <VideoSettingForm
             onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
             isLoading={isLoading} // 로딩화면
           />
-        </>
+          // {/* <VideoJoinForm  // 입장화면 
+          //   myUserName={myUserName} // 내가 입력한 이름
+          //   mySessionRoomName={mySessionRoomName} // 세션(방)이름
+          //   onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
+          //   onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
+          //   onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
+          //   isLoading={isLoading} // 로딩화면
+          // /> */}
       ) : (
+        // 세션 연결 후: 비디오 폼 표시
         // ☆★☆★☆★ 전체영역 ☆★☆★☆★
         <div className="h-screen w-full flex flex-col bg-green-100">
           {/* ☆★ 상단10% 영역 ☆★ */}
