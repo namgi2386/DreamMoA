@@ -91,8 +91,7 @@ const useOpenVidu = () => {
         resolution: '640x480',   // 해상도
         frameRate: 30,           // FPS
         insertMode: 'APPEND',    
-         // 미러링 비활성화
-        mirror: false,           // 미러링 비활성화
+        mirror: true,           // 미러링 비활성화
         audioConstraints: {       // 오디오 제약조건 추가
           echoCancellation: true, // 에코 제거
           noiseSuppression: true, // 노이즈 제거
