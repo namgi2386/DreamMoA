@@ -17,6 +17,13 @@ const useScreenShare = (session, publisher, OV) => {
       // 2. 화면공유용 토큰 발급 (더미 유저용)
       const screenToken = await videoApi.getToken(session.sessionId);
 
+      // 세션 종료 이벤트 핸들러 추가
+      screenSession.on("sessionDisconnected", () => {
+        setIsScreenSharing(false);
+        setScreenPublisher(null);
+        setScreenSession(null);
+      });
+
       // 3. 화면공유용 Publisher 초기화
       const screenPublisher = await OV.current.initPublisherAsync(undefined, {
         videoSource: "screen",
@@ -40,6 +47,10 @@ const useScreenShare = (session, publisher, OV) => {
               console.log("사용자가 화면 공유를 중지했습니다");
               stopScreenShare();
             });
+          // streamDestroyed 이벤트 핸들러 추가
+          screenPublisher.on('streamDestroyed', () => {
+            stopScreenShare();
+          });
 
           // 5. 더미 유저로 세션 연결
           await screenSession.connect(screenToken, {
@@ -79,9 +90,14 @@ const useScreenShare = (session, publisher, OV) => {
           .getMediaStream()
           .getTracks()
           .forEach((track) => track.stop());
-
-        // 세션에서 발행 중단 및 연결 해제
+        // 스트림 제거 전에 발행 중단
         await screenSession.unpublish(screenPublisher);
+        
+        // 세션 연결 해제 전에 모든 이벤트 리스너 제거
+        screenPublisher.off('streamDestroyed');
+        screenSession.off('sessionDisconnected');
+        
+        // 세션 연결 해제
         screenSession.disconnect();
       }
     } catch (error) {
