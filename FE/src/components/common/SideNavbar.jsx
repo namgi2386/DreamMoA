@@ -137,7 +137,7 @@ export default function SideNavbar() {
           />
           <NavButton icon={<BsClipboard2CheckFill />} additionalStyles='text-white border-b-2' to="/dashboard"/>
           <NavButton icon={<FaFolder />} additionalStyles='text-white border-b-2' to="/documents"/>
-          <NavButton icon={<IoChatbubbleEllipsesSharp />} additionalStyles='text-white border-b-2' to="/community/list"/>
+          <NavButton icon={<IoChatbubbleEllipsesSharp />} additionalStyles='text-white border-b-2' to="/community/free"/>
 
 
 
