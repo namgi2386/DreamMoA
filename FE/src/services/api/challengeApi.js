@@ -53,9 +53,24 @@ const challengeApi = {
     }
   },
 
-  getRunningChallengeList: async() => {
-    const response = await api.get("/challenges/ongoing")
+  // 챌린지 리스트 최상단 나의 태그기반 챌린지 8개 받아오기
+  getTagChallenges: async(tags) => {
+    const response = await api.get("/challenges/tag-challenges", {
+      params: {
+        tags: tags // 쿼리 파라미터로 tags 전달
+      }
+    });
     return response
+  },
+
+  // 챌린지 디테일
+  getChallenges: async(challengeId) => {
+    try {
+      const response = await api.get(`/challenges/${challengeId}/info`);
+      return response
+    } catch (e){
+      console.log("챌린지디테일 못가져옴",e);
+    }
   }
 };
 

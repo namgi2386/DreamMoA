@@ -110,7 +110,7 @@ const VideoRoom = () => {
             sessionTitle={dummySessionRoomName} //방이름
             isChatOpen={isChatOpen} // 채팅창 on off
             setIsChatOpen={setIsChatOpen} // 채팅창 on off
-          />
+          /> 
         </div>
       )}
     </div>

@@ -198,7 +198,6 @@ const ChallengeDetailModal = ({ isOpen, onClose, challenge }) => {
             </div>
           </div>
 
-
           {/* 버튼 */}
           <button 
           onClick={() => {StartChallenge()}}

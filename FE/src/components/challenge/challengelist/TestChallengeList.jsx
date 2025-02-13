@@ -26,7 +26,6 @@ export default function TestChallengeList({isModalOpen,setIsModalOpen,selectedCh
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         challenge={dummyChallenge} // 이걸이제 api연결되면 selectedChallenge 로 변경하면됨
-
       />
     </>
   );
