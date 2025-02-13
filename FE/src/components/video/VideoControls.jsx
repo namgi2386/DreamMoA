@@ -1,6 +1,7 @@
 import { IoIosSquareOutline } from "react-icons/io";
 import { CiGrid41, CiGrid2H, CiGrid42, CiGrid2V } from "react-icons/ci";
 import { BsGrid1X2 } from "react-icons/bs";
+import { LuScreenShare, LuScreenShareOff } from "react-icons/lu";
 import useOpenViduSetting from "../../hooks/useOpenViduSetting";
 
 export default function VideoControls({
@@ -10,6 +11,8 @@ export default function VideoControls({
   onLeaveSession,
   currentLayout,
   onLayoutChange,
+  isScreenSharing, // 화면 공유 상태
+  onToggleScreenShare, // 화면 공유 토글 함수
 }) {
   // 레이아웃 설정
   const layouts = [
@@ -77,7 +80,9 @@ export default function VideoControls({
                 max="1"
                 step="0.01"
                 value={speakerVolume}
-                onChange={(e) => adjustSpeakerVolume(parseFloat(e.target.value))}
+                onChange={(e) =>
+                  adjustSpeakerVolume(parseFloat(e.target.value))
+                }
                 className="w-full"
               />
             </div>
@@ -119,8 +124,21 @@ export default function VideoControls({
             </button>
           ))}
         </div>
+        {/* 화면 공유 버튼 추가 */}
+        <button
+          onClick={onToggleScreenShare}
+          className={`p-2 rounded-lg transition-all ${
+            isScreenSharing ? "bg-red-500" : "bg-blue-500"
+          } text-white`}
+          title={isScreenSharing ? "화면 공유 중지" : "화면 공유 시작"}
+        >
+          {isScreenSharing ? (
+            <LuScreenShareOff className="w-6 h-6" />
+          ) : (
+            <LuScreenShare className="w-6 h-6" />
+          )}
+        </button>
       </div>
-
     </div>
   );
 }
