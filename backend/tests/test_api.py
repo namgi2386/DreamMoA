@@ -6,7 +6,7 @@ import websockets
 WEBSOCKET_URL = "ws://localhost:8000/focus"
 
 # ✅ 정확한 테스트 데이터
-TEST_PAYLOAD = TEST_PAYLOAD =     {
+TEST_PAYLOAD = {
         "timestamp": 1739238238,
         "frame_data": [
             {

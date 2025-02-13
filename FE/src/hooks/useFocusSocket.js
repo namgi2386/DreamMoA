@@ -1,34 +1,37 @@
-import { useState, useEffect } from "react";
-import io from "socket.io-client";
+import { useState, useEffect, useRef } from "react";
 
 const useFocusSocket = (serverUrl) => {
     const [focusData, setFocusData] = useState(null);
-    const socket = io(serverUrl, { transports: ["websocket"] });
+    const socketRef = useRef(null);  // ✅ useRef 사용
 
     useEffect(() => {
-        socket.on("connect", () => {
+        const ws = new WebSocket(serverUrl);
+        socketRef.current = ws;  // ✅ useRef에 저장
+
+        ws.onopen = () => {
             console.log("✅ WebSocket 연결 성공:", serverUrl);
-        });
+        };
 
-        socket.on("focus_result", (data) => {
-            console.log("📡 받은 집중 예측 결과:", data.focus_prediction);
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("📡 받은 집중 예측 결과:", data);
             setFocusData(data.focus_prediction);  // 🔥 0 or 1 저장
-        });
+        };
 
-        socket.on("error", (err) => {
-            console.error("❌ WebSocket 에러 발생:", err);
-        });
+        ws.onerror = (error) => {
+            console.error("❌ WebSocket 에러 발생:", error);
+        };
 
-        socket.on("disconnect", () => {
+        ws.onclose = () => {
             console.log("🔴 WebSocket 연결 종료");
-        });
+        };
 
         return () => {
-            socket.disconnect();
+            ws.close();
         };
     }, [serverUrl]);
 
-    return { focusData, socket };
+    return { focusData, socket: socketRef.current };
 };
 
 export default useFocusSocket;

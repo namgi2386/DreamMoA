@@ -1,75 +1,92 @@
 import { useEffect, useRef } from "react";
-import * as poseDetection from "@tensorflow-models/pose-detection";
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
-const FocusAnalysis = ({ videoRef, socket }) => {
-    const detectorRef = useRef(null);  // 🔥 Mediapipe 포즈 감지 모델
-    const yoloModelRef = useRef(null); // 🔥 YOLO 휴대폰 감지 모델
+const FocusAnalysis = ({ serverUrl }) => {
+    const socketRef = useRef(null);
+    const canvasRef = useRef(document.createElement("canvas")); // ✅ 캔버스를 사용해 프레임을 캡처
+    const videoRef = useRef(null); // ✅ 비디오 엘리먼트 참조
+    const frameInterval = 100; // 🔥 100ms마다 (1초에 10프레임) 전송
 
     useEffect(() => {
-        // ✅ Mediapipe & YOLO 모델 로드
-        const loadModels = async () => {
-            detectorRef.current = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet);
-            yoloModelRef.current = await cocoSsd.load();
+        socketRef.current = new WebSocket(serverUrl);
+
+        socketRef.current.onopen = () => {
+            console.log("✅ WebSocket 연결 성공:", serverUrl);
+            waitForVideoElement(); // ✅ 비디오 렌더링될 때까지 대기 후 프레임 캡처 시작
         };
-        loadModels();
 
-        // ✅ 1초마다 프레임 캡처 및 데이터 전송
-        const captureFrames = async () => {
-            if (!videoRef.current || !detectorRef.current || !yoloModelRef.current) return;
+        socketRef.current.onerror = (error) => console.error("❌ WebSocket 에러:", error);
 
-            let frameData = [];
-            let phoneDetected = 0; // 🔥 한 번이라도 감지되면 1로 설정
-
-            for (let i = 0; i < 30; i++) { // 🔥 30 프레임(대략 1초 동안) 저장
-                const pose = await detectorRef.current.estimatePoses(videoRef.current.video);
-                const objects = await yoloModelRef.current.detect(videoRef.current.video);
-
-                const frame = {
-                    frame_index: i,
-                    head_x: pose[0]?.keypoints[0]?.x || 0,
-                    head_y: pose[0]?.keypoints[0]?.y || 0,
-                    neck_x: ((pose[0]?.keypoints[5]?.x || 0) + (pose[0]?.keypoints[6]?.x || 0)) / 2,
-                    neck_y: ((pose[0]?.keypoints[5]?.y || 0) + (pose[0]?.keypoints[6]?.y || 0)) / 2,
-                    shoulder_left_x: pose[0]?.keypoints[5]?.x || 0,
-                    shoulder_left_y: pose[0]?.keypoints[5]?.y || 0,
-                    shoulder_right_x: pose[0]?.keypoints[6]?.x || 0,
-                    shoulder_right_y: pose[0]?.keypoints[6]?.y || 0,
-                    wrist_left_x: pose[0]?.keypoints[9]?.x || 0,
-                    wrist_left_y: pose[0]?.keypoints[9]?.y || 0,
-                    wrist_right_x: pose[0]?.keypoints[10]?.x || 0,
-                    wrist_right_y: pose[0]?.keypoints[10]?.y || 0,
-                    head_tilt: pose[0]?.keypoints[0]?.z || 0,
-                    eye_direction: ((pose[0]?.keypoints[1]?.x || 0) + (pose[0]?.keypoints[2]?.x || 0)) / 2,
-                    phone_detected: objects.some((obj) => obj.class === "cell phone") ? 1 : 0
-                };
-
-                if (frame.phone_detected === 1) {
-                    phoneDetected = 1;
-                }
-
-                frameData.push(frame);
-                await new Promise(r => setTimeout(r, 33)); // 🔥 30fps 기준 약 33ms 대기
+        socketRef.current.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log("📡 집중도 분석 결과:", data.focus_prediction);
+                console.log("📊 신뢰도:", data.confidence);
+                console.log("📱 핸드폰 감지:", data.phone_detected ? "📱 감지됨" : "⭕ 미감지");
+                console.log("👀 시선 방향:", data.eye_direction);
+                console.log("🤖 머리 기울기:", data.head_tilt);
+                console.log("----------------------------------------------------");
+            } catch (error) {
+                console.error("❌ WebSocket 데이터 오류:", error);
             }
-
-            // ✅ WebSocket 전송 데이터
-            const payload = {
-                timestamp: Date.now(),
-                frame_data: frameData, // 🔥 30프레임 전체 포함
-                phone_detected_percentage: phoneDetected, // 🔥 1초 동안 한 번이라도 감지되면 1
-                head_tilt: frameData[frameData.length - 1].head_tilt, // 🔥 마지막 프레임 값
-                eye_direction: frameData[frameData.length - 1].eye_direction // 🔥 마지막 프레임 값
-            };
-
-            console.log("📡 보낼 데이터:", payload);
-            socket.emit("send_focus_data", payload);
         };
 
-        // ✅ 1초마다 실행
-        const interval = setInterval(captureFrames, 1000);
-        
-        return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
-    }, [videoRef, socket]);
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.close();
+            }
+        };
+    }, [serverUrl]);
+
+    // ✅ 비디오가 렌더링될 때까지 대기하는 함수
+    const waitForVideoElement = () => {
+        const checkVideo = () => {
+            const videoElement = document.querySelector("video");
+            if (videoElement) {
+                videoRef.current = videoElement;
+                startFrameCapture(); // ✅ 비디오가 렌더링되면 프레임 전송 시작
+            } else {
+                setTimeout(checkVideo, 500); // ✅ 비디오가 없으면 500ms 후 다시 체크
+            }
+        };
+        checkVideo();
+    };
+
+    // ✅ 일정 간격으로 프레임을 캡처하여 WebSocket으로 전송하는 함수
+    const startFrameCapture = () => {
+        setInterval(() => {
+            sendFrame();
+        }, frameInterval); // 🔥 1초에 10프레임만 전송하도록 조절
+    };
+
+    // ✅ 프레임을 캡처하여 WebSocket으로 전송하는 함수
+    const sendFrame = () => {
+        const videoElement = videoRef.current;
+        if (!videoElement || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+            return;
+        }
+
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        canvas.width = 640; // 🔥 해상도를 고정하여 YOLO 감지 성능 유지
+        canvas.height = 480;
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+        // 캔버스를 Base64 이미지로 변환 후 WebSocket으로 전송
+        canvas.toBlob(
+            (blob) => {
+                if (blob) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const base64Frame = reader.result.split(",")[1]; // Base64 인코딩
+                        socketRef.current.send(JSON.stringify({ frame: base64Frame }));
+                    };
+                }
+            },
+            "image/jpeg",
+            0.8 // 🔥 JPEG 품질 조정 (0.8 정도 유지)
+        );
+    };
 
     return null;
 };

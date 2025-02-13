@@ -4,9 +4,10 @@ import pandas as pd
 import torch
 import pickle
 from models.config import FEATURES, DEVICE, MODEL_PATH  # ✅ 경로 유지
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ✅ StandardScaler 로드
-SCALER_PATH = os.getenv("SCALER_PATH", r"C:\Users\zebra\Desktop\asfdasf\S12P11C106\backend\models\standard_scaler.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "standard_scaler.pkl")
 
 try:
     with open(SCALER_PATH, "rb") as f:
@@ -15,11 +16,15 @@ try:
 except FileNotFoundError:
     raise FileNotFoundError(f"❌ StandardScaler 파일을 찾을 수 없습니다: {SCALER_PATH}")
 
+# ✅ Feature 개수 검증
+EXPECTED_FEATURE_COUNT = scaler.n_features_in_
+
 # ✅ 데이터 전처리 함수 (테스트 데이터)
 def preprocess_input(data):
     frame_data = data.get("frame_data", [])
 
     if not frame_data:
+        print("❌ 입력 데이터가 없습니다.")
         return None  # 🔥 데이터가 없으면 처리 X
 
     df = pd.DataFrame(frame_data)
@@ -31,9 +36,21 @@ def preprocess_input(data):
 
     df = df[FEATURES]  # ✅ Feature 순서 고정
 
-    # ✅ StandardScaler 정규화 (학습한 Scaler 적용)
-    df[FEATURES] = scaler.transform(df[FEATURES])  # ✅ transform()으로 학습된 Scaler 적용
-    df = df.replace([np.inf, -np.inf], np.nan).fillna(0)  # 🔥 NaN, Inf 방지
+    # ✅ Feature 개수 검증 (StandardScaler가 학습한 Feature와 동일해야 함)
+    if df.shape[1] != EXPECTED_FEATURE_COUNT:
+        print(f"❌ Feature 개수 불일치! 모델이 {EXPECTED_FEATURE_COUNT}개의 Feature를 기대하지만, 입력 데이터는 {df.shape[1]}개입니다.")
+        print("❌ FEATURES 리스트가 맞는지 확인하세요.")
+        return None  # 🔥 Feature 개수가 맞지 않으면 예측하지 않음
+
+    # ✅ NaN, Inf 값 처리 (변환 전에 수행)
+    df = df.replace([np.inf, -np.inf], np.nan).fillna(0)  
+
+    # ✅ StandardScaler 정규화 (훈련된 Scaler 적용)
+    try:
+        df[FEATURES] = scaler.transform(df[FEATURES])  # ✅ transform()으로 학습된 Scaler 적용
+    except ValueError as e:
+        print(f"❌ StandardScaler 변환 중 오류 발생: {e}")
+        return None
 
     # ✅ 시퀀스 길이 맞추기 (최대 15 프레임 유지)
     seq_array = df.values

@@ -1,18 +1,29 @@
+import { useEffect, useRef } from 'react';
 import OvVideo from './OvVideo';
+import useVideoFrameCapture from '../../hooks/ai/useVideoFrameCapture'; // ✅ 프레임 캡처 훅 추가
 
-const UserVideo = ({ streamManager }) => {
-  // streamManager로부터 사용자 이름 추출하는 헬퍼 함수
+const UserVideo = ({ streamManager, isMyVideo }) => {
+  const videoRef = useRef();
+
+  // ✅ WebSocket을 통한 프레임 캡처 실행 (isMyVideo가 true일 때만)
+  useVideoFrameCapture(streamManager, isMyVideo);
+
+  // ✅ 사용자 닉네임 가져오는 헬퍼 함수
   const getNicknameTag = () => {
-    // 연결된 클라이언트 데이터에서 사용자 이름을 가져옴
     if (!streamManager) return '';
     const { clientData } = JSON.parse(streamManager.stream.connection.data);
-      // clientData를 파싱하여 originalName만 추출
-  const userData = JSON.parse(clientData);
-  return userData.originalName;
+    const userData = JSON.parse(clientData);
+    return userData.originalName;
   };
- 
+
+  useEffect(() => {
+    if (streamManager && videoRef.current) {
+      streamManager.addVideoElement(videoRef.current);
+    }
+  }, [streamManager]);
+
   return (
-    <div className="relative w-full h-full bg-blue-400 flex justify-center ">
+    <div className="relative w-full h-full bg-blue-400 flex justify-center">
       {/* 기본 비디오 스트림 표시 */}
       <OvVideo streamManager={streamManager} />
       

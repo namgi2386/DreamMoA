@@ -5,10 +5,11 @@ import torch
 
 # ✅ 환경 변수 로드
 load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ✅ 모델 경로 설정 (Windows 환경)
-MODEL_PATH = os.getenv("MODEL_PATH", r"C:\Users\zebra\Desktop\asfdasf\S12P11C106\backend\models\residual_gru_model.pth")
-FEATURES_PATH = r"C:\Users\zebra\Desktop\asfdasf\S12P11C106\backend\models\features.pkl"
+MODEL_PATH = os.path.join(BASE_DIR, "models", "residual_gru_model.pth")
+FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.pkl")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ✅ Feature 리스트 (자동 로드)
