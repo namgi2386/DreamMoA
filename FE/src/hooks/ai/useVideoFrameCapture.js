@@ -1,75 +1,60 @@
-// hooks/ai/useVideoFrameCapture.js
+import { useEffect, useRef } from "react";
 
-import { useEffect, useRef } from 'react';
+const useVideoFrameCapture = (streamManager, isMyVideo) => {
+    const socketRef = useRef(null);
+    const canvasRef = useRef(document.createElement("canvas")); // ✅ 캔버스 생성
 
-const useVideoFrameCapture = (streamManager, isEnabled = true) => {
-  // 캔버스 요소 참조
-  const canvasRef = useRef(null);
-  // 비디오 요소 참조
-  const videoRef = useRef(null);
+    useEffect(() => {
+        if (!isMyVideo || !streamManager) return;
 
-  useEffect(() => {
-    // isEnabled가 false거나 streamManager가 없으면 실행하지 않음
-    if (!isEnabled || !streamManager) return;
+        // ✅ WebSocket 연결
+        socketRef.current = new WebSocket("ws://localhost:8000/focus");
 
-    // 캔버스 및 비디오 엘리먼트 생성
-    canvasRef.current = document.createElement('canvas');
-    videoRef.current = document.createElement('video');
-    const context = canvasRef.current.getContext('2d');
+        socketRef.current.onopen = () => console.log("✅ WebSocket 연결 성공");
+        socketRef.current.onerror = (error) => console.error("❌ WebSocket 에러:", error);
+        socketRef.current.onclose = () => console.log("🔴 WebSocket 연결 종료");
 
-    try {
-      // streamManager로부터 미디어 스트림 가져오기
-      const mediaStream = streamManager.stream.getMediaStream();
-      videoRef.current.srcObject = mediaStream;
-      videoRef.current.play();
+        // ✅ WebSocket 메시지 확인
+        socketRef.current.onmessage = (event) => {
+            console.log("📡 서버에서 받은 메시지:", event.data);
+        };
 
-      // 비디오 메타데이터 로드 완료 시 캔버스 크기 설정
-      videoRef.current.onloadedmetadata = () => {
-        canvasRef.current.width = videoRef.current.videoWidth;
-        canvasRef.current.height = videoRef.current.videoHeight;
-      };
-    } catch (error) {
-      console.error('Error setting up video capture:', error);
-    }
+        const sendFrame = () => {
+            const videoElement = document.createElement("video");
+            streamManager.addVideoElement(videoElement);
+            
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            canvas.width = 640;
+            canvas.height = 480;
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-    // 클린업 함수
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
-      canvasRef.current = null;
-      videoRef.current = null;
-    };
-  }, [streamManager, isEnabled]);
+            // ✅ 캔버스를 Blob(JPEG)로 변환 후 Base64 인코딩하여 서버로 전송
+            canvas.toBlob((blob) => {
+                if (blob && socketRef.current.readyState === WebSocket.OPEN) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const base64Frame = reader.result.split(",")[1];
+                        console.log("📤 WebSocket으로 프레임 전송 중...");
+                        socketRef.current.send(JSON.stringify({ frame: base64Frame }));
+                    };
+                } else {
+                    console.error("❌ WebSocket이 닫혀 있음!");
+                }
+            }, "image/jpeg");
+        };
 
-  // 현재 프레임 캡처 함수
-  const captureFrame = () => {
-    if (!isEnabled || !canvasRef.current || !videoRef.current) return null;
+        // ✅ 1초마다 프레임 캡처 및 전송
+        const intervalId = setInterval(sendFrame, 1000);
 
-    try {
-      const context = canvasRef.current.getContext('2d');
-      
-      // 현재 프레임을 캔버스에 그리기
-      context.drawImage(
-        videoRef.current, 
-        0, 
-        0, 
-        canvasRef.current.width, 
-        canvasRef.current.height
-      );
+        return () => {
+            clearInterval(intervalId);
+            socketRef.current.close();
+        };
+    }, [streamManager, isMyVideo]);
 
-      // 캔버스의 내용을 Base64 이미지로 변환
-      // 압축률 0.8로 설정하여 네트워크 부하 감소
-      return canvasRef.current.toDataURL('image/jpeg', 0.8);
-    } catch (error) {
-      console.error('Error capturing frame:', error);
-      return null;
-    }
-  };
-
-  return {
-    captureFrame: isEnabled ? captureFrame : () => null
-  };
+    return null;
 };
 
 export default useVideoFrameCapture;

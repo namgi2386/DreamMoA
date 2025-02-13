@@ -6,8 +6,10 @@ import TestErrorAlert from "/src/components/video/TestErrorAlert";
 import TestLoadingSpinner from "/src/components/video/TestLoadingSpinner";
 import useOpenVidu from "../../hooks/useOpenVidu";
 import ChatPanel from "../../components/video/chat/ChatPanel";
-// import VideoJoinForm from '../../components/video/VideoJoinForm'; // VideoJoinForm 버전
 import VideoSettingForm from "../../components/video/VideoSettingForm";
+import FocusAnalysis from '../../components/video/analysis/FocusAnalyzer'; // ✅ 웹소켓 테스트용
+
+const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {
   // 사용자 입력 상태
@@ -39,16 +41,19 @@ const VideoRoom = () => {
     screenPublisher,
   } = useOpenVidu();
 
-  // 세션 참가 핸들러
-  const handleJoinSession = async () => {
-    try {
-      // await connectSession(mySessionRoomName, myUserName); // VideoJoinForm 버전
-      await connectSession(dummySessionRoomName, dummyUserName); // (VideoSettingForm) 내이름 방이름 가져가서 입장시켜줌
-    } catch (error) {
-      // 에러는 useOpenVidu에서 처리됨
-      console.error("세션 참가 실패:", error);
-    }
-  };
+    // ✅ 웹소켓에서 받은 데이터 처리
+    const handleWebSocketData = (data) => {
+        console.log("📡 WebSocket에서 받은 데이터:", data);
+    };
+
+    // ✅ 세션 참가 핸들러
+    const handleJoinSession = async () => {
+        try {
+            await connectSession(dummySessionRoomName, dummyUserName);
+        } catch (error) {
+            console.error("세션 참가 실패:", error);
+        }
+    };
 
   // 화면 공유 토글 핸들러
   const handleToggleScreenShare = async () => {
@@ -63,12 +68,12 @@ const VideoRoom = () => {
     }
   };
   
-  // 언마운트시 세션 정리 (강제종료(크롬창닫음)시 세션 종료)
-  useEffect(() => {
-    return () => {
-      disconnectSession();
-    };
-  }, [disconnectSession]);
+    // ✅ 언마운트 시 WebRTC 세션 종료
+    useEffect(() => {
+        return () => {
+            disconnectSession();
+        };
+    }, [disconnectSession]);
 
   return (
     // <div className="w-full h-full bg-gray-900 text-white p-4">
@@ -131,6 +136,8 @@ const VideoRoom = () => {
             isChatOpen={isChatOpen} // 채팅창 on off
             setIsChatOpen={setIsChatOpen} // 채팅창 on off
           />
+           {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
+           <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
         </div>
       )}
     </div>
