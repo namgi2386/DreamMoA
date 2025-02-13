@@ -22,21 +22,18 @@ const VideoGrid = ({
     console.log("통합된 스트림 목록:", allStreams);
 
     switch (currentLayout) {
-      // 참가자 수에 따라
-      case "Dynamic":
+      case "default":
         return (
-          <DynamicGridLayout
+          <GridMatrixLayout // 2분할 그리드 레이아웃
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={allStreams}
             onStreamClick={onStreamClick}
           />
         );
-      
-      // 기본 그리드
-      case "default":
+      case "Dynamic":
         return (
-          <GridMatrixLayout
+          <DynamicGridLayout
             mainStreamManager={mainStreamManager}
             publisher={publisher}
             subscribers={allStreams}

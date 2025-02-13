@@ -110,7 +110,9 @@ export default function MyPage() {
                 </motion.button>
               )}
 
-              {socialLoginDependency === "true" && (
+              {socialLoginDependency === "true" &&  (
+              // 롤 추가하면 이걸로 변경
+              // {userInfo?.role !== "USER" && (
                 <div
                   className={`relative z-10 px-8 py-1 my-1 rounded-full mt-32 font-bold tracking-wider text-xl cursor-default bg-gray-100`}
                 >

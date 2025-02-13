@@ -91,17 +91,15 @@ const useOpenVidu = () => {
 
       // 게시자 초기화 (자신의 비디오 스트림 설정)
       const publisher = await OV.current.initPublisherAsync(undefined, {
-        audioSource: undefined, // 기본 마이크
-        videoSource: undefined, // 기본 카메라
-        publishAudio: true, // 오디오 활성화
-        publishVideo: true, // 비디오 활성화
-        resolution: "640x480", // 해상도
-        frameRate: 30, // FPS
-        insertMode: "APPEND",
-        // 미러링 비활성화
-        mirror: false, // 미러링 비활성화
-        audioConstraints: {
-          // 오디오 제약조건 추가
+        audioSource: undefined,  // 기본 마이크
+        videoSource: undefined,  // 기본 카메라
+        publishAudio: true,      // 오디오 활성화
+        publishVideo: true,      // 비디오 활성화
+        resolution: '640x480',   // 해상도
+        frameRate: 30,           // FPS
+        insertMode: 'APPEND',    
+        mirror: true,           // 미러링 비활성화
+        audioConstraints: {       // 오디오 제약조건 추가
           echoCancellation: true, // 에코 제거
           noiseSuppression: true, // 노이즈 제거
           autoGainControl: true, // 자동 게인 제어

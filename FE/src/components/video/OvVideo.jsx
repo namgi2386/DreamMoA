@@ -17,7 +17,7 @@ const OvVideo = ({ streamManager }) => {
     <video
       autoPlay={true}
       ref={videoRef}
-      className="w-full h-full object-cover"
+      className=" h-full object-cover rounded-xl"
       // className="w-full h-full object-contain bg-black"
       // className="w-full h-full object-contain bg-black aspect-video"
     />
