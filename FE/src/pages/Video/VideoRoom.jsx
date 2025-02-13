@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-import VideoControls from '/src/components/video/VideoControls';
-import VideoGrid from '/src/components/video/VideoGrid';
-import TestErrorAlert from '/src/components/video/TestErrorAlert';
-import TestLoadingSpinner from '/src/components/video/TestLoadingSpinner';
-import useOpenVidu from '../../hooks/useOpenVidu';
-import ChatPanel from '../../components/video/chat/ChatPanel';
-// import VideoJoinForm from '../../components/video/VideoJoinForm'; // VideoJoinForm 버전
-import VideoSettingForm from '../../components/video/VideoSettingForm';
+import VideoControls from "/src/components/video/VideoControls";
+import VideoGrid from "/src/components/video/VideoGrid";
+import TestErrorAlert from "/src/components/video/TestErrorAlert";
+import TestLoadingSpinner from "/src/components/video/TestLoadingSpinner";
+import useOpenVidu from "../../hooks/useOpenVidu";
+import ChatPanel from "../../components/video/chat/ChatPanel";
+import VideoSettingForm from "../../components/video/VideoSettingForm";
+import FocusAnalysis from '../../components/video/analysis/FocusAnalyzer'; // ✅ 웹소켓 테스트용
+
+const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {
   // 사용자 입력 상태
@@ -32,64 +34,84 @@ const VideoRoom = () => {
     isLoading,
     error,
     clearError,
+    // 화면 공유
+    isScreenSharing,
+    startScreenShare,
+    stopScreenShare,
+    screenPublisher,
   } = useOpenVidu();
 
-  // 세션 참가 핸들러
-  const handleJoinSession = async () => {
+    // ✅ 웹소켓에서 받은 데이터 처리
+    const handleWebSocketData = (data) => {
+        console.log("📡 WebSocket에서 받은 데이터:", data);
+    };
+
+    // ✅ 세션 참가 핸들러
+    const handleJoinSession = async () => {
+        try {
+            await connectSession(dummySessionRoomName, dummyUserName);
+        } catch (error) {
+            console.error("세션 참가 실패:", error);
+        }
+    };
+
+  // 화면 공유 토글 핸들러
+  const handleToggleScreenShare = async () => {
     try {
-      // await connectSession(mySessionRoomName, myUserName); // VideoJoinForm 버전
-      await connectSession(dummySessionRoomName, dummyUserName); // (VideoSettingForm) 내이름 방이름 가져가서 입장시켜줌
+      if (isScreenSharing) {
+        await stopScreenShare();
+      } else {
+        await startScreenShare();
+      }
     } catch (error) {
-      // 에러는 useOpenVidu에서 처리됨
-      console.error("세션 참가 실패:", error);
+      console.error("화면 공유 토글 실패:", error);
     }
   };
-
-  // 언마운트시 세션 정리 (강제종료(크롬창닫음)시 세션 종료)
-  useEffect(() => {
-    return () => {
-      disconnectSession();
-    };
-  }, [disconnectSession]);
+  
+    // ✅ 언마운트 시 WebRTC 세션 종료
+    useEffect(() => {
+        return () => {
+            disconnectSession();
+        };
+    }, [disconnectSession]);
 
   return (
     // <div className="w-full h-full bg-gray-900 text-white p-4">
     // <div className="w-full h-screen bg-gray-900 text-white p-4">
     <div className="w-full h-screen bg-gray-900 text-white">
-    {" "}
+      {" "}
       {/* h-full -> h-screen으로 변경 */}
       {/* 로딩페이지 */}
       {isLoading && <TestLoadingSpinner />}
       {/* 에러페이지 */}
       {error && <TestErrorAlert message={error} onClose={clearError} />}
       {!session ? (
-        <>
-          {/* <VideoJoinForm  // 입장화면 
-            myUserName={myUserName} // 내가 입력한 이름
-            mySessionRoomName={mySessionRoomName} // 세션(방)이름
-            onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
-            onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
-            onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
-            isLoading={isLoading} // 로딩화면
-          /> */}
+        // 세션 연결 전: 설정 화면 표시
           <VideoSettingForm
             onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
             isLoading={isLoading} // 로딩화면
           />
-        </>
+          // {/* <VideoJoinForm  // 입장화면 
+          //   myUserName={myUserName} // 내가 입력한 이름
+          //   mySessionRoomName={mySessionRoomName} // 세션(방)이름
+          //   onUserNameChange={setMyUserName} // 이름 변경시켜주는 함수
+          //   onSessionNameChange={setMySessionRoomName} // 방이름 변경시켜주는 함수
+          //   onJoin={handleJoinSession} // 참가하기위해 세션요청하고 토큰요청하는 함수
+          //   isLoading={isLoading} // 로딩화면
+          // /> */}
       ) : (
+        // 세션 연결 후: 비디오 폼 표시
         // ☆★☆★☆★ 전체영역 ☆★☆★☆★
         <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
           {/* ☆★ 상단10% 영역 ☆★ */}
-          <div className='w-full h-[10%] bg-red-100'>
-            
-          </div>
+          <div className="w-full h-[10%] bg-red-100"></div>
           {/* ☆★ 중앙 화면 영역 ☆★ */}
           <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
             <VideoGrid // 너와나의 비디오 위치 크기 등등
               mainStreamManager={mainStreamManager}
               publisher={publisher} // 내 화면
               subscribers={subscribers} // 친구들 화면
+              screenPublisher={screenPublisher}
               onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
               currentLayout={currentLayout}
             />
@@ -102,6 +124,9 @@ const VideoRoom = () => {
               onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
               currentLayout={currentLayout}
               onLayoutChange={setCurrentLayout}
+              // 화면공유 관련 props
+              isScreenSharing={isScreenSharing}
+              onToggleScreenShare={handleToggleScreenShare}
             />
           </div>
           {/* ☆★ z-index걸린 모달 영역 ☆★ */}
@@ -110,7 +135,9 @@ const VideoRoom = () => {
             sessionTitle={dummySessionRoomName} //방이름
             isChatOpen={isChatOpen} // 채팅창 on off
             setIsChatOpen={setIsChatOpen} // 채팅창 on off
-          /> 
+          />
+          {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
+          <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
         </div>
       )}
     </div>
