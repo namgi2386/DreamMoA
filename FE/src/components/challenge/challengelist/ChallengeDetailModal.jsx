@@ -160,7 +160,7 @@ export default function ChallengeDetailModal() {
     console.log("탈퇴성공");
     try {
       // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.leaveChallenge();
+      const response = await challengeApi.leaveChallengeNamgiver();
       console.log("메세지도착: ",response.message);
       
     } catch (error) {
