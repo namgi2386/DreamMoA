@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
-import TestChallengeList from "../challenge/challengelist/TestChallengeList";
+// import TestChallengeList from "../challenge/challengelist/TestChallengeList";
 import challengeApi from "../../services/api/challengeApi";
 // 기본 이미지
 import defaultChallengeImage from "/src/assets/default/defaultChallengePicture.png";
+import ChallengeDetailModal from "../challenge/challengelist/ChallengeDetailModal";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { challengeModalState, selectedChallengeState } from "../../recoil/atoms/challenge/challengeDetailState";
 
 export default function ChallengeImages() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedChallenge, setSelectedChallenge] = useState(null);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [challenges, setChallenges] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const isModalOpen = useRecoilValue(challengeModalState);
+  const setModalOpen = useSetRecoilState(challengeModalState);
+  const setSelectedChallenge = useSetRecoilState(selectedChallengeState);
+
 
   // 컴포넌트 마운트 시 챌린지 데이터 가져오기
   useEffect(() => {
@@ -35,10 +42,23 @@ export default function ChallengeImages() {
     fetchChallenges();
   }, []);
 
-  const handleImageClick = (item) => {
+  const handleImageClick = async (item) => {
     console.log(`Clicked challenge no.${item.id}`);
-    setSelectedChallenge(item);
-    setIsModalOpen(true);
+    try {
+      // 챌린지 상세 정보 불러오기
+      const response = await challengeApi.getChallengeDetailInfo(item.id);
+      
+      // 상세 정보를 Recoil 상태에 저장
+      setSelectedChallenge(response.data);
+      
+      // 모달 열기
+      console.log(response.data);
+      
+      setModalOpen(true);
+      
+    } catch (error) {
+      console.error('챌린지 상세 정보 로딩 실패:', error);
+    }
   };
 
   // 로딩 중일 때 표시할 스켈레톤 UI
@@ -81,11 +101,12 @@ export default function ChallengeImages() {
         ))}
       </div>
       {/* 챌린지 상세모달 */}
-      <TestChallengeList
+      {/* <TestChallengeList
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         selectedChallenge={selectedChallenge}
-      />
+      /> */}
+      {isModalOpen && <ChallengeDetailModal />}
     </>
   );
 }

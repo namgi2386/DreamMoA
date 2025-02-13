@@ -95,7 +95,36 @@ const challengeApi = {
     } catch (e){
       console.log("챌린지디테일 못가져옴",e);
     }
-  }
+  },
+
+  // ☆★☆★☆★☆★☆★ 챌린지 신청 입장 참가 탈퇴 ☆★☆★☆★☆★☆★☆★
+  // 챌린지 참가신청하기 (시작날짜 전 신청만하는상태)
+  joinChallenge: async(challengeId) => {
+    try {
+      const response = await api.post(`/challenges/${challengeId}/join`);
+      return response
+    } catch (e){
+      console.log("챌린지 참가하기 api 실패",e);
+    }
+  },
+  // 챌린지 입장하기(내꺼 입장) === 참가하기(이미시작날짜지났지만 입장)
+  enterChallenge: async(challengeId) => {
+    try {
+      const response = await api.post(`/challenges/${challengeId}/enter`);
+      return response
+    } catch (e){
+      console.log("챌린지 입장하기 api 실패",e);
+    }
+  },
+  // 챌린지 탈퇴하기
+  leaveChallenge: async(challengeId) => {
+    try {
+      const response = await api.delete(`/challenges/${challengeId}/leave`);
+      return response
+    } catch (e){
+      console.log("챌린지 입장하기 api 실패",e);
+    }
+  },
 };
 
 export default challengeApi;

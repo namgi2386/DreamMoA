@@ -30,7 +30,7 @@ export default function ChallengeCard({ challenge }) {
       <div className="w-full h-[200px] rounded-lg overflow-hidden hover:scale-105 transition duration-200 ease-in"> {/* 고정 높이 설정 */}
         {/* 태그 영역 */}
         <div className="pb-1 pl-2 flex flex-wrap gap-1.5">
-          {tags.slice(0, 2).map((tag, index) => (
+          {tags.slice(0, 3).map((tag, index) => (
             <span 
             key={index}
             className="px-2 py-0.5 text-md font-medium rounded-md bg-my-blue-1 text-white"
