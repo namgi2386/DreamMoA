@@ -36,6 +36,7 @@ const challengeApi = {
       // 썸네일 이미지가 있는 경우에만 추가
       if (thumbnail) {
         formData.append("thumbnail", thumbnail);
+        console.log('썸네일 이미지 추가됨:', thumbnail); // 디버깅용
       }
 
       // POST 요청 전송
@@ -45,18 +46,36 @@ const challengeApi = {
         },
       });
 
+    // 응답에 thumbnailUrl이 포함되어 있는지 확인
+    console.log('챌린지 생성 응답:', response.data); // 디버깅용
+    return response.data;
+  } catch (error) {
+    console.error("Challenge creation failed:", error);
+    throw error;
+  }
+},
+
+  /**
+   * 진행 중인 챌린지 목록 조회
+   * @returns {Promise} - 진행 중인 챌린지 목록
+   */
+  getRunningChallengeList: async () => {
+    const response = await api.get("/challenges/ongoing");
+    return response;
+  },
+  /**
+   * 사용자가 참여 중인 챌린지 목록 조회 (최대 7개)
+   * @returns {Promise} - 참여 중인 챌린지 목록
+   */
+  getMyParticipatingChallenges: async () => {
+    try {
+      const response = await api.get("/challenges/my-challenges");
       return response.data;
     } catch (error) {
-      // 에러 발생 시 throw
-      console.error("Challenge creation failed:", error);
+      console.error("참여 중인 챌린지 조회 실패:", error);
       throw error;
     }
   },
-
-  getRunningChallengeList: async() => {
-    const response = await api.get("/challenges/ongoing")
-    return response
-  }
 };
 
 export default challengeApi;
