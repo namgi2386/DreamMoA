@@ -20,11 +20,6 @@ const VideoRoom = () => {
   // const dummyUserName = "namhui"
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
 
-  // 사용자 정보
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const dummySessionRoomName = "12"; // 이거 챌린지 선택했을때 가져와야됨.
-  const dummyUserName = userInfo?.nickname || "testUser";
-
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
   const {
     session,
