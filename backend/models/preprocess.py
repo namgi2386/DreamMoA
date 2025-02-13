@@ -3,10 +3,12 @@ import numpy as np
 import pandas as pd
 import torch
 import pickle
-from models.config import FEATURES, DEVICE, MODEL_PATH  # ✅ 경로 유지
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+from models.config import FEATURES, DEVICE, MODEL_PATH  # ✅ 상대 경로 유지
 
-# ✅ StandardScaler 로드
+# ✅ 프로젝트의 루트 디렉토리를 `backend` 기준으로 설정
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # `backend` 폴더 기준
+
+# ✅ StandardScaler 로드 (상대 경로 유지)
 SCALER_PATH = os.path.join(BASE_DIR, "models", "standard_scaler.pkl")
 
 try:
@@ -47,7 +49,7 @@ def preprocess_input(data):
 
     # ✅ StandardScaler 정규화 (훈련된 Scaler 적용)
     try:
-        df[FEATURES] = scaler.transform(df[FEATURES])  # ✅ transform()으로 학습된 Scaler 적용
+        df.iloc[:, :] = scaler.transform(df)  # ✅ transform()으로 학습된 Scaler 적용
     except ValueError as e:
         print(f"❌ StandardScaler 변환 중 오류 발생: {e}")
         return None

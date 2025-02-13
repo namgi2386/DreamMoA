@@ -18,10 +18,10 @@ logging.getLogger("ultralytics").setLevel(logging.ERROR)
 
 router = APIRouter()
 
-# ✅ YOLOv8 모델 로드 (휴대폰 감지)
+# ✅ YOLOv8 모델 업그레이드 (핸드폰 감지)
 device = "cuda" if torch.cuda.is_available() else "cpu"
-yolo_model = YOLO("yolov8n.pt", verbose=False).to(device)
-logger.info("✅ YOLOv8n 모델 로드 완료")
+yolo_model = YOLO("yolov8s.pt", verbose=False).to(device)  # ✅ YOLO 모델을 "s" 버전으로 업그레이드
+logger.info("✅ YOLOv8s 모델 로드 완료")
 
 # ✅ Mediapipe Pose & Face Mesh 초기화
 mp_pose = mp.solutions.pose
@@ -62,11 +62,19 @@ def compute_eye_direction(face_landmarks):
     right_mouth = face_landmarks[291].y
     return abs(left_eye - left_mouth) + abs(right_eye - right_mouth)
 
-# ✅ 프레임 데이터 저장 버퍼 (최근 20프레임 유지) - OpenCV 코드와 동일하게 변경
-frame_data = deque(maxlen=20)
-phone_detected_history = deque(maxlen=20)
-head_tilt_history = deque(maxlen=20)
-eye_direction_history = deque(maxlen=20)
+def detect_phone(frame):
+    """
+    YOLOv8을 사용하여 핸드폰 감지
+    :param frame: OpenCV 이미지
+    :return: 핸드폰이 감지되면 1, 그렇지 않으면 0 반환
+    """
+    results = yolo_model(frame, conf=0.3)  # ✅ 신뢰도(conf) 0.3으로 조정
+    for result in results:
+        for box in result.boxes:
+            class_id = int(box.cls)
+            if class_id == 67:  # 📌 YOLO의 "cell phone" 클래스 ID = 67
+                return 1
+    return 0
 
 @router.websocket("/focus")
 async def focus_websocket(websocket: WebSocket):
@@ -78,7 +86,13 @@ async def focus_websocket(websocket: WebSocket):
             start_time = time.time()
             frame_index = 0
 
-            while frame_index < 20:  # 🔥 OpenCV 코드와 동일하게 1초에 20프레임만 수집
+            # 🔥 1초 동안의 프레임 데이터 저장 버퍼 (초기화)
+            frame_data = []
+            phone_detected_history = []
+            head_tilt_history = []
+            eye_direction_history = []
+
+            while frame_index < 20:
                 data = await websocket.receive_json()
                 base64_frame = data.get("frame", None)
 
@@ -97,14 +111,13 @@ async def focus_websocket(websocket: WebSocket):
 
                 frame_index += 1
 
-                # ✅ YOLOv8 핸드폰 감지 실행
+                # ✅ YOLOv8 핸드폰 감지 실행 (원본 해상도 유지)
                 phone_detected = detect_phone(frame)
                 phone_detected_history.append(phone_detected)
 
                 # ✅ Mediapipe 포즈 분석
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                results_pose = pose.process(frame_rgb)
-                results_face = face_mesh.process(frame_rgb)
+                results_pose = pose.process(frame)
+                results_face = face_mesh.process(frame)
 
                 # ✅ 포즈 분석 결과 저장
                 body_landmarks = extract_body_landmarks(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
@@ -123,36 +136,30 @@ async def focus_websocket(websocket: WebSocket):
                 })
 
             # ✅ 1초 동안의 데이터 평균 계산
-            phone_detected_percentage = 1 if any(phone_detected_history) else 0  
+            phone_detected_percentage = 1 if any(phone_detected_history) else 0
             avg_head_tilt = sum(filter(None, head_tilt_history)) / len(head_tilt_history) if head_tilt_history else 0
             avg_eye_direction = sum(filter(None, eye_direction_history)) / len(eye_direction_history) if eye_direction_history else 0
 
             # ✅ WebSocket으로 JSON 데이터 전송
-            payload = {
-                "timestamp": int(time.time()),
-                "frame_data": list(frame_data),
-                "phone_detected_percentage": phone_detected_percentage,
-                "head_tilt": avg_head_tilt,
-                "eye_direction": avg_eye_direction
-            }
-
-            # ✅ AI 모델 예측 실행 (🔥 집중도 분석)
-            prediction, confidence = predict_focus(payload)
-
-            # ✅ WebSocket으로 AI 예측 결과 전송
+            prediction, confidence = predict_focus({"frame_data": frame_data})
             result = {
                 "focus_prediction": prediction,
                 "confidence": confidence,
                 "phone_detected_percentage": phone_detected_percentage,
                 "head_tilt": avg_head_tilt,
                 "eye_direction": avg_eye_direction,
-                "timestamp": payload["timestamp"]
+                "timestamp": int(time.time())
             }
 
             logger.info(f"📡 AI 예측 결과: {json.dumps(result, indent=2)}")
             await websocket.send_json(result)
 
-            # 🔥 1초마다 실행 보장
+            # ✅ 🔥 응답을 보낸 직후 데이터 비우기
+            frame_data.clear()
+            phone_detected_history.clear()
+            head_tilt_history.clear()
+            eye_direction_history.clear()
+
             elapsed_time = time.time() - start_time
             if elapsed_time < 1.0:
                 await asyncio.sleep(1.0 - elapsed_time)
@@ -163,10 +170,15 @@ async def focus_websocket(websocket: WebSocket):
         await websocket.close()
 
 def detect_phone(frame):
-    results = yolo_model(frame, conf=0.05)
+    """
+    YOLOv8을 사용하여 핸드폰 감지
+    :param frame: OpenCV 이미지
+    :return: 핸드폰이 감지되면 1, 그렇지 않으면 0 반환
+    """
+    results = yolo_model(frame, conf=0.3)  # ✅ 신뢰도(conf) 0.3으로 조정
     for result in results:
         for box in result.boxes:
             class_id = int(box.cls)
-            if class_id == 67:
+            if class_id == 67:  # 📌 YOLO의 "cell phone" 클래스 ID = 67
                 return 1
     return 0

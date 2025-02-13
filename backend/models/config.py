@@ -5,11 +5,12 @@ import torch
 
 # ✅ 환경 변수 로드
 load_dotenv()
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # ✅ backend 폴더 기준
 
-# ✅ 모델 경로 설정 (Windows 환경)
+# ✅ 모델 경로 설정 (상대 경로 유지)
 MODEL_PATH = os.path.join(BASE_DIR, "models", "residual_gru_model.pth")
 FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "standard_scaler.pkl")
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # ✅ Feature 리스트 (자동 로드)
@@ -22,5 +23,6 @@ else:
 
 # ✅ 디버깅용 출력
 print(f"✅ MODEL_PATH: {MODEL_PATH}")
+print(f"✅ SCALER_PATH: {SCALER_PATH}")
 print(f"✅ DEVICE: {DEVICE}")
 print(f"✅ FEATURES: {FEATURES}")
