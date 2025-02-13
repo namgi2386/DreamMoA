@@ -168,17 +168,3 @@ async def focus_websocket(websocket: WebSocket):
         logger.info("🔴 클라이언트가 연결을 종료함")
     finally:
         await websocket.close()
-
-def detect_phone(frame):
-    """
-    YOLOv8을 사용하여 핸드폰 감지
-    :param frame: OpenCV 이미지
-    :return: 핸드폰이 감지되면 1, 그렇지 않으면 0 반환
-    """
-    results = yolo_model(frame, conf=0.3)  # ✅ 신뢰도(conf) 0.3으로 조정
-    for result in results:
-        for box in result.boxes:
-            class_id = int(box.cls)
-            if class_id == 67:  # 📌 YOLO의 "cell phone" 클래스 ID = 67
-                return 1
-    return 0
