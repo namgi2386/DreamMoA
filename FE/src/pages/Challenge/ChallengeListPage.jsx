@@ -1,7 +1,10 @@
+import { useRecoilValue } from "recoil";
 import ChallengeListMyTagSorted from "../../components/challenge/test/ChallengeListMyTagSorted";
+import { challengeModalState } from "../../recoil/atoms/challenge/challengeDetailState";
+import ChallengeDetailModal from "../../components/challenge/challengelist/ChallengeDetailModal";
 
 export default function ChallengeListPage() {
-  
+  const isModalOpen = useRecoilValue(challengeModalState);
   return (
     <div className="min-h-screen w-full bg-white py-12 pl-20 pr-6 ">
       {/* 제목 */}
@@ -21,6 +24,7 @@ export default function ChallengeListPage() {
       <div className="min-h-[480px] bg-red-600 w-full">
         전체보기
       </div>
+      {isModalOpen && <ChallengeDetailModal />}
     </div>
   );
 }

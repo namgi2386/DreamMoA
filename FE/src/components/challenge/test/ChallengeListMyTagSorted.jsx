@@ -3,6 +3,7 @@ import challengeApi from "../../../services/api/challengeApi";
 import ChallengeCard from "/src/components/challenge/test/ChallengeCard";
 import { motion } from "framer-motion";
 import { tagApi } from "../../../services/api/tagApi";
+import { useNavigate } from "react-router-dom";
 
 const getRepeatCount = (length) => {
   switch (length) {
@@ -24,6 +25,7 @@ export default function ChallengeListMyTagSorted() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [myTags, setMyTags] = useState(null);
+  const navigate = useNavigate();
 
   // 챌린지 데이터 가져오기
   useEffect(() => {
@@ -67,6 +69,7 @@ export default function ChallengeListMyTagSorted() {
   // Create 버튼 클릭 핸들러
   const handleCreateClick = () => {
     console.log('Create button clicked!');
+    navigate('/challenge/create')
   };
 
   return (

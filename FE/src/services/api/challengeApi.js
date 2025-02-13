@@ -63,8 +63,8 @@ const challengeApi = {
     return response
   },
 
-  // 챌린지 디테일
-  getChallenges: async(challengeId) => {
+  // 챌린지 디테일 정보 불러오기 
+  getChallengeDetailInfo: async(challengeId) => {
     try {
       const response = await api.get(`/challenges/${challengeId}/info`);
       return response

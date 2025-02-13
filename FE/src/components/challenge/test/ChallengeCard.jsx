@@ -1,12 +1,27 @@
+import { useSetRecoilState } from "recoil";
+import challengeApi from "../../../services/api/challengeApi";
+import { challengeModalState, selectedChallengeState } from "../../../recoil/atoms/challenge/challengeDetailState";
+
 // components/common/ChallengeCard.jsx
 export default function ChallengeCard({ challenge }) {
   const { title, thumbnail, tags } = challenge;
+  const setModalOpen = useSetRecoilState(challengeModalState);
+  const setSelectedChallenge = useSetRecoilState(selectedChallengeState);
 
-  const cardDetail = () => {
-    console.log(title);
-    console.log(challenge);
-    
-    
+
+  const cardDetail = async () => {
+    try {
+      // 챌린지 상세 정보 불러오기
+      const response = await challengeApi.getChallengeDetailInfo(challenge.challengeId);
+      
+      // 상세 정보를 Recoil 상태에 저장
+      setSelectedChallenge(response.data);
+      
+      // 모달 열기
+      setModalOpen(true);
+    } catch (error) {
+      console.error('챌린지 상세 정보 로딩 실패:', error);
+    }
   }
 
   return (
