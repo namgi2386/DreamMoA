@@ -33,7 +33,7 @@ export default function ChallengeCard({ challenge }) {
           {tags.slice(0, 3).map((tag, index) => (
             <span 
             key={index}
-            className="px-2 py-0.5 text-md font-medium rounded-md bg-my-blue-1 text-white"
+            className="px-4 py-0.5 text-md font-medium rounded-full bg-my-blue-1 text-white"
             >
               #{tag}
             </span>
@@ -43,8 +43,8 @@ export default function ChallengeCard({ challenge }) {
         <div className="h-[150px] flex  flex-col bg-cover bg-center bg-no-repeat rounded-xl "
           style={{ backgroundImage: `url(${thumbnail})` }}>
           {/* 제목 영역 - 맨 아래로 밀어내기 위해 margin-top: auto 사용 */}
-          <div className="mt-auto pl-2 py-1 bg-black bg-black/70">
-            <h3 className="text-white text-xl font-medium line-clamp-2 ">
+          <div className="mt-auto pl-2 py-1 bg-white bg-white/70 rounded-b-xl">
+            <h3 className="text-gray-800 text-xl font-medium line-clamp-2 ">
               {title}
             </h3>
           </div>

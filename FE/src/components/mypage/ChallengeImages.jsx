@@ -42,6 +42,7 @@ export default function ChallengeImages() {
   const fetchChallenges = async () => {
     try {
       const data = await challengeApi.getMyParticipatingChallenges();
+      
       setChallenges(
         data.slice(0, 7).map((challenge) => ({
           ...challenge,

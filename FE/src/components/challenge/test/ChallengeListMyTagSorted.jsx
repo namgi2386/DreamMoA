@@ -76,8 +76,8 @@ export default function ChallengeListMyTagSorted() {
     <>
       <div className="relative flex w-full h-60 cursor-default mt-5">
         {/* 왼쪽 Start Your Challenge 섹션 */}
-        <div className="flex flex-col bg-my-blue-4 px-4 py-8 h-full justify-between items-center w-full sm:w-80 rounded-lg transition-all duration-300 sm:rounded-none sm:rounded-l-lg">
-          <h1 className="text-5xl  font-bold text-black mb-2 select-none whitespace-nowrap">
+        <div className="flex flex-col bg-my-blue-1 px-4 py-8 h-full justify-between items-center w-full sm:w-80 rounded-lg transition-all duration-300 sm:rounded-none sm:rounded-l-lg">
+          <h1 className="text-5xl  font-bold text-[#FEFDD5] mb-2 select-none whitespace-nowrap tracking-wider">
             Start Your
           </h1>
           {/* 태그 리스트 */}
@@ -85,20 +85,20 @@ export default function ChallengeListMyTagSorted() {
             {myTags.map((tag, index) => (
               <span
                 key={index}
-                className="px-3 py-0.5 bg-my-blue-3 rounded-lg whitespace-nowrap text-lg font-medium select-none hover:scale-105 transition duration-300"
+                className="px-3 py-0.5 text-gray-800 bg-hmy-blue-3 rounded-lg whitespace-nowrap text-lg font-medium select-none hover:scale-105 transition duration-300"
               >
                 #{tag}
               </span>
             ))}
           </div>
-          <h1 className="text-5xl font-bold text-black select-none whitespace-nowrap">
+          <h1 className="text-5xl font-bold text-[#FEFDD5] select-none whitespace-nowrap tracking-wider">
             Challenge
           </h1>
           
         </div>
 
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
-        <div className="flex-1 bg-black rounded-r-lg mr-1 text-white 
+        <div className="flex-1 bg-[#FEFDD5] rounded-r-lg mr-1 text-white 
 opacity-0 sm:opacity-100 invisible sm:visible transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
   <div className="w-full h-full flex items-center">
     <motion.div 
@@ -125,11 +125,11 @@ opacity-0 sm:opacity-100 invisible sm:visible transition duration-800 overflow-h
 </div>
 
         {/* Create 버튼 */}
-        <div className="absolute -top-5 right-0 flex justify-center items-center bg-white rounded-t-lg rounded-bl-lg p-1 
+        <div className="absolute -top-0 right-0 flex justify-center items-center bg-white rounded-t-lg rounded-bl-lg pr-1 
         opacity-0 md:opacity-100 invisible md:visible transition duration-300">
           <button
             onClick={handleCreateClick}
-            className=" bg-my-blue-1 text-white text-2xl px-12 py-2 rounded-lg hover:bg-hmy-blue-1 transition-colors "
+            className=" bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white text-2xl px-12 py-2 rounded-lg hover:bg-hmy-blue-1 transition-colors "
           >
             create
           </button>

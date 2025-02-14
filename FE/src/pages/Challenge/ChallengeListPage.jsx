@@ -9,7 +9,7 @@ export default function ChallengeListPage() {
     <div className="min-h-screen w-full bg-white py-12 pl-20 pr-6 ">
       {/* 제목 */}
       <ChallengeListMyTagSorted/>
-      <div className="min-h-[140px] bg-red-200 w-full">
+      <div className="min-h-[140px] bg-white w-full">
         랭킹
       </div>
       <div className="min-h-[210px] bg-red-300 w-full">
