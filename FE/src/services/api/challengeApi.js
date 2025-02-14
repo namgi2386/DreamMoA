@@ -80,10 +80,17 @@ const challengeApi = {
   getTagChallenges: async(tags) => {
     const response = await api.get("/challenges/tag-challenges", {
       params: {
-        tags: tags // 쿼리 파라미터로 tags 전달
+        tags: tags
       }
     });
-    return response
+    
+    // currentParticipants가 0이 아닌 항목만 필터링
+    const filteredData = response.data.filter(challenge => challenge.currentParticipants !== 0);
+    
+    return {
+      ...response,
+      data: filteredData
+    };
   },
 
   // 챌린지 디테일 정보 불러오기 

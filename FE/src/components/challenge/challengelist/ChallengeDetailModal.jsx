@@ -63,26 +63,25 @@ export default function ChallengeDetailModal() {
     challengeId, // +
     title,
     description,
+    currentParticipants, //현재참가신청자 -> 어뜨카지? >>> 나중에 + 현재참가자
     maxParticipants, // 최대인원
-    isPrivate, // 이거 어뜨케 비밀방
-    createdAt, // 생성날 X X 사용안함
+    // isPrivate, // 이거 어뜨케 비밀방
+    // createdAt, // 생성날 X X 사용안함
     startDate, // 시작일 "2025-02-06T00:00:00"
     expireDate, // 끝날짜
     isActive, // + on off
     standard, // 목표일수
     thumbnail, // 썸네일
     message, // + 버튼 눌렀을때 에러메세지 
-    token, // + 입장버튼 눌렀을때 openVidu연결이 아니고 애초에 openvidu화면에서 어쩌지
     challengeTags, // 태그 ["a","b"]
-    // currentParticipants, //현재참가신청자 -> 어뜨카지? >>> 나중에 + 현재참가자
+    token, // + 입장버튼 눌렀을때 openVidu연결이 아니고 애초에 openvidu화면에서 어쩌지
     // activeParticipants, //현재active참가자 -> 어뜨카지? >>> 나중에 + 현재참가자
     // hostProfileImage, // 방장 프사 -> 제거
     // hostName, // 방장 이름 -> 제거
     // progressRate, // 몇퍼센트 성공 35 -> 다른 api
   } = selectedChallenge;
   // 삭제예정
-  const currentParticipants = 1
-  const activeParticipants = 2
+  const activeParticipants = 2 
   // 계산 필요한 변수
   const formattedStartDate = startDate.split('T')[0];  // "2025-02-06"
   const formattedExpireDate = expireDate.split('T')[0];  // 마찬가지로 날짜만 추출
@@ -224,7 +223,7 @@ export default function ChallengeDetailModal() {
 
           {/* 태그 */}
           <div className="absolute top-4 left-4 flex gap-2 ">
-            {challengeTags.map((tag, index) => (
+            {challengeTags?.map((tag, index) => (
               <motion.span
                 key={index}
                 initial={{ opacity: 0, y: -10 }}
