@@ -3,6 +3,8 @@ import { CiGrid41, CiGrid2H, CiGrid42, CiGrid2V } from "react-icons/ci";
 import { BsGrid1X2 } from "react-icons/bs";
 import { LuScreenShare, LuScreenShareOff } from "react-icons/lu";
 import useOpenViduSetting from "../../hooks/useOpenViduSetting";
+import { useRecoilState  } from "recoil";
+import { scriptOnOffState } from '/src/recoil/atoms/challenge/ai/scriptState';
 
 export default function VideoControls({
   // sessionName,
@@ -34,6 +36,15 @@ export default function VideoControls({
     toggleMicMute,
     toggleCamera,
   } = useOpenViduSetting(publisher, subscribers);
+
+  
+  //자막
+  const [scriptOnOff , setScriptOnOff] = useRecoilState(scriptOnOffState);
+  const onToggleScript = () => {
+    setScriptOnOff(!scriptOnOff)
+    console.log(scriptOnOff);
+    
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -137,6 +148,9 @@ export default function VideoControls({
           ) : (
             <LuScreenShare className="w-6 h-6" />
           )}
+        </button>
+        <button onClick={onToggleScript}>
+          자막onoff
         </button>
       </div>
     </div>

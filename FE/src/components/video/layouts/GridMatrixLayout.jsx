@@ -18,7 +18,7 @@ const GridMatrixLayout = ({
       <div className="w-full max-w-7xl flex  lg:flex-row gap-10 h-full justify-center">
         {/* 메인 스트림 영역 */}
         <div className="w-full md:w-4/5 bg-blue-200 rounded-lg overflow-hidden h-full min-w-[640px] flex justify-center ">
-          {mainStreamManager && <UserVideo streamManager={mainStreamManager} />}
+          {mainStreamManager && <UserVideo streamManager={mainStreamManager} isMainStream={true}/>}
         </div>
 
         {/* 참가자 목록 영역 */}
