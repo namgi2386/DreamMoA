@@ -8,6 +8,7 @@ import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity
 import SplashScreen from "../components/home/SplashScreen";
 import TopLine from "../components/home/topLineSection/TopLine";
 import VideoSection from "../components/home/videoSection/VideoSection";
+import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(() => {
@@ -62,11 +63,12 @@ export default function HomePage() {
             <ChallengeCarousel />
           </div>
         </section>
-        <div className="snap-start">
+        {/* <div className="snap-start">
           <AIFeatureSection />
-        </div>
+        </div> */}
         <div>
-          <VideoSection/>
+          {/* <VideoSection/> */}
+          <ReviewGradation/>
         </div>
       </div>
     </>
