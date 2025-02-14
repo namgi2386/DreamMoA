@@ -78,7 +78,6 @@ async def focus_websocket(websocket: WebSocket):
     try:
         while True:
             start_time = time.time()
-            frame_index = 0
 
             # 🔥 1초 동안의 프레임 데이터 저장 버퍼 (초기화)
             frame_data = []
@@ -86,49 +85,51 @@ async def focus_websocket(websocket: WebSocket):
             head_tilt_history = []
             eye_direction_history = []
 
-            while frame_index < 20:  # 🔥 1초 동안 20프레임 수집
-                data = await websocket.receive_json()
-                base64_frame = data.get("frame", None)
+            # ✅ 프론트에서 `frames: []` 형식으로 전송됨 -> 이를 받아서 처리
+            data = await websocket.receive_json()
+            frames = data.get("frames", [])
 
-                if not base64_frame:
-                    logger.error("❌ WebSocket 데이터 오류")
-                    continue
+            if not frames:
+                logger.error("❌ WebSocket 데이터 오류: frames 배열이 비어 있음")
+                continue
 
-                # ✅ Base64를 OpenCV 이미지로 변환
-                frame_data_bytes = base64.b64decode(base64_frame)
-                np_arr = np.frombuffer(frame_data_bytes, np.uint8)
-                frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            for frame_index, base64_frame in enumerate(frames):
+                try:
+                    # ✅ Base64를 OpenCV 이미지로 변환
+                    frame_data_bytes = base64.b64decode(base64_frame)
+                    np_arr = np.frombuffer(frame_data_bytes, np.uint8)
+                    frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-                if frame is None:
-                    logger.error("❌ OpenCV에서 프레임을 디코딩할 수 없습니다!")
-                    continue
+                    if frame is None:
+                        logger.error("❌ OpenCV에서 프레임을 디코딩할 수 없습니다!")
+                        continue
 
-                frame_index += 1
+                    # ✅ YOLOv8 핸드폰 감지 실행 (원본 해상도 유지)
+                    phone_detected = detect_phone(frame)
+                    phone_detected_history.append(phone_detected)
 
-                # ✅ YOLOv8 핸드폰 감지 실행 (원본 해상도 유지)
-                phone_detected = detect_phone(frame)
-                phone_detected_history.append(phone_detected)
+                    # ✅ Mediapipe 포즈 분석
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    results_pose = pose.process(frame_rgb)
+                    results_face = face_mesh.process(frame_rgb)
 
-                # ✅ Mediapipe 포즈 분석
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                results_pose = pose.process(frame_rgb)
-                results_face = face_mesh.process(frame_rgb)
+                    # ✅ 포즈 분석 결과 저장
+                    body_landmarks = extract_body_landmarks(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
+                    head_tilt = compute_head_tilt(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
+                    eye_direction = compute_eye_direction(results_face.multi_face_landmarks[0].landmark if results_face.multi_face_landmarks else None)
 
-                # ✅ 포즈 분석 결과 저장
-                body_landmarks = extract_body_landmarks(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
-                head_tilt = compute_head_tilt(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
-                eye_direction = compute_eye_direction(results_face.multi_face_landmarks[0].landmark if results_face.multi_face_landmarks else None)
+                    head_tilt_history.append(head_tilt)
+                    eye_direction_history.append(eye_direction)
 
-                head_tilt_history.append(head_tilt)
-                eye_direction_history.append(eye_direction)
-
-                frame_data.append({
-                    "frame_index": frame_index,
-                    **(body_landmarks if body_landmarks else {}),
-                    "head_tilt": head_tilt if head_tilt is not None else 0,
-                    "eye_direction": eye_direction if eye_direction is not None else 0,
-                    "phone_detected": 1 if phone_detected else 0
-                })
+                    frame_data.append({
+                        "frame_index": frame_index,
+                        **(body_landmarks if body_landmarks else {}),
+                        "head_tilt": head_tilt if head_tilt is not None else 0,
+                        "eye_direction": eye_direction if eye_direction is not None else 0,
+                        "phone_detected": 1 if phone_detected else 0
+                    })
+                except Exception as e:
+                    logger.error(f"❌ 프레임 처리 중 오류 발생: {e}")
 
             # ✅ 1초 동안의 데이터 평균 계산
             phone_detected_percentage = 1 if any(phone_detected_history) else 0

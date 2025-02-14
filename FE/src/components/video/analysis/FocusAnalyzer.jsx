@@ -7,13 +7,15 @@ const FocusAnalysis = ({ serverUrl }) => {
     const frameBuffer = useRef([]); // ✅ 프레임을 모아두는 버퍼
     const frameInterval = 100; // 🔥 100ms (1초에 10프레임 캡처)
     const batchSize = 10; // ✅ 10개의 프레임을 모아 한 번에 전송
+    const mediaStreamRef = useRef(null); // ✅ WebRTC 스트림 추적용
+    const intervalRef = useRef(null); // ✅ `setInterval` 추적용
 
     useEffect(() => {
         socketRef.current = new WebSocket(serverUrl);
 
         socketRef.current.onopen = () => {
             console.log("✅ WebSocket 연결 성공:", serverUrl);
-            waitForVideoElement();
+            startWebRTCStream();
         };
 
         socketRef.current.onerror = (error) => console.error("❌ WebSocket 에러:", error);
@@ -33,29 +35,49 @@ const FocusAnalysis = ({ serverUrl }) => {
         };
 
         return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
+            stopWebRTCStream(); // ✅ WebRTC 스트림 종료
+            closeWebSocket(); // ✅ WebSocket 닫기
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current); // ✅ `setInterval` 정리
             }
         };
     }, [serverUrl]);
 
-    // ✅ 비디오가 렌더링될 때까지 대기하는 함수
-    const waitForVideoElement = () => {
-        const checkVideo = () => {
-            const videoElement = document.querySelector("video");
-            if (videoElement) {
-                videoRef.current = videoElement;
-                startFrameCapture();
-            } else {
-                setTimeout(checkVideo, 500);
+    // ✅ WebRTC 스트림을 시작하는 함수
+    const startWebRTCStream = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            mediaStreamRef.current = stream;
+            videoRef.current.srcObject = stream;
+            startFrameCapture(); // ✅ 스트림 시작 후 프레임 캡처 시작
+        } catch (error) {
+            console.error("❌ WebRTC 스트림 오류:", error);
+        }
+    };
+
+    // ✅ WebRTC 스트림을 중지하는 함수
+    const stopWebRTCStream = () => {
+        if (mediaStreamRef.current) {
+            mediaStreamRef.current.getTracks().forEach(track => track.stop());
+            mediaStreamRef.current = null;
+            if (videoRef.current) {
+                videoRef.current.srcObject = null; // ✅ 비디오 스트림 제거
             }
-        };
-        checkVideo();
+            console.log("🔴 WebRTC 스트림이 중지됨");
+        }
+    };
+
+    // ✅ WebSocket을 안전하게 종료하는 함수
+    const closeWebSocket = () => {
+        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+            socketRef.current.close();
+            console.log("🔴 WebSocket이 안전하게 종료됨");
+        }
     };
 
     // ✅ 일정 간격으로 프레임을 캡처하여 버퍼에 저장
     const startFrameCapture = () => {
-        setInterval(() => {
+        intervalRef.current = setInterval(() => {
             captureFrame();
         }, frameInterval);
     };
@@ -109,7 +131,7 @@ const FocusAnalysis = ({ serverUrl }) => {
         frameBuffer.current = [];
     };
 
-    return null;
+    return <video ref={videoRef} autoPlay playsInline style={{ display: "none" }} />;
 };
 
 export default FocusAnalysis;
