@@ -6,7 +6,6 @@ import base64
 import numpy as np
 import mediapipe as mp
 import asyncio
-from collections import deque
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from ultralytics import YOLO
 from models.predict import predict_focus
@@ -18,9 +17,9 @@ logging.getLogger("ultralytics").setLevel(logging.ERROR)
 
 router = APIRouter()
 
-# ✅ YOLOv8 모델 업그레이드 (핸드폰 감지)
+# ✅ YOLOv8 모델 로드 (핸드폰 감지)
 device = "cuda" if torch.cuda.is_available() else "cpu"
-yolo_model = YOLO("yolov8s.pt", verbose=False).to(device)  # ✅ YOLO 모델을 "s" 버전으로 업그레이드
+yolo_model = YOLO("yolov8s.pt", verbose=False).to(device)
 logger.info("✅ YOLOv8s 모델 로드 완료")
 
 # ✅ Mediapipe Pose & Face Mesh 초기화
@@ -34,7 +33,7 @@ def extract_body_landmarks(pose_landmarks):
     if pose_landmarks is None:
         return None
     
-    landmarks = {
+    return {
         "head_x": pose_landmarks[0].x, "head_y": pose_landmarks[0].y,
         "neck_x": pose_landmarks[1].x, "neck_y": pose_landmarks[1].y,
         "shoulder_left_x": pose_landmarks[11].x, "shoulder_left_y": pose_landmarks[11].y,
@@ -44,7 +43,6 @@ def extract_body_landmarks(pose_landmarks):
         "wrist_left_x": pose_landmarks[15].x, "wrist_left_y": pose_landmarks[15].y,
         "wrist_right_x": pose_landmarks[16].x, "wrist_right_y": pose_landmarks[16].y
     }
-    return landmarks
 
 def compute_head_tilt(pose_landmarks):
     """고개 기울기 계산"""
@@ -63,18 +61,14 @@ def compute_eye_direction(face_landmarks):
     return abs(left_eye - left_mouth) + abs(right_eye - right_mouth)
 
 def detect_phone(frame):
-    """
-    YOLOv8을 사용하여 핸드폰 감지
-    :param frame: OpenCV 이미지
-    :return: 핸드폰이 감지되면 1, 그렇지 않으면 0 반환
-    """
-    results = yolo_model(frame, conf=0.3)  # ✅ 신뢰도(conf) 0.3으로 조정
+    """YOLOv8을 사용하여 핸드폰 감지"""
+    results = yolo_model(frame, conf=0.3)
     for result in results:
         for box in result.boxes:
             class_id = int(box.cls)
-            if class_id == 67:  # 📌 YOLO의 "cell phone" 클래스 ID = 67
-                return 1
-    return 0
+            if class_id == 67:
+                return 1  # 📱 핸드폰 감지됨
+    return 0  # ❌ 핸드폰 미감지
 
 @router.websocket("/focus")
 async def focus_websocket(websocket: WebSocket):
@@ -92,7 +86,7 @@ async def focus_websocket(websocket: WebSocket):
             head_tilt_history = []
             eye_direction_history = []
 
-            while frame_index < 20:
+            while frame_index < 20:  # 🔥 1초 동안 20프레임 수집
                 data = await websocket.receive_json()
                 base64_frame = data.get("frame", None)
 
@@ -116,8 +110,9 @@ async def focus_websocket(websocket: WebSocket):
                 phone_detected_history.append(phone_detected)
 
                 # ✅ Mediapipe 포즈 분석
-                results_pose = pose.process(frame)
-                results_face = face_mesh.process(frame)
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                results_pose = pose.process(frame_rgb)
+                results_face = face_mesh.process(frame_rgb)
 
                 # ✅ 포즈 분석 결과 저장
                 body_landmarks = extract_body_landmarks(results_pose.pose_landmarks.landmark if results_pose.pose_landmarks else None)
@@ -140,8 +135,18 @@ async def focus_websocket(websocket: WebSocket):
             avg_head_tilt = sum(filter(None, head_tilt_history)) / len(head_tilt_history) if head_tilt_history else 0
             avg_eye_direction = sum(filter(None, eye_direction_history)) / len(eye_direction_history) if eye_direction_history else 0
 
-            # ✅ WebSocket으로 JSON 데이터 전송
-            prediction, confidence = predict_focus({"frame_data": frame_data})
+            # ✅ 1초 동안의 모든 프레임을 포함한 payload 생성
+            payload = {
+                "frame_data": frame_data,  # 🔥 전체 프레임 데이터 포함
+                "phone_detected_percentage": phone_detected_percentage,
+                "head_tilt": avg_head_tilt,
+                "eye_direction": avg_eye_direction
+            }
+
+            # ✅ AI 모델 예측 실행 (🔥 집중도 분석)
+            prediction, confidence = predict_focus(payload)
+
+            # ✅ WebSocket으로 최종 결과 전송
             result = {
                 "focus_prediction": prediction,
                 "confidence": confidence,
@@ -153,16 +158,6 @@ async def focus_websocket(websocket: WebSocket):
 
             logger.info(f"📡 AI 예측 결과: {json.dumps(result, indent=2)}")
             await websocket.send_json(result)
-
-            # ✅ 🔥 응답을 보낸 직후 데이터 비우기
-            frame_data.clear()
-            phone_detected_history.clear()
-            head_tilt_history.clear()
-            eye_direction_history.clear()
-
-            elapsed_time = time.time() - start_time
-            if elapsed_time < 1.0:
-                await asyncio.sleep(1.0 - elapsed_time)
 
     except WebSocketDisconnect:
         logger.info("🔴 클라이언트가 연결을 종료함")

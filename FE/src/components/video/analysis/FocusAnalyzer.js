@@ -4,9 +4,9 @@ const FocusAnalysis = ({ serverUrl }) => {
     const socketRef = useRef(null);
     const canvasRef = useRef(document.createElement("canvas"));
     const videoRef = useRef(null);
-    const frameInterval = 100; // 🔥 1초에 10프레임 전송
-    const isCapturing = useRef(false); // ✅ 중복 실행 방지
-    const isSocketReady = useRef(true); // ✅ WebSocket 전송 속도 조절
+    const frameBuffer = useRef([]); // ✅ 프레임을 모아두는 버퍼
+    const frameInterval = 100; // 🔥 100ms (1초에 10프레임 캡처)
+    const batchSize = 10; // ✅ 10개의 프레임을 모아 한 번에 전송
 
     useEffect(() => {
         socketRef.current = new WebSocket(serverUrl);
@@ -27,9 +27,6 @@ const FocusAnalysis = ({ serverUrl }) => {
                 console.log("👀 시선 방향:", data.eye_direction);
                 console.log("🤖 머리 기울기:", data.head_tilt);
                 console.log("----------------------------------------------------");
-
-                // ✅ WebSocket 응답을 받은 후 다음 프레임을 전송할 준비 완료
-                isSocketReady.current = true;
             } catch (error) {
                 console.error("❌ WebSocket 데이터 오류:", error);
             }
@@ -48,10 +45,7 @@ const FocusAnalysis = ({ serverUrl }) => {
             const videoElement = document.querySelector("video");
             if (videoElement) {
                 videoRef.current = videoElement;
-                if (!isCapturing.current) {
-                    startFrameCapture(); // ✅ 중복 실행 방지
-                    isCapturing.current = true;
-                }
+                startFrameCapture();
             } else {
                 setTimeout(checkVideo, 500);
             }
@@ -59,33 +53,60 @@ const FocusAnalysis = ({ serverUrl }) => {
         checkVideo();
     };
 
-    // ✅ 일정 간격으로 프레임을 캡처하여 WebSocket으로 전송
+    // ✅ 일정 간격으로 프레임을 캡처하여 버퍼에 저장
     const startFrameCapture = () => {
         setInterval(() => {
-            if (isSocketReady.current) {
-                sendFrame();
-            }
+            captureFrame();
         }, frameInterval);
     };
 
-    // ✅ 프레임을 캡처하여 WebSocket으로 전송
-    const sendFrame = () => {
+    // ✅ 프레임을 캡처하여 버퍼에 저장
+    const captureFrame = () => {
         const videoElement = videoRef.current;
-        if (!videoElement || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-            return;
-        }
+        if (!videoElement) return;
 
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
-        canvas.width = 640; // ✅ 해상도 조절
+        canvas.width = 640;
         canvas.height = 480;
         context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-        // ✅ canvas.toDataURL()을 사용하여 동기적 변환 (속도 향상)
-        const base64Frame = canvas.toDataURL("image/jpeg", 0.7).split(",")[1]; // 🔥 JPEG 품질 0.7로 낮춤
+        // 캔버스를 Base64로 변환 후 버퍼에 저장
+        canvas.toBlob(
+            (blob) => {
+                if (blob) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const base64Frame = reader.result.split(",")[1]; // Base64 인코딩
+                        frameBuffer.current.push(base64Frame);
 
-        // ✅ WebSocket으로 전송
-        socketRef.current.send(JSON.stringify({ frame: base64Frame }));
+                        // ✅ 일정 개수(batchSize)만큼 모이면 한 번에 전송
+                        if (frameBuffer.current.length >= batchSize) {
+                            sendBufferedFrames();
+                        }
+                    };
+                }
+            },
+            "image/jpeg",
+            0.7
+        );
+    };
+
+    // ✅ 모인 프레임을 한 번에 WebSocket으로 전송
+    const sendBufferedFrames = () => {
+        if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+            console.warn("⚠️ WebSocket이 닫혀 있어 프레임을 전송할 수 없음.");
+            return;
+        }
+
+        console.log(`📤 ${batchSize}개 프레임 한 번에 전송 중...`);
+
+        // 🔥 JSON으로 변환하여 한 번에 전송
+        socketRef.current.send(JSON.stringify({ frames: frameBuffer.current }));
+
+        // ✅ 전송 후 버퍼 비우기
+        frameBuffer.current = [];
     };
 
     return null;
