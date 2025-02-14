@@ -1,103 +1,118 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import ChallengeCard from './ChallengeCard';
-import '../../../assets/styles/scrollbar-hide.css';
-import { mockApiResponse } from '../../../utils/mockData';
+import { useRef, useEffect, useState, useCallback } from "react";
+import { motion, useAnimation } from "framer-motion";
+import ChallengeCard from "./ChallengeCard";
+import "../../../assets/styles/scrollbar-hide.css";
+import { homeApi } from "../../../services/api/homeApi";
+// import { mockApiResponse } from '../../../utils/mockData';
 
 const ChallengeCarousel = () => {
   const [challenges, setChallenges] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  // const [currentX, setCurrentX] = useState(0);  // 현재 x 위치 추적
   const carouselRef = useRef(null);
   const controls = useAnimation();
 
+  // 애니메이션 로직
   const startCarouselAnimation = useCallback(() => {
+    if (!carouselRef.current) return;
+
+    // 카드 하나의 너비 계산 (마진 포함)
+    const cardWidth = carouselRef.current.children[0].offsetWidth - 20; // gap-3 = 12px
+    // 전체 이동 거리 계산 (카드 개수 * 카드 너비)
+    const totalWidth = cardWidth * challenges.length;
+
     controls.start({
-      // x: [currentX, currentX - 1000],  // 현재 위치에서 시작
-      x: [0, -1000],
+      x: [0, -totalWidth],
       transition: {
-        duration: 20, // 애니메이션 시간
+        duration: 30, // 고정된 duration 값 (초 단위)
         ease: "linear",
         repeat: Infinity,
-        repeatType: "loop"
-      }
+        repeatType: "loop",
+        type: "tween",
+        restSpeed: 0.5,
+        repeatDelay: 0,
+      },
     });
-  }, [controls]);
+  }, [controls, challenges.length]);
 
+  // 챌린지 데이터가 로드되거나 화면 크기가 변경될 때 애니메이션 재시작
   useEffect(() => {
-    startCarouselAnimation();
-  }, [startCarouselAnimation]);
+    if (challenges.length > 0) {
+      startCarouselAnimation();
+    }
 
-  const fetchChallenges = useCallback(async (page) => {
+    // 화면 크기 변경 시 애니메이션 재시작
+    const handleResize = () => {
+      startCarouselAnimation();
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [startCarouselAnimation, challenges]);
+
+  // fetchChallenges 함수는 동일
+  const fetchChallenges = useCallback(async () => {
     try {
       setIsLoading(true);
-
-      // 백에서 API 구현되면 주석 풀기!!!!!
-      // const response = await axios.get(`/api/rooms?page=${page}`);
-      const response = { data: mockApiResponse(page, 10)};
-
-      // 마감임박(참여자 60%이상 찼거나 D-3 이하) 챌린지 필터링
-      const filteredChallenges = response.data.data.filter(challenge => {
-        const participationRate = challenge.currentParticipants / challenge.maxParticipants;
-        const daysUntilStart = calculateDday(challenge.startDate);
-        return participationRate >= 0.6 || daysUntilStart <= 3;
-      });
-
-      setChallenges(prev => [...prev, ...filteredChallenges]);
-      setCurrentPage(page);
+      const response = await homeApi.getEndingSoonChallenges();
+      if (Array.isArray(response)) {
+        setChallenges(response);
+      } else {
+        console.error("Expected array of challenges, got:", response);
+        setChallenges([]);
+      }
     } catch (error) {
-      console.error('Failed to fetch challenges:', error);
+      console.error("Failed to fetch challenges:", error);
+      setChallenges([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);  // 의존성 없는 경우 빈 배열로 전달
-
-  const calculateDday = (startDate) => {
-    const today = new Date();
-    const start = new Date(startDate);
-    const diffTime = start.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  }, []);
 
   useEffect(() => {
-    fetchChallenges(1);
-  }, [fetchChallenges]);  // 의존성 있는 경우 해당 변수(fetchChallenges) 전달
+    fetchChallenges();
+  }, [fetchChallenges]);
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (challenges.length === 0) {
+    return <div>No challenges available</div>;
+  }
 
   return (
     <div className="w-full overflow-hidden">
-      <motion.div 
+      <motion.div
         ref={carouselRef}
-        className="flex gap-3 py-4"  // 카드 간격
+        className="flex -ml-5"
         animate={controls}
+        style={{
+          willChange: "transform", // 성능 최적화
+          WebkitBackfaceVisibility: "hidden", // Safari 성능 최적화
+          backfaceVisibility: "hidden",
+          WebkitPerspective: 1000,
+          perspective: 1000,
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
+          pointerEvents: 'none',
+        }}
       >
-        {challenges.map((challenge, index) => (
-          <motion.div 
-            key={`${challenge.challengeId}-${index}`}
-            // className="flex-none w-72 sm:w-80 md:w-96"
-            className="flex-none w-56 sm:w-60 md:w-64"  // 카드 축소
-          >
-            <ChallengeCard 
-              challenge={challenge} 
-              index={index}
-            />
-          </motion.div>
-        ))}
-        
-        {/* 무한 스크롤을 위해 처음 요소들을 복제 */}
-        {challenges.map((challenge, index) => (
-          <motion.div 
-            key={`clone-${challenge.challengeId}-${index}`}
-            // className="flex-none w-72 sm:w-80 md:w-96"
-            className="flex-none w-56 sm:w-60 md:w-64" // 카드 축소
-          >
-            <ChallengeCard 
-              challenge={challenge} 
-              index={index}
-            />
-          </motion.div>
-        ))}
+        {/* 더 부드러운 움직임을 위해 카드 개수 3배로 증가 */}
+        {[...Array(3)].map((_, arrayIndex) =>
+          challenges.map((challenge, index) => (
+            <motion.div
+              key={`${challenge.challengeId}-${index}-${arrayIndex}`}
+              className="flex-none w-56 sm:w-60 md:w-64 -mr-5"
+              style={{
+                WebkitBackfaceVisibility: "hidden",
+                backfaceVisibility: "hidden",
+                pointerEvents: 'auto',
+              }}
+            >
+              <ChallengeCard challenge={challenge} index={index} />
+            </motion.div>
+          ))
+        )}
       </motion.div>
     </div>
   );

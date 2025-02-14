@@ -49,15 +49,15 @@ export default function HomePage() {
         <div className="snap-start">
           <ServiceHighlight />
         </div>
-        <section className="w-full py-16 snap-start">
-          <div className="container mx-auto px-4">
+        <section className="w-full py-16 snap-start bg-my-blue-3">
+          <div className="container mx-auto px-4 bg-my-blue-3">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900">
-                인기 있는 챌린지
+              <h2 className="text-3xl tracking-wider font-bold text-gray-900">
+                시작일이 다가오는 챌린지에 참여해보세요!
               </h2>
-              <p className="mt-2 text-gray-600">
-                곧 시작하거나 많은 사람들이 참여하고 있는 챌린지를 확인해보세요
-              </p>
+              {/* <p className="mt-2 text-gray-600">
+                시작일이 다가오는 챌린지에 참여해보세요!
+              </p> */}
             </div>
             <ChallengeCarousel />
           </div>
