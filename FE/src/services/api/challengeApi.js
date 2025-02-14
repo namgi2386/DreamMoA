@@ -76,7 +76,54 @@ const challengeApi = {
       throw error;
     }
   },
+  // 챌린지 리스트 최상단 나의 태그기반 챌린지 8개 받아오기
+  getTagChallenges: async(tags) => {
+    const response = await api.get("/challenges/tag-challenges", {
+      params: {
+        tags: tags // 쿼리 파라미터로 tags 전달
+      }
+    });
+    return response
+  },
 
+  // 챌린지 디테일 정보 불러오기 
+  getChallengeDetailInfo: async(challengeId) => {
+    try {
+      const response = await api.get(`/challenges/${challengeId}/info`);
+      return response
+    } catch (e){
+      console.log("챌린지디테일 못가져옴",e);
+    }
+  },
+
+  // ☆★☆★☆★☆★☆★ 챌린지 신청 입장 참가 탈퇴 ☆★☆★☆★☆★☆★☆★
+  // 챌린지 참가신청하기 (시작날짜 전 신청만하는상태)
+  joinChallenge: async(challengeId) => {
+    try {
+      const response = await api.post(`/challenges/${challengeId}/join`);
+      return response
+    } catch (e){
+      console.log("챌린지 참가하기 api 실패",e);
+    }
+  },
+  // 챌린지 입장하기(내꺼 입장) === 참가하기(이미시작날짜지났지만 입장)
+  enterChallenge: async(challengeId) => {
+    try {
+      const response = await api.post(`/challenges/${challengeId}/enter`);
+      return response
+    } catch (e){
+      console.log("챌린지 입장하기 api 실패",e);
+    }
+  },
+  // 챌린지 탈퇴하기
+  leaveChallengeNamgiver: async(challengeId) => {
+    try {
+      const response = await api.delete(`/challenges/${challengeId}/leave`);
+      return response
+    } catch (e){
+      console.log("챌린지 입장하기 api 실패",e);
+    }
+  },
   /**
    * 챌린지 탈퇴
    * @param {number} challengeId - 탈퇴할 챌린지 ID

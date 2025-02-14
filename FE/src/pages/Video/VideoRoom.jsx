@@ -136,8 +136,8 @@ const VideoRoom = () => {
             isChatOpen={isChatOpen} // 채팅창 on off
             setIsChatOpen={setIsChatOpen} // 채팅창 on off
           />
-           {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
-           <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
+          {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
+          <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
         </div>
       )}
     </div>
