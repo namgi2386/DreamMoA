@@ -140,7 +140,7 @@ export default function ChallengeImages() {
             }`}
           onClick={() => setIsEditMode(!isEditMode)}
         >
-          {isEditMode ? "completed" : "edit"}
+          {isEditMode ? "completed" : "leave"}
         </motion.button>
       </div>
 
@@ -169,14 +169,14 @@ export default function ChallengeImages() {
                 exit={{ opacity: 0 }}
                 className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 
                           bg-red-500 text-white px-4 py-1.5 rounded-full 
-                          text-base font-semibold hover:bg-red-600 
+                          text-base font-light hover:bg-red-600 
                           transition-colors duration-300 shadow-md"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLeaveChallenge(item.id);
                 }}
               >
-                탈퇴하기
+                leave
               </motion.button>
             )}
 

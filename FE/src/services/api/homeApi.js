@@ -11,4 +11,10 @@ export const homeApi = {
   updateUserTags: async (tagNames) => {
     return await api.post("/user-tag", { tagNames });
   },
+
+  // 임박 챌린지 조회
+  getEndingSoonChallenges: async () => {
+    const response = await api.get("/ending-soon");
+    return response.data;
+  },
 };
