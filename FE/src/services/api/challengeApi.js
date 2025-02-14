@@ -36,6 +36,7 @@ const challengeApi = {
       // 썸네일 이미지가 있는 경우에만 추가
       if (thumbnail) {
         formData.append("thumbnail", thumbnail);
+        console.log("썸네일 이미지 추가됨:", thumbnail); // 디버깅용
       }
 
       // POST 요청 전송
@@ -45,18 +46,91 @@ const challengeApi = {
         },
       });
 
+      // 응답에 thumbnailUrl이 포함되어 있는지 확인
+      console.log("챌린지 생성 응답:", response.data); // 디버깅용
       return response.data;
     } catch (error) {
-      // 에러 발생 시 throw
       console.error("Challenge creation failed:", error);
       throw error;
     }
   },
 
-  getRunningChallengeList: async() => {
-    const response = await api.get("/challenges/ongoing")
-    return response
-  }
+  /**
+   * 진행 중인 챌린지 목록 조회
+   * @returns {Promise} - 진행 중인 챌린지 목록
+   */
+  getRunningChallengeList: async () => {
+    const response = await api.get("/challenges/ongoing");
+    return response;
+  },
+  /**
+   * 사용자가 참여 중인 챌린지 목록 조회 (최대 7개)
+   * @returns {Promise} - 참여 중인 챌린지 목록
+   */
+  getMyParticipatingChallenges: async () => {
+    try {
+      const response = await api.get("/challenges/my-challenges");
+      return response.data;
+    } catch (error) {
+      console.error("참여 중인 챌린지 조회 실패:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * 챌린지 탈퇴
+   * @param {number} challengeId - 탈퇴할 챌린지 ID
+   * @returns {Promise} - 챌린지 탈퇴 결과
+   */
+  // leaveChallenge: async (challengeId) => {
+  //   try {
+  //     const response = await api.delete(`/challenges/${challengeId}/leave`);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("챌린지 탈퇴 실패:", error);
+  //     throw error;
+  //   }
+  // },
+  /**
+   * 챌린지 탈퇴
+   * @param {number} challengeId - 탈퇴할 챌린지 ID
+   * @returns {Promise} - 챌린지 탈퇴 결과
+   */
+  leaveChallenge: async (challengeId) => {
+    try {
+      if (!challengeId && challengeId !== 0) {
+        throw new Error("유효하지 않은 챌린지 ID입니다.");
+      }
+
+      // challengeId를 URL에 직접 포함시키고 별도의 요청 본문 없이 전송
+      const response = await api.delete(`/challenges/${challengeId}/leave`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 204 || response.status === 200) {
+        return { success: true };
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("챌린지 탈퇴 실패:", {
+        challengeId,
+        errorMessage: error.response?.data?.message || error.message,
+        errorStatus: error.response?.status,
+        errorDetails: error.response?.data,
+      });
+
+      // 사용자에게 더 명확한 에러 메시지 제공
+      const errorMessage =
+        error.response?.status === 500
+          ? "서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+          : error.response?.data?.message || "챌린지 탈퇴에 실패했습니다.";
+
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 export default challengeApi;
