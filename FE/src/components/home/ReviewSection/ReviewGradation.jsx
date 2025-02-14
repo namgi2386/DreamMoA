@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ReviewMain from './ReviewMain';
+import VideoSection from '../videoSection/VideoSection';
 
 export default function ReviewGradation() {
   // opacity 상태값 (0: 완전 투명, 1: 완전 불투명)
@@ -59,7 +60,8 @@ export default function ReviewGradation() {
       </div>
       {/* 실제내용div (배경보다 위에 z-10) */}
       <div className="absolute inset-0 flex flex-col items-center justify-center z-10" >
-        <ReviewMain/>
+        {/* <ReviewMain/> */}
+        <VideoSection/>
       </div>
     </div>
   );
