@@ -6,6 +6,7 @@ import {
 } from '../../../recoil/atoms/challenge/challengeListState';
 import ChallengeCardForSearchList from "./ChallengeCardForSearchList";
 import { useEffect, useState } from 'react';
+import { SlArrowDownCircle } from "react-icons/sl";
 
 
 export default function ChallengeListSearchResultSection() {
@@ -111,6 +112,11 @@ export default function ChallengeListSearchResultSection() {
               content empty
             </div>
           )}
+        </div>
+        <div className="w-full flex justify-center items-center">
+          <button className="mr-16 text-2xl text-gray-700">
+          <SlArrowDownCircle />
+          </button>
         </div>
       </div>
     </>
