@@ -28,6 +28,7 @@ export default function ChallengeListSearchResultSection() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
   
   return (
     <>
@@ -45,9 +46,9 @@ export default function ChallengeListSearchResultSection() {
           </>
         )}
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
-        <div className="mb-5 flex-1 bg-[#FEFDD5]  rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
+        <div className="mb-5 flex-1   rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 "> {/* overflow-auto를 overflow-hidden으로 변경 */}
           {runningChallenges.length !== 0 ? (
-            <div className="w-full h-[400px] bg-red-100 h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-hidden">
+            <div className="w-full  gap-4  h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  items-center justify-items-center">
               {runningChallenges  
                 .slice(0, maxCards)
                 .map((challenge) => (
@@ -59,7 +60,7 @@ export default function ChallengeListSearchResultSection() {
             </div>
           ): (
             <>
-              {/* <div className="bg-green-100 flex justify-center items-center w-full h-[400px]">
+              {/* <div className="bg-green-100 flex justify-center items-center w-full h-96 gap-4">
                 content empty
               </div> */}
             </>
@@ -71,9 +72,9 @@ export default function ChallengeListSearchResultSection() {
           모집 중
         </div>
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
-        <div className="mb-5 flex-1 bg-[#FEFDD5]  rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
+        <div className="mb-5 flex-1   rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 "> {/* overflow-auto를 overflow-hidden으로 변경 */}
           {recruitingChallenges.length !== 0 ? (
-            <div className="w-full h-[400px] bg-red-100 h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-hidden">
+            <div className="w-full  gap-4  h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  items-center justify-items-center">
               {recruitingChallenges  
                 .slice(0, maxCards)
                 .map((challenge) => (
@@ -84,7 +85,7 @@ export default function ChallengeListSearchResultSection() {
               ))}
             </div>
           ): (
-            <div className="bg-white flex justify-center items-center w-full h-[400px]">
+            <div className="bg-white flex justify-center items-center w-full h-96 gap-4">
               content empty
             </div>
           )}
@@ -95,9 +96,9 @@ export default function ChallengeListSearchResultSection() {
           전체 보기
         </div>
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
-        <div className="mb-5 flex-1 bg-[#FEFDD5]  rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
+        <div className="mb-5 flex-1   rounded-r-lg mr-1 text-black-800 pt-3 transition duration-800 "> {/* overflow-auto를 overflow-hidden으로 변경 */}
           {popularChallenges.length !== 0 ? (
-            <div className="w-full h-[400px] bg-red-100 h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-hidden">
+            <div className="w-full  gap-4 h-full grid grid-template-rows-[repeat(2,1fr)] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  items-center justify-items-center">
               {popularChallenges  
                 .slice(0, maxCards)
                 .map((challenge) => (
@@ -108,16 +109,12 @@ export default function ChallengeListSearchResultSection() {
               ))}
             </div>
           ): (
-            <div className="bg-white flex justify-center items-center w-full h-[400px]">
+            <div className="bg-white flex justify-center items-center w-full h-96 gap-4">
               content empty
             </div>
           )}
         </div>
-        <div className="w-full flex justify-center items-center">
-          <button className="mr-16 text-2xl text-gray-700">
-          <SlArrowDownCircle />
-          </button>
-        </div>
+
       </div>
     </>
   );

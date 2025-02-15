@@ -5,22 +5,24 @@ import { IoSearch } from "react-icons/io5";
 import { X } from 'lucide-react';
 import { useRecoilState } from 'recoil';
 import { 
+  searchForChallengeInputState,
   popularChallengesState, 
   runningChallengesState, 
-  recruitingChallengesState 
+  recruitingChallengesState,
+  searchForChallengeTagState, 
 } from '../../../recoil/atoms/challenge/challengeListState';
 
 
 export default function ChallengeListSearchSection() {
   // 챌린지 목록 상태 관리
+  const [inputValue, setInputValue] = useRecoilState(searchForChallengeInputState);
   const [popularChallenges, setPopularChallenges] = useRecoilState(popularChallengesState);
   const [runningChallenges, setRunningChallenges] = useRecoilState(runningChallengesState);
   const [recruitingChallenges, setRecruitingChallenges] = useRecoilState(recruitingChallengesState);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [myTags, setMyTags] = useState(null);
-  const [inputValue, setInputValue] = useState('');
+  const [myTags, setMyTags] = useRecoilState(searchForChallengeTagState);
 
   // 챌린지 데이터 가져오기
   useEffect(() => {
