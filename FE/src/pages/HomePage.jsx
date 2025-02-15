@@ -40,6 +40,10 @@ export default function HomePage() {
           setFinalHours={setTotalHours}
         />
       )}
+      {/* <SplashScreen
+        onComplete={handleSplashComplete}
+        setFinalHours={setTotalHours}
+      /> */}
       <div>
         
         <TopLine />

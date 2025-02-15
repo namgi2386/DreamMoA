@@ -6,6 +6,8 @@ import { FaStar, FaFolder, FaAngleDoubleLeft , FaAngleDoubleRight } from "react-
 import { BsClipboard2CheckFill } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+import { useRecoilState } from 'recoil';
+import { isHideSideState } from '../../recoil/atoms/SidebarState';
 
 // 공통 스타일 상수화
 const commonStyles = "fixed left-0   dark:bg-gray-800 cursor-grab z-50 bg-my-blue-1 rounded-tr-xl rounded-br-xl bg-opacity-95 hover:bg-opacity-98";
@@ -34,7 +36,16 @@ export default function SideNavbar() {
   const [isHideSide, setIsHideSide] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { scrollY } = useScroll();
+  const [isHideSideForRecoil, setIsHideSideForRecoil] = useRecoilState(isHideSideState);
 
+  useEffect(() => {
+    // isSetup 값이 변경될 때마다 실행
+    setIsHideSideForRecoil(!isSetup); // isSetup이 false면 true로, true면 false로 설정
+  }, [isSetup]);
+  useEffect(() => {
+    // isSetup 값이 변경될 때마다 실행
+    setIsHideSideForRecoil(isHideSide); // isSetup이 false면 true로, true면 false로 설정
+  }, [isHideSide]);
 
   useEffect(() => {
     const handleScroll = () => {
