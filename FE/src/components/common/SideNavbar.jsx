@@ -8,6 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import { useRecoilState } from 'recoil';
 import { isHideSideState } from '../../recoil/atoms/SidebarState';
+import { BsStars } from "react-icons/bs";
 
 // 공통 스타일 상수화
 const commonStyles = "fixed left-0   dark:bg-gray-800 cursor-grab z-50 bg-my-blue-1 rounded-tr-xl rounded-br-xl bg-opacity-95 hover:bg-opacity-98";
@@ -146,8 +147,8 @@ export default function SideNavbar() {
             icon={<FaStar />} 
             additionalStyles={`text-my-yellow rounded-tr-xl hover:rounded-tl-xl cursor-grab border-b-2` }
           />
+          <NavButton icon={<BsStars />} additionalStyles='text-white border-b-2' to="/challenge/list"/>
           <NavButton icon={<BsClipboard2CheckFill />} additionalStyles='text-white border-b-2' to="/dashboard"/>
-          <NavButton icon={<FaFolder />} additionalStyles='text-white border-b-2' to="/documents"/>
           <NavButton icon={<IoChatbubbleEllipsesSharp />} additionalStyles='text-white border-b-2' to="/community/free"/>
 
 

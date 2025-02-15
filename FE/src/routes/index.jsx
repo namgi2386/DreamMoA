@@ -123,7 +123,7 @@ export default function AppRoutes() {
           </PrivateRoute>
         }
       />
-      <Route path="/video" element={<VideoRoom />} />
+      <Route path="/video/:roomId" element={<VideoRoom />} />
       <Route path="/admin" element={<AdminPage />} />
 
       <Route path="*" element={<Notfound />} />
