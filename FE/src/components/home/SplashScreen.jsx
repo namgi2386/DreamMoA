@@ -2,12 +2,31 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import dreammoaLogo from "../../assets/logo/dreammoa.png";
 
+const StarryBackground = () => (
+  // 빛나는 밤하늘 배경 - footer에서 가져옴
+  <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    {[...Array(100)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute bg-white/70 rounded-full animate-pulse"
+        style={{
+          width: `${Math.random() * 3}px`,
+          height: `${Math.random() * 3}px`,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 100}%`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    ))}
+  </div>
+);
+
 const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   // 애니메이션 상태 관리
   const [count, setCount] = useState(0);
   const [animationStep, setAnimationStep] = useState(1); // 1: 숫자, 2: 텍스트, 3: 로고
   const [isCountingDone, setIsCountingDone] = useState(false);
-  const animationDuration = 6;
+  const animationDuration = 4;
 
   // body scroll 제어
   useEffect(() => {
@@ -17,7 +36,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     };
   }, []);
 
-  // forceComplete 처리
+
   useEffect(() => {
     if (forceComplete && !isCountingDone) {
       setIsCountingDone(true);
@@ -61,7 +80,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
       // 숫자 -> 텍스트 전환
       const textTimer = setTimeout(() => {
         setAnimationStep(2);
-      }, 2000);
+      }, 1500);
 
       // 텍스트 -> 로고 전환
       const logoTimer = setTimeout(() => {
@@ -71,7 +90,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
       // 전체 완료
       const completeTimer = setTimeout(() => {
         onComplete();
-      }, 6000);
+      }, 5000);
 
       return () => {
         clearTimeout(textTimer);
@@ -81,19 +100,36 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     }
   }, [isCountingDone, onComplete]);
 
+  // 로고 깜빡임 효과
+  const logoAnimation = {
+    initial: { opacity: 0, scale: 0.8 },
+    animate: { 
+      opacity: [0, 1, 0.5, 1, 0.5, 1, 0],  // 여러 번 깜빡이는 효과
+      scale: [0.8, 1, 0.95, 1, 0.95, 1, 1.1]
+    },
+    transition: { 
+      duration: 2,
+      times: [0, 0.2, 0.4, 0.6, 0.8, 0.9, 1],  // 각 단계별 타이밍
+      ease: "easeInOut"
+    }
+  };
+
   return (
     <motion.div
-      className="fixed inset-0 bg-[#003458] flex items-center justify-center z-50"
+    // 베경 덜 어두우면 bg-[#001524]로 바꾸기
+      className="fixed inset-0 bg-my-blue-1 flex items-center justify-center z-50 overflow-hidden"
       initial={{ opacity: 1 }}
-      animate={{ opacity: animationStep === 3 ? 0 : 1 }}
-      transition={{ duration: 2.0, ease: "easeOut", delay: animationStep === 3 ? 2 : 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.0, ease: "easeInOut" }}  //easeOut -> easeInOut (더 부드러움)
     >
+      <StarryBackground />
+      
       <AnimatePresence mode="wait">
-        {/* 숫자 카운트 애니메이션 */}
         {animationStep === 1 && (
           <motion.div
             key="counter"
-            className="text-white text-9xl font-bold" // 크기 증가
+            className="text-white text-9xl font-bold"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.2 }}
@@ -103,31 +139,27 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
           </motion.div>
         )}
 
-        {/* DREAMMOA 텍스트 애니메이션 */}
         {animationStep === 2 && (
           <motion.div
             key="text"
-            className="text-white text-9xl font-extrabold tracking-wider" // 크기 및 폰트 굵기 증가
+            className="text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5 }}
           >
-            DREAMMOA
+            <div className="text-white text-4xl mb-2 font-medium">꿈을 모으다</div>
+            <div className="text-white text-7xl font-extrabold tracking-wider">DREAMMOA</div>
           </motion.div>
         )}
 
-        {/* 로고 애니메이션 */}
         {animationStep === 3 && (
           <motion.img
             key="logo"
             src={dreammoaLogo}
             alt="DreamMoa Logo"
-            className="w-96 h-auto" // 로고 크기 조정
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.2 }}
-            transition={{ duration: 0.5 }}
+            className="w-96 h-auto"
+            {...logoAnimation}
           />
         )}
       </AnimatePresence>
