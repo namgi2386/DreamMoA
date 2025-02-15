@@ -185,6 +185,40 @@ const challengeApi = {
       throw new Error(errorMessage);
     }
   },
+  // 챌린지 리스트 검색+태그+초기랜더링 데이터 가져오기
+  getSearchedChallenges: async(keyword,tags) => {
+    const params = {};  // 빈 객체 생성
+  
+    // 값이 있을 때만 params 객체에 추가
+    if (keyword) params.keyword = keyword;
+    if (tags) params.tags = tags;
+
+    const response = await api.get("/challenges/search", { params });
+    console.log("챌린지 검색 결과 :",response.data);
+    
+    
+    // 각 카테고리별 필터링
+    const popularChallenges = response.data.popularChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    const runningChallenges = response.data.runningChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    const recruitingChallenges = response.data.recruitingChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    return {
+      ...response,
+      data: {
+        popularChallenges,
+        runningChallenges,
+        recruitingChallenges
+      }
+    };
+  },
 };
 
 export default challengeApi;

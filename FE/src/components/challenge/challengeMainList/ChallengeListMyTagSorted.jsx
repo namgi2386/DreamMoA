@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import challengeApi from "../../../services/api/challengeApi";
-import ChallengeCard from "/src/components/challenge/test/ChallengeCard";
+import ChallengeCard from "./ChallengeCard";
 import { motion } from "framer-motion";
 import { tagApi } from "../../../services/api/tagApi";
 import { useNavigate } from "react-router-dom";
@@ -76,7 +76,7 @@ export default function ChallengeListMyTagSorted() {
     <>
       <div className="relative flex w-full h-60 cursor-default mt-5">
         {/* 왼쪽 Start Your Challenge 섹션 */}
-        <div className="flex flex-col bg-my-blue-1 px-4 py-8 h-full justify-between items-center w-full sm:w-80 rounded-lg transition-all duration-300 sm:rounded-none sm:rounded-l-lg">
+        <div className="flex flex-col bg-my-blue-1 px-4 py-8 h-full justify-between items-center w-full sm:w-80 rounded-xl transition-all duration-300 sm:rounded-none sm:rounded-l-xl">
           <h1 className="text-5xl  font-bold text-[#FEFDD5] mb-2 select-none whitespace-nowrap tracking-wider">
             Start Your
           </h1>

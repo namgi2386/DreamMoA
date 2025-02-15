@@ -14,7 +14,7 @@ import SuccessModal from '/src/components/common/modal/SuccessModal';
 
 export default function App() {
   const location = useLocation();
-  const hideFooterPaths = ["/join","/findpw","/findid", "/login","/documents","/challenge/create", "/video"];
+  const hideFooterPaths = ["/join","/findpw","/findid", "/login","/documents","/challenge/create", "/video","/challenge/list"];
   const hideSideNavbarPaths = ["/join","/findpw","/findid", "/login","/documents", "/video"];
   const hideHeaderPaths = ["/login","/findpw","/findid", "/documents", "/video"];
 
