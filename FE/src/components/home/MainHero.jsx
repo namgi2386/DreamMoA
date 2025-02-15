@@ -65,13 +65,17 @@ const MainHero = () => {
       <div className="container mx-auto h-full px-10 flex items-center justify-center">
         <div className="text-center space-y-8 z-10">
           <h1 className="font-bold text-my-yellow">
-            {/*간격 조정 참고: mb-1 -> mb-0.5 */}
-            <span className="text-[66px] block mb-0.5 whitespace-nowrap tracking-wider">
+            <span className="text-[66px] block mb-0 tracking-wider">
               우리의 꿈이 모인지
             </span>
-            <span className="text-[106px] block whitespace-nowrap tracking-wider">
-              {totalHours.toLocaleString()}시간
-            </span>
+            <div className="whitespace-nowrap block -mt-5">
+              <span className="text-[135px] tracking-wider inline-block animate-sparkle">
+                {totalHours.toLocaleString()}
+              </span>
+              <span className="text-[98px] tracking-wider inline-block">
+                시간째
+              </span>
+            </div>
           </h1>
           <div className="flex items-center justify-center whitespace-nowrap mt-12">
             <span className="text-[32px] text-my-blue-3 font-bold tracking-wider">
@@ -86,5 +90,4 @@ const MainHero = () => {
     </section>
   );
 };
-
 export default MainHero;
