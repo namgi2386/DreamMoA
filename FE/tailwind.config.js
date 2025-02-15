@@ -28,7 +28,23 @@ export default {
       },
       fontFamily: {
         'user-input': ['Noto Sans KR', 'sans-serif'],
-      }
+      },
+
+      animation: {
+        'sparkle': 'sparkle 3s ease-in-out infinite',
+      },
+      keyframes: {
+        'sparkle': {
+          '0%, 100%': {
+            'text-shadow': '0 0 4px rgba(249, 248, 113, 0.3), 0 0 8px rgba(249, 248, 113, 0.2)',
+            'opacity': '0.95'
+          },
+          '50%': {
+            'text-shadow': '0 0 8px rgba(255, 255, 180, 0.6), 0 0 20px rgba(255, 255, 180, 0.4), 0 0 30px rgba(255, 255, 180, 0.2)',
+            'opacity': '1'
+          }
+        },
+      },
     },
   },
   plugins: [],
