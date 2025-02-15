@@ -17,4 +17,14 @@ export const homeApi = {
     const response = await api.get("/ending-soon");
     return response.data;
   },
+
+  getTotalScreenTime: async () => {
+    try {
+      const response = await api.get("/total-screen-time");
+      return response.data.totalScreenTime;
+    } catch (error) {
+      console.error("Failed to fetch total screen time:", error);
+      return 150000; // 에러 발생 시 기본값 반환
+    }
+  },
 };

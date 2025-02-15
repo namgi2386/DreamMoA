@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { homeApi } from "../../services/api/homeApi";
 import dreammoaLogo from "../../assets/logo/dreammoa.png";
 
 const stars = [...Array(100)].map(() => ({
@@ -53,8 +54,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   useEffect(() => {
     const fetchAndSetupAnimation = async () => {
       try {
-        // 백엔드 구현 후 실제 데이터로 변경
-        const totalMinutes = 150000; // 임시 값
+        const totalMinutes = await homeApi.getTotalScreenTime();
         const hours = Math.floor(totalMinutes / 60);
         setFinalHours(hours);
 
