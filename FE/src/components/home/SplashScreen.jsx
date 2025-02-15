@@ -33,7 +33,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const [count, setCount] = useState(0);
   const [animationStep, setAnimationStep] = useState(1); // 1: 숫자, 2: 텍스트, 3: 로고
   const [isCountingDone, setIsCountingDone] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);  // 전체 컴포넌트의 표시 여부
+  const [isVisible, setIsVisible] = useState(true); // 전체 컴포넌트의 표시 여부
   const animationDuration = 4;
 
   // body scroll 제어
@@ -86,7 +86,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
       // 숫자 -> 텍스트 전환
       const textTimer = setTimeout(() => {
         setAnimationStep(2);
-      }, 2000);
+      }, 1500);
 
       // 텍스트 -> 로고 전환
       const logoTimer = setTimeout(() => {
@@ -95,13 +95,13 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
 
       // 로고 깜빡임 후 페이드아웃 시작
       const startExitTimer = setTimeout(() => {
-        setIsVisible(false);  // 페이드아웃 시작
+        setIsVisible(false); // 페이드아웃 시작
       }, 5000);
 
       // 페이드아웃이 완료된 후 컴포넌트 제거
       const completeTimer = setTimeout(() => {
         onComplete();
-      }, 6500);  // 페이드아웃 시간 고려하여 지연
+      }, 6500); // 페이드아웃 시간 고려하여 지연
 
       return () => {
         clearTimeout(textTimer);
@@ -142,13 +142,16 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
             {animationStep === 1 && (
               <motion.div
                 key="counter"
-                className="text-white text-9xl font-bold z-10"
+                className="text-white text-[12rem] font-bold z-10 flex items-center justify-center whitespace-nowrap"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                {Math.floor(count).toLocaleString()}
+                <div className="w-[28rem] text-right">
+                  {Math.floor(count).toLocaleString()}
+                </div>
+                <div className="ml-4 text-[7rem]">시간</div>
               </motion.div>
             )}
 
@@ -161,10 +164,10 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="text-white text-4xl mb-2 font-medium">
+                <div className="text-white text-6xl mb-4 font-medium">
                   꿈을 모으다
                 </div>
-                <div className="text-white text-7xl font-extrabold tracking-wider">
+                <div className="text-white text-8xl font-extrabold tracking-wider">
                   DREAMMOA
                 </div>
               </motion.div>
@@ -175,7 +178,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 key="logo"
                 src={dreammoaLogo}
                 alt="DreamMoa Logo"
-                className="w-96 h-auto z-10"
+                className="w-[32rem] h-auto z-10"
                 {...logoAnimation}
               />
             )}
