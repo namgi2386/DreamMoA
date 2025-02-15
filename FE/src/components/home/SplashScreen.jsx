@@ -32,7 +32,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   const [count, setCount] = useState(0);
   const [animationStep, setAnimationStep] = useState(1); // 1: 숫자, 2: 텍스트, 3: 로고
   const [isCountingDone, setIsCountingDone] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);  // 전체 컴포넌트의 표시 여부
   const animationDuration = 4;
 
   // body scroll 제어
@@ -93,15 +93,15 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
         setAnimationStep(3);
       }, 3500);
 
-      // 전체 완료 전에 페이드아웃 시작
+      // 로고 깜빡임 후 페이드아웃 시작
       const startExitTimer = setTimeout(() => {
-        setIsExiting(true);
+        setIsVisible(false);  // 페이드아웃 시작
       }, 5000);
 
-      // 페이드아웃 완료 후 onComplete 호출
+      // 페이드아웃이 완료된 후 컴포넌트 제거
       const completeTimer = setTimeout(() => {
         onComplete();
-      }, 6000);
+      }, 6500);  // 페이드아웃 시간 고려하여 지연
 
       return () => {
         clearTimeout(textTimer);
@@ -127,81 +127,63 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
   };
 
   return (
-    <motion.div
-      // 밤하늘 베경 더 어둡게 하려면 bg-[#001524]로 바꾸기
-      className="fixed inset-0 bg-my-blue-1 flex items-center justify-center z-50 overflow-hidden"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1.0, ease: "easeInOut" }} //easeOut -> easeInOut (더 부드러움)
-    >
-      <StarryBackground />
+    <AnimatePresence mode="wait">
+      {isVisible && (
+        <motion.div
+          className="fixed inset-0 bg-my-blue-1 flex items-center justify-center z-50 overflow-hidden"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        >
+          <StarryBackground />
 
-      <AnimatePresence mode="wait">
-        {animationStep === 1 && (
-          <motion.div
-            key="counter"
-            className="text-white text-9xl font-bold z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {Math.floor(count).toLocaleString()}
-          </motion.div>
-        )}
+          <AnimatePresence mode="wait">
+            {animationStep === 1 && (
+              <motion.div
+                key="counter"
+                className="text-white text-9xl font-bold z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                {Math.floor(count).toLocaleString()}
+              </motion.div>
+            )}
 
-        {animationStep === 2 && (
-          <motion.div
-            key="text"
-            className="text-center z-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="text-white text-4xl mb-2 font-medium">
-              꿈을 모으다
-            </div>
-            <div className="text-white text-7xl font-extrabold tracking-wider">
-              DREAMMOA
-            </div>
-          </motion.div>
-        )}
+            {animationStep === 2 && (
+              <motion.div
+                key="text"
+                className="text-center z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="text-white text-4xl mb-2 font-medium">
+                  꿈을 모으다
+                </div>
+                <div className="text-white text-7xl font-extrabold tracking-wider">
+                  DREAMMOA
+                </div>
+              </motion.div>
+            )}
 
-        {animationStep === 3 && (
-          <motion.img
-            key="logo"
-            src={dreammoaLogo}
-            alt="DreamMoa Logo"
-            className="w-96 h-auto z-10"
-            {...logoAnimation}
-            style={{ opacity: isExiting ? 0 : undefined }}
-            transition={{
-              ...logoAnimation.transition,
-              opacity: { duration: 1.0, ease: "easeInOut" },
-            }}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
+            {animationStep === 3 && (
+              <motion.img
+                key="logo"
+                src={dreammoaLogo}
+                alt="DreamMoa Logo"
+                className="w-96 h-auto z-10"
+                {...logoAnimation}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
-
-// 별 반짝임을 위한 커스텀 애니메이션
-const styles = `
-  @keyframes twinkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-  .animate-twinkle {
-    animation: twinkle 3s infinite;
-  }
-`;
-
-// 스타일 태그 추가
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
 
 export default SplashScreen;
