@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { homeApi } from "../../services/api/homeApi";
-import dreammoaLogo from "../../assets/logo/dreammoa.png";
+import dreammoaLogo from "../../assets/logo/dreammoa-bg.png";
 
 const stars = [...Array(100)].map(() => ({
   width: 1 + Math.random() * 2,
