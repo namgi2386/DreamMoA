@@ -334,10 +334,13 @@ export default function ChallengeDetailModal() {
           className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white py-4 rounded-xl font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg">
             {getButtonText(isSetup, isMyChallenge)}
           </button>
-          {/* 탈퇴 */}
-          <button 
-          onClick={() => {QuitChallenge()}}
-          className="text-gray-400 hover:text-gray-600 duration-300">탈퇴하기</button>
+          {/* 탈퇴버튼 제거됨 */}
+          <div className=''>
+            {/* <button 
+              onClick={() => {QuitChallenge()}}
+              className="text-gray-400 hover:text-gray-600 duration-300">탈퇴하기
+            </button> */}
+          </div>
         </div>
       </motion.div>
     </motion.div>

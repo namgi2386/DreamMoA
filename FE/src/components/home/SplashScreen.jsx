@@ -25,7 +25,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
       try {
         // 백 구현되면 이거 주석 해제!!!!!!!!!!!!
         // const totalMinutes = await getTotalStudyTime();
-        const totalMinutes = 2500; // 임시 값
+        const totalMinutes = 2500*60; // 임시 값
         const hours = Math.floor(totalMinutes / 60);
         setFinalHours(hours);
 
