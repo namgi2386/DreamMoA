@@ -1,4 +1,7 @@
-// 랜덤한 별을 생성하는 유틸리티 함수
+import { useEffect, useState } from "react";
+import { homeApi } from "../../services/api/homeApi";
+
+// 랜덤한 별 생성
 const generateStars = (count) => {
   return Array.from({ length: count }, () => ({
     width: Math.random() * 3 + 1, // 1-4px 크기의 별
@@ -8,10 +11,10 @@ const generateStars = (count) => {
   }));
 };
 
-// 밤하늘의 별 생성 (200개의 별)
+// 밤하늘 별 생성 (200개의 별)
 const stars = generateStars(200);
 
-// 별이 빛나는 배경 컴포넌트
+// 별 빛나는 배경 컴포넌트
 const StarryBackground = () => (
   <div className="absolute inset-0 pointer-events-none overflow-hidden">
     {stars.map((star, i) => (
@@ -30,7 +33,31 @@ const StarryBackground = () => (
   </div>
 );
 
-const MainHero = ({ totalHours }) => {
+const MainHero = () => {
+  // 총 스크린 타임 관리할 상태
+  const [totalHours, setTotalHours] = useState(0);
+
+  useEffect(() => {
+    // 초기 데이터 로딩
+    const fetchTotalScreenTime = async () => {
+      try {
+        const totalMinutes = await homeApi.getTotalScreenTime();
+        // 분 단위를 시간 단위로 변환 (소수점 첫째자리까지 표시)
+        const hoursValue = Number((totalMinutes / 60).toFixed(1));
+        setTotalHours(hoursValue);
+      } catch (error) {
+        console.error("Error fetching total screen time:", error);
+        // 에러 시 기본값도 시간 단위로 변환 (150000분 → 2500시간)
+        setTotalHours(2500);
+      }
+    };
+
+    fetchTotalScreenTime();
+    const interval = setInterval(fetchTotalScreenTime, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative h-screen bg-gradient-to-b from-hmy-blue-1 to-my-blue-1 text-white overflow-hidden">
       <StarryBackground />
@@ -38,16 +65,15 @@ const MainHero = ({ totalHours }) => {
       <div className="container mx-auto h-full px-10 flex items-center justify-center">
         <div className="text-center space-y-8 z-10">
           <h1 className="font-bold text-my-yellow">
-            {/* tracking-wider로 자간 증가, mb-1에서 mb-0.5로 간격 감소 */}
+            {/*간격 조정 참고: mb-1 -> mb-0.5 */}
             <span className="text-[66px] block mb-0.5 whitespace-nowrap tracking-wider">
               우리의 꿈이 모인지
             </span>
             <span className="text-[106px] block whitespace-nowrap tracking-wider">
-              {totalHours.toLocaleString()}시간째
+              {totalHours.toLocaleString()}시간
             </span>
           </h1>
           <div className="flex items-center justify-center whitespace-nowrap mt-12">
-            {/* tracking-wider로 자간 증가 */}
             <span className="text-[32px] text-my-blue-3 font-bold tracking-wider">
               dreammoa
             </span>

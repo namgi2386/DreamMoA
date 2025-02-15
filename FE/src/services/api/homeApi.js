@@ -18,6 +18,7 @@ export const homeApi = {
     return response.data;
   },
 
+  // 전체 유저 총 공부시간
   getTotalScreenTime: async () => {
     try {
       const response = await api.get("/total-screen-time");
