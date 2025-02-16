@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { homeApi } from "../../services/api/homeApi";
-import dreammoaLogo from "../../assets/logo/dreammoa-bg.png";
+import dreammoaLogo from "../../assets/logo/dreammoa.png";
 
-const stars = [...Array(100)].map(() => ({
-  width: 1 + Math.random() * 2,
-  left: Math.random() * 100,
-  top: Math.random() * 100,
-  delay: Math.random() * 5,
-}));
+// 랜덤한 별 생성 함수
+const generateStars = (count) => {
+  return Array.from({ length: count }, () => ({
+    width: Math.random() * 3 + 1, // 1-4px 크기의 별
+    left: Math.random() * 100, // 0-100% 위치
+    top: Math.random() * 100, // 0-100% 위치
+    delay: Math.random() * 3, // 0-3초 딜레이
+  }));
+};
 
+// 밤하늘 별 생성 (200개의 별)
+const stars = generateStars(200);
+
+// 별 빛나는 배경 컴포넌트
 const StarryBackground = () => (
-  // 별이 빛나는 밤하늘 배경 (완전 고정)
   <div className="absolute inset-0 pointer-events-none overflow-hidden">
     {stars.map((star, i) => (
       <div
@@ -86,7 +92,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
       // 숫자 -> 텍스트 전환
       const textTimer = setTimeout(() => {
         setAnimationStep(2);
-      }, 1500);
+      }, 700);
 
       // 텍스트 -> 로고 전환
       const logoTimer = setTimeout(() => {
