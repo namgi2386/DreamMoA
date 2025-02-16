@@ -136,6 +136,7 @@ const VideoRoom = () => {
               subscribers={subscribers} // 친구들 화면
               onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
               currentLayout={currentLayout}
+              session={session}
               onLayoutChange={setCurrentLayout}
               // 화면공유 관련 props
               isScreenSharing={isScreenSharing}
