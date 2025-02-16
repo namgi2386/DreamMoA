@@ -2,16 +2,27 @@
 import { useEffect, useState } from 'react';
 import { Paperclip, Smile, Bell } from 'lucide-react'; // lucide-react 아이콘 사용
 import { WiDirectionUp } from "react-icons/wi";
+import { useRecoilState } from 'recoil';
+import { memoListState, showSummaryState } from '../../../recoil/atoms/challenge/ai/scriptState';
 
   // ☆★☆★☆★ 채팅 입력창 ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
 
 export default function ChatInput({ onSendMessage }) {
   const [chatInput, setChatInput] = useState('');
+  const [showSummary, setShowSummary] = useRecoilState(showSummaryState); // 요약창 on off
+  const [memoList, setMemoList] = useRecoilState(memoListState); // 채팅 기록저장용
 
   // 메시지 전송 핸들러
   const chatRequest = (e) => {
     e.preventDefault(); // 새로고침 제거
-    if (chatInput.trim()) {
+    if (showSummary && chatInput.trim()) {
+      setMemoList(prev => [...prev, {
+        id: Date.now(),  // 고유 ID 생성
+        content: chatInput.trim()
+      }]);
+      setChatInput('');
+    }
+    if (!showSummary && chatInput.trim()) {
       onSendMessage(chatInput); // 메세지 전송
       setChatInput('');
     }
@@ -36,7 +47,7 @@ export default function ChatInput({ onSendMessage }) {
   const handleNotifyClick = () => console.log('알림 버튼 클릭');
 
   return (
-    <div className="absolute bottom-0 w-full pt-4 pl-4 pr-4 border-t ">
+    <div className="">
       <div className="flex flex-col items-center  ">
         {/* 입력 section */}
         <form onSubmit={chatRequest}
