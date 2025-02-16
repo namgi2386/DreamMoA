@@ -3,10 +3,6 @@ import { useMemo } from "react";
 import defaultImage from "../../../assets/default/defaultChallengePicture.png";
 
 const ChallengeCard = ({ challenge, onHover }) => {
-  // 카드마다 다른 기울기 값을 생성 (-3도 ~ 3도 사이)
-  const randomRotation = useMemo(() => {
-    return Math.random() * 6 - 3;
-  }, []);
 
   // 참여자 수 진행률 계산 유지
   const calculateProgress = () => {
@@ -25,20 +21,8 @@ const ChallengeCard = ({ challenge, onHover }) => {
   };
 
   return (
-    <motion.div
-      className="w-full aspect-[5/7] bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform-gpu" // transform-gpu 추가
-      initial={{ rotate: randomRotation }}
-      whileHover={{
-        scale: 1.02,
-        rotate: 0,
-        transition: {
-          duration: 0.3,
-          scale: {
-            type: "spring",
-            damping: 15,
-          },
-        },
-      }}
+    <div
+      className="w-full aspect-[5/7] bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transform-gpu"
       style={{
         willChange: "transform",
         WebkitBackfaceVisibility: "hidden",
@@ -50,7 +34,7 @@ const ChallengeCard = ({ challenge, onHover }) => {
         <h3 className="text-xl text-my-blue-1 font-bold mb-2 truncate">
           {challenge.title}
         </h3>
-        {/* 챌린지 설명 - API에서 제공하지 않는 경우 제거 고려 */}
+        {/* 챌린지 설명 */}
         {challenge.description && (
           <p
             className="text-gray-600 mb-4 truncate text-base"
@@ -104,7 +88,7 @@ const ChallengeCard = ({ challenge, onHover }) => {
           )}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

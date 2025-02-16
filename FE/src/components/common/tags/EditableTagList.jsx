@@ -67,9 +67,15 @@ export default function EditableTagList({
     // 태그가 없고 edit 모드가 아닐 때
     if (!isEdittag && selectedTags.length === 0) {
       return (
-        <motion.p variants={tagVariants} className="text-gray-500 text-lg">
-          관심있는 태그를 설정해보세요.
-        </motion.p>
+        <div className="flex justify-center items-center h-full">
+          <motion.p
+            variants={tagVariants}
+            // 와 이거 엄청 좋다 폰트 특성에 따라서 여백이 이상해질 때 relative top-[?px] 이렇게 미세조정 가능능
+            className="text-gray-500 text-lg leading-none relative top-[10px]"
+          >
+            관심 있는 태그를 설정해보세요
+          </motion.p>
+        </div>
       );
     }
 
@@ -88,7 +94,7 @@ export default function EditableTagList({
               transition-all duration-200
               ${
                 tag
-                  ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  ? "bg-my-blue-2 text-my-blue-5 hover:bg-my-blue-4"
                   : isEdittag
                   ? "bg-gray-100 text-gray-400"
                   : "hidden"
@@ -120,8 +126,13 @@ export default function EditableTagList({
               <motion.div
                 key="editor"
                 variants={tagVariants}
-                className="space-y-4"
+                className="space-y-2"
               >
+                <div className="flex justify-end">
+                  <span className="text-my-blue-4 text-sm">
+                    태그는 최대 3개 선택할 수 있습니다.
+                  </span>
+                </div>
                 <TagSelector />
                 {selectedTags.length > 3 && (
                   <motion.p

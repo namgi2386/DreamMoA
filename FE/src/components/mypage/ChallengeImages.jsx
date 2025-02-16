@@ -119,7 +119,7 @@ export default function ChallengeImages() {
 
         <div className="w-full bg-white rounded-3xl border-2 border-gray-300 p-4">
           <motion.p className="text-gray-500 text-lg text-center py-8">
-            관심 있는 챌린지를 찾아보세요.
+            관심 있는 챌린지를 찾아보세요
           </motion.p>
         </div>
       </div>
