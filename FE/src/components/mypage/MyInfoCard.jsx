@@ -6,7 +6,6 @@ import { FaCamera } from "react-icons/fa";
 import getUserApi from "../../services/api/getUserApi";
 import { successModalState } from "/src/recoil/atoms/modalState";
 import { validateNickname, validateName } from "../../utils/validation";
-// 삭제: validateEmail, validatePassword import 제거
 
 // 프로필 기본 이미지
 import defaultUserImageOrange from "/src/assets/default/defaultUserImageOrange.png";
@@ -27,8 +26,10 @@ export default function MyInfoCard({
 }) {
   // 상태 관리
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  const [inputNameValue, setInputNameValue] = useState(null);
-  const [inputNicknameValue, setInputNicknameValue] = useState(null);
+  const [inputNameValue, setInputNameValue] = useState(userInfo.name);
+  const [inputNicknameValue, setInputNicknameValue] = useState(
+    userInfo.nickname
+  );
   const [inputPasswordValue1, setInputPasswordValue1] = useState(null);
   const [inputPasswordValue2, setInputPasswordValue2] = useState(null);
   const [inputPasswordValue3, setInputPasswordValue3] = useState(null);
@@ -37,8 +38,7 @@ export default function MyInfoCard({
   const [isNicknameVerified, setIsNicknameVerified] = useState(false);
   const [wasNicknameChanged, setWasNicknameChanged] = useState(false);
   const [isNameVerified, setIsNameVerified] = useState(false);
-  // 삭제: errors 상태 제거
-
+  
   const fileInputRef = useRef(null);
   const setSuccessModalState = useSetRecoilState(successModalState);
 
@@ -51,12 +51,15 @@ export default function MyInfoCard({
         setIsNicknameVerified(false);
         setWasNicknameChanged(true);
       }
-      setInputNicknameValue(value);
+
+      // 빈 값일 경우 현재 닉네임으로 설정
+      setInputNicknameValue(value || userInfo.nickname);
     } else if (name === "name") {
       if (isNameVerified) {
         setIsNameVerified(false);
       }
-      setInputNameValue(value);
+      // 빈 값일 경우 현재 이름으로 설정
+      setInputNameValue(value || userInfo.name);
     }
   };
 
@@ -84,8 +87,21 @@ export default function MyInfoCard({
   // 닉네임 중복 확인
   const handleCheckNickname = async () => {
     try {
-      const isAvailable = await authApi.checkNickname(inputNicknameValue);
+      // 현재 사용자의 닉네임과 동일한 경우 즉시 승인
+      if (inputNicknameValue === userInfo.nickname) {
+        setSuccessModalState({
+          isOpen: true,
+          message: "현재 사용중인 닉네임입니다.",
+          onCancel: () => console.log("작업 취소됨"),
+          isCancellable: false,
+        });
+        setIsNicknameVerified(true);
+        setWasNicknameChanged(false);
+        return;
+      }
 
+      // 다른 닉네임인 경우 중복 체크
+      const isAvailable = await authApi.checkNickname(inputNicknameValue);
       if (isAvailable) {
         setSuccessModalState({
           isOpen: true,
@@ -168,36 +184,49 @@ export default function MyInfoCard({
   const handleSaveProfile = async () => {
     try {
       setIsVerified(1);
-      const response = await getUserApi.uploadProfileInfo(
-        inputNameValue,
-        inputNicknameValue
-      );
+      // 현재 값과 다른 경우에만 해당 필드 업데이트
+      const updatedName = inputNameValue !== userInfo.name ? inputNameValue : undefined;
+      const updatedNickname = inputNicknameValue !== userInfo.nickname ? inputNicknameValue : undefined;
 
-      if (response.data.message === "회원 정보가 성공적으로 수정되었습니다.") {
-        try {
-          const userResponse = await getUserApi.getUserInfo();
-          setSuccessModalState({
-            isOpen: true,
-            message: "변경 완료",
-            onCancel: () => console.log("작업 취소됨"),
-            isCancellable: false,
-          });
+      // 변경된 필드가 있는 경우에만 API 호출
+      if (updatedName || updatedNickname) {
+        const response = await getUserApi.uploadProfileInfo(
+          updatedName || userInfo.name,
+          updatedNickname || userInfo.nickname
+        );
 
-          if (userResponse.data) {
-            setUserInfo(userResponse.data);
+        if (response.data.message === "회원 정보가 성공적으로 수정되었습니다.") {
+          try {
+            const userResponse = await getUserApi.getUserInfo();
+            setSuccessModalState({
+              isOpen: true,
+              message: "변경 완료",
+              onCancel: () => console.log("작업 취소됨"),
+              isCancellable: false,
+            });
+
+            if (userResponse.data) {
+              setUserInfo(userResponse.data);
+            }
+            setIsEditModeState(false);
+          } catch (error) {
+            console.error("프로필 정보 갱신 실패:", error);
           }
-          setIsEditModeState(false);
-        } catch (error) {
-          console.error("프로필 정보 갱신 실패:", error);
         }
+      } else {
+        // 변경사항이 없는 경우
+        setSuccessModalState({
+          isOpen: true,
+          message: "변경사항이 없습니다.",
+          onCancel: () => console.log("작업 취소됨"),
+          isCancellable: false,
+        });
+        setIsEditModeState(false);
       }
     } catch (error) {
       console.error("프로필 정보 변경 실패:", error);
     }
   };
-
-  // 삭제: editProfileSaveButton 함수 제거 (handleSaveProfile과 중복)
-  // 삭제: validateField 함수 제거 (더 이상 사용하지 않음)
 
   // 비밀번호 일치여부검사
   useEffect(() => {
@@ -259,16 +288,17 @@ export default function MyInfoCard({
 
   // 화면 렌더링시 초기상태
   useEffect(() => {
-    setInputNicknameValue(null);
+    setInputNameValue(userInfo.name);
+    setInputNicknameValue(userInfo.nickname);
     setInputPasswordValue1(null);
     setInputPasswordValue2(null);
     setInputPasswordValue3(null);
     setIsPasswordMode(false);
-    // 삭제: setErrors({}); - errors 상태를 더 이상 사용하지 않음
-    setIsNicknameVerified(false);
+    // 초기에는 검증 완료 상태로 설정 (현재 값 사용 중)
+    setIsNicknameVerified(true);
     setWasNicknameChanged(false);
-    setIsNameVerified(false);
-  }, [isEditMode]);
+    setIsNameVerified(true);
+  }, [isEditMode, userInfo]);
 
   // 기본화면 or 수정화면 or 비밀번호변경화면 전환 로직
   const renderContent = () => {
@@ -414,7 +444,8 @@ export default function MyInfoCard({
               <input
                 type="text"
                 name="name"
-                placeholder={userInfo.name}
+                // placeholder={userInfo.name}
+                value={inputNameValue}
                 className="w-full focus:outline-none"
                 onChange={handleChange}
               />
@@ -445,7 +476,8 @@ export default function MyInfoCard({
               <input
                 type="text"
                 name="nickname"
-                placeholder={userInfo.nickname}
+                // placeholder={userInfo.nickname}
+                value={inputNicknameValue}
                 className="w-full focus:outline-none"
                 onChange={handleChange}
               />
