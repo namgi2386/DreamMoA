@@ -35,3 +35,8 @@ export const selectedTagsState = atom({
     },
   ],
 });
+
+export const challengeSelectedTagsState = atom({
+  key: "challengeSelectedTagsState",
+  default: []
+});

@@ -5,6 +5,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { challengeModalState, selectedChallengeState } from '../../../recoil/atoms/challenge/challengeDetailState';
 import { useEffect, useState } from 'react';
 import challengeApi from '../../../services/api/challengeApi';
+import { useNavigate } from "react-router-dom";
 
 
 ///////////////////////////// 이건 메인함수 아니고 성공률 모션 분리한거
@@ -57,6 +58,7 @@ export default function ChallengeDetailModal() {
   const isModalOpen = useRecoilValue(challengeModalState);
   const setModalOpen = useSetRecoilState(challengeModalState);
   const selectedChallenge  = useRecoilValue(selectedChallengeState);
+  const navigate = useNavigate();
 
   // 매게변수 분리 
   const {
@@ -87,10 +89,12 @@ export default function ChallengeDetailModal() {
   const formattedExpireDate = expireDate.split('T')[0];  // 마찬가지로 날짜만 추출
   const today = new Date();
   const start = new Date(startDate);
+  const ending = new Date(expireDate);
   const dayDifference  = Math.floor((today - start) / (1000 * 60 * 60 * 24)) ; 
+  const totalDate  = Math.floor((ending - start) / (1000 * 60 * 60 * 24)) ; 
   const currentDay = dayDifference < 0 ? -dayDifference : dayDifference+1; // 오늘몇일차
   const isSetup = dayDifference < 0 ? true : false; // 오늘몇일차
-  const progressRate = isSetup ? Math.round(100 * currentParticipants/ maxParticipants) : Math.round(100 * currentDay/ standard)
+  const progressRate = isSetup ? Math.round(100 * currentParticipants/ maxParticipants) : Math.round(100 * currentDay/ totalDate)
   const isMyChallenge = myChallenges.includes(challengeId);
 
   const getButtonText = (isSetup, isMyChallenge) => {
@@ -102,15 +106,25 @@ export default function ChallengeDetailModal() {
   };
   // 버튼 클릭 핸들러를 결정하는 함수
   const StartChallenge = (isSetup, isMyChallenge) => {
-    if (isSetup) {
-      return isMyChallenge 
-        ? () => console.log('대기중입니다') // 대기중일 때는 아무 동작 안하거나 알림
-        : handleApplyChallenge;  // 신청하기 함수
-    } else {
-      return isMyChallenge 
-        ? handleEnterChallenge   // 입장하기 함수
-        : handleJoinChallenge;   // 참가하기 함수
-    }
+    console.log("챌린지디테일 버튼클릭" , isSetup,isMyChallenge);
+    
+  // 조건에 따른 함수를 직접 실행하는 방식으로 변경
+  if (isSetup && isMyChallenge) {
+    console.log('대기중입니다');
+    return;
+  }
+  
+  if (isSetup) {
+    handleApplyChallenge();  // 신청하기
+    return;
+  }
+  
+  if (isMyChallenge) {
+    handleEnterChallenge();  // 입장하기
+    return;
+  }
+  
+  handleJoinChallenge();     // 참가하기
   };
 
   const handleApplyChallenge = async () => {
@@ -118,7 +132,7 @@ export default function ChallengeDetailModal() {
     console.log('챌린지 신청하기 ');
     try {
       // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.joinChallenge();
+      const response = await challengeApi.joinChallenge(challengeId);
       console.log("메세지도착: ",response.message);
       
     } catch (error) {
@@ -132,8 +146,11 @@ export default function ChallengeDetailModal() {
     console.log('챌린지 참가하기');
     try {
       // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.enterChallenge();
+      const response = await challengeApi.joinChallenge(challengeId);
       console.log("메세지도착: ",response.message);
+      navigate(`/video/${challengeId}`);
+      // const response = await challengeApi.enterChallenge();
+      // console.log("메세지도착: ",response.message);
       
     } catch (error) {
       console.error('챌린지 참가하기 실패:', error);
@@ -146,27 +163,15 @@ export default function ChallengeDetailModal() {
     console.log('챌린지 입장하기');
     try {
       // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.enterChallenge();
-      console.log("메세지도착: ",response.message);
+      navigate(`/video/${challengeId}`);
+      // const response = await challengeApi.enterChallenge();
+      // console.log("메세지도착: ",response.message);
       
     } catch (error) {
       console.error('챌린지 입장하기 실패:', error);
     }
     setModalOpen(false)
   };
-  const QuitChallenge = async () => {
-    // 챌린지 탈퇴 로직
-    console.log("탈퇴성공");
-    try {
-      // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.leaveChallengeNamgiver();
-      console.log("메세지도착: ",response.message);
-      
-    } catch (error) {
-      console.error('챌린지 탈퇴하기 실패:', error);
-    }
-    setModalOpen(false)
-  }
 
   // 컴포넌트 마운트 시 챌린지 데이터 가져오기
   useEffect(() => {
@@ -189,7 +194,7 @@ export default function ChallengeDetailModal() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-white bg-opacity-70 backdrop-blur-sm"
       onClick={() => setModalOpen(false)}
     >
       <motion.div
@@ -294,7 +299,7 @@ export default function ChallengeDetailModal() {
                 ${isSetup? 'mb-1 bg-rose-500 px-3 rounded-full text-gray-100 ':'text-my-blue-1'}`}>
                 {isSetup ? 'D-':'오늘 '}{currentDay}{isSetup ? '':'일차'}
               </div>
-              <div className="text-sm text-gray-500">총 {maxParticipants}일</div>
+              <div className="text-sm text-gray-500">총 {totalDate}일</div>
             </div>
           </div>
 
@@ -334,13 +339,7 @@ export default function ChallengeDetailModal() {
           className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white py-4 rounded-xl font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg">
             {getButtonText(isSetup, isMyChallenge)}
           </button>
-          {/* 탈퇴버튼 제거됨 */}
-          <div className=''>
-            {/* <button 
-              onClick={() => {QuitChallenge()}}
-              className="text-gray-400 hover:text-gray-600 duration-300">탈퇴하기
-            </button> */}
-          </div>
+          <div id="아래 빈칸용"></div>
         </div>
       </motion.div>
     </motion.div>

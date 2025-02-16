@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 
 import VideoControls from "/src/components/video/VideoControls";
 import VideoGrid from "/src/components/video/VideoGrid";
@@ -13,12 +14,13 @@ const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {
   // 사용자 입력 상태
+  const { roomId } = useParams();
   // const [myUserName, setMyUserName] = useState('');// 유저이름  VideoJoinForm 버전
   // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const dummySessionRoomName = "13" // 이거 챌린지 선택했을때 가져와야됨.
-  const dummyUserName = userInfo?.nickname || "testUser"
+  const dummySessionRoomName = roomId || "106" // 이거 챌린지 선택했을때 가져와야됨.
+  const dummyUserName = userInfo?.nickname || "Guest"
   // const dummyUserName = "namhui"
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
 
@@ -123,6 +125,7 @@ const VideoRoom = () => {
               subscribers={subscribers} // 친구들 화면
               onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
               currentLayout={currentLayout}
+              session={session}
               onLayoutChange={setCurrentLayout}
               // 화면공유 관련 props
               isScreenSharing={isScreenSharing}

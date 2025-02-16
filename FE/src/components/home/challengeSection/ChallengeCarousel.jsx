@@ -3,6 +3,10 @@ import { motion, useAnimation } from "framer-motion";
 import ChallengeCard from "./ChallengeCard";
 import "../../../assets/styles/scrollbar-hide.css";
 import { homeApi } from "../../../services/api/homeApi";
+import ChallengeDetailModal from "../../challenge/challengelist/ChallengeDetailModal";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { challengeModalState, selectedChallengeState } from "../../../recoil/atoms/challenge/challengeDetailState";
+import challengeApi from "../../../services/api/challengeApi";
 // import { mockApiResponse } from '../../../utils/mockData';
 
 const ChallengeCarousel = () => {
@@ -10,6 +14,26 @@ const ChallengeCarousel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const carouselRef = useRef(null);
   const controls = useAnimation();
+  const isModalOpen = useRecoilValue(challengeModalState);
+  const setModalOpen = useSetRecoilState(challengeModalState);
+  const setSelectedChallenge = useSetRecoilState(selectedChallengeState);
+
+
+
+  const clickChallengeDetail = async (challenge) => {
+    try {
+      // 챌린지 상세 정보 불러오기
+      const response = await challengeApi.getChallengeDetailInfo(challenge.challengeId);
+      
+      // 상세 정보를 Recoil 상태에 저장
+      setSelectedChallenge(response.data);
+      
+      // 모달 열기
+      setModalOpen(true);
+    } catch (error) {
+      console.error('챌린지 상세 정보 로딩 실패:', error);
+    }
+  }
 
   // 애니메이션 로직
   const startCarouselAnimation = useCallback(() => {
@@ -81,20 +105,20 @@ const ChallengeCarousel = () => {
   }
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full overflow-visible">
       <motion.div
         ref={carouselRef}
         className="flex -ml-5"
         animate={controls}
         style={{
-          willChange: "transform", // 성능 최적화
-          WebkitBackfaceVisibility: "hidden", // Safari 성능 최적화
+          willChange: "transform",
+          WebkitBackfaceVisibility: "hidden",
           backfaceVisibility: "hidden",
           WebkitPerspective: 1000,
           perspective: 1000,
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
-          pointerEvents: 'none',
+          pointerEvents: "none",
         }}
       >
         {/* 더 부드러운 움직임을 위해 카드 개수 3배로 증가 */}
@@ -102,18 +126,33 @@ const ChallengeCarousel = () => {
           challenges.map((challenge, index) => (
             <motion.div
               key={`${challenge.challengeId}-${index}-${arrayIndex}`}
-              className="flex-none w-56 sm:w-60 md:w-64 -mr-5"
+              className="flex-none w-56 sm:w-60 md:w-64 -mr-3"
+              initial={{ rotate: Math.random() * 6 - 3 }}
+              whileHover={{
+                y: -10,
+                scale: 1.01,
+                rotate: 0,
+                zIndex: 10,
+                transition: {
+                  y: { type: "spring", stiffness: 300, damping: 20 },
+                  scale: { type: "spring", stiffness: 300, damping: 20 },
+                  rotate: { type: "spring", stiffness: 300, damping: 20 },
+                },
+              }}
               style={{
                 WebkitBackfaceVisibility: "hidden",
                 backfaceVisibility: "hidden",
-                pointerEvents: 'auto',
+                pointerEvents: "auto",
               }}
             >
+              <div onClick={() => clickChallengeDetail(challenge)}>
               <ChallengeCard challenge={challenge} index={index} />
+              </div>
             </motion.div>
           ))
         )}
       </motion.div>
+      {isModalOpen && <ChallengeDetailModal />}
     </div>
   );
 };

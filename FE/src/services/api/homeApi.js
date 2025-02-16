@@ -28,4 +28,9 @@ export const homeApi = {
       return 150000; // 에러 발생 시 기본값 반환
     }
   },
+  // 임박 챌린지 조회
+  getRandomCommunity: async () => {
+    const response = await api.get("/top-viewed");
+    return response.data;
+  },
 };
