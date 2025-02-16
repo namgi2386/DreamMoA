@@ -59,10 +59,10 @@ export default function AppRoutes() {
       {/* 메인 페이지 */}
       <Route path="/" element={<HomePage />} />
       {/* 메인 페이지 하이라이트 경로 */}
-      <Route
+      {/* <Route
         path="/Challenge/ChallengeListPage"
         element={<ChallengeListPage />}
-      />
+      /> */}
       <Route path="/User/DashBoardPage" element={<DashBoardPage />} />
       {/* <Route path="/Community/CommunityListPage" element={<CommunityListPage />} /> */}
       {/* 회원 */}

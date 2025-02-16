@@ -145,7 +145,7 @@ export default function ChallengeListMoreMoreSection() {
          )}
          {/* 무한 스크롤을 위한 로딩 감지 요소 */}
          <div ref={loadingRef} className="h-10">
-           {isLoading && <div className="text-center">Loading...</div>}
+           {isLoading && <div className="text-center"></div>}
          </div>
        </div>
      </div>

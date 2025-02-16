@@ -49,7 +49,7 @@ export default function ChallengeListSearchSection() {
 
   // if (loading) {
   //   return (
-  //     <div className="min-h-screen w-full bg-rose-200 flex items-center justify-center">
+  //     <div className="min-h-screen w-full bg-blue-300 flex items-center justify-center">
   //       <p className="text-lg">로딩 중...</p>
   //     </div>
   //   );

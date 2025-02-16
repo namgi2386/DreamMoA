@@ -8,7 +8,7 @@ const ServiceHighlight = () => {
       title: '챌린지',
       description: '태그 분석을 통한 맞춤형 챌린지',
       color: '#3F628A',
-      path: '/Challenge/ChallengeListPage'
+      path: '/Challenge/list'
     },
     {
       title: '대시보드',
