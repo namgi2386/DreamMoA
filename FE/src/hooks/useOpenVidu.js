@@ -4,6 +4,7 @@ import { OpenVidu } from "openvidu-browser";
 import { videoApi } from "../services/api/videoApi";
 import useScreenShare from "./useScreenShare";
 import { useNavigate } from "react-router-dom";
+import challengeApi from "../services/api/challengeApi";
 
 const useOpenVidu = () => {
   // 상태 관리
@@ -78,12 +79,21 @@ const useOpenVidu = () => {
       });
 
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
-      const token = await getToken(sessionName);
-      console.log("토큰줘", token, userName, encodedUserName); // 토큰 도착 성공
+      // const token = await getToken(sessionName);
+      console.log("토큰테스트");
+      
+      const response = await challengeApi.enterChallenge(sessionName)
+      const fullUrl = response.data.token;
+      const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0];
+      const tokenInResponse = fullUrl.split('token=')[1];
+      
+      console.log("토큰테스트 응답", fullUrl);
+      console.log("토큰줘", tokenInResponse, userName, encodedUserName); // 토큰 도착 성공
       console.log("마이세션", mySession);
+      console.log("마이세션 in response", sessionIdInResponse);
 
       // clientData에 원본 userName과 인코딩된 userName 모두 포함
-      await mySession.connect(token, {
+      await mySession.connect(tokenInResponse, {
         clientData: JSON.stringify({
           originalName: userName,
           encodedName: encodedUserName,
