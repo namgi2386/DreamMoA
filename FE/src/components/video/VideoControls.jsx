@@ -24,6 +24,8 @@ export default function VideoControls({
   onLayoutChange,
   isScreenSharing,
   onToggleScreenShare,
+  isFullscreen,
+  onToggleFullscreen,
 }) {
   const layouts = [
     { id: "default", icon: BsGrid1X2, label: "기본" },
@@ -204,13 +206,22 @@ export default function VideoControls({
         나가기
       </button>
       
-
+      {/* ✅ 전체화면 버튼 */}
+      <button onClick={onToggleFullscreen} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
+        {isFullscreen ? (
+          <div>unfull</div>
+        ) : (
+            <div>full</div>
+        )}
+      </button>
+      
       {/* ✅ 화면 공유 버튼 */}
       <div className="flex gap-4 items-center">
         <button onClick={onToggleScreenShare} className="p-2 rounded bg-yellow-500 text-white">
           {isScreenSharing ? <LuScreenShareOff className="w-6 h-6" /> : <LuScreenShare className="w-6 h-6" />}
         </button>
       </div>
+
       {/* ✅ 그리드 스타일 조정 버튼 */}
       <div className="flex gap-2 items-center">
         {layouts.map(({ id, icon: Icon }) => (
@@ -219,6 +230,7 @@ export default function VideoControls({
           </button>
         ))}
       </div>
+      
     </div>
   );
 }

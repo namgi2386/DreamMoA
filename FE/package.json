@@ -23,6 +23,7 @@
     "chart.js": "^4.4.7",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.4",
+    "emoji-picker-react": "^4.12.0",
     "framer-motion": "^12.4.2",
     "lucide-react": "^0.474.0",
     "openvidu-browser": "^2.31.0",
