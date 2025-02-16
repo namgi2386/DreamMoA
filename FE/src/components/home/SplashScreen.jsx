@@ -130,7 +130,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     <AnimatePresence mode="wait">
       {isVisible && (
         <motion.div
-          className="fixed inset-0 bg-my-blue-1 flex items-center justify-center z-50 overflow-hidden"
+          className="fixed inset-0 bg-my-blue-1 flex items-center justify-center z-[1000] overflow-hidden"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
