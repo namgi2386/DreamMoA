@@ -66,7 +66,7 @@ const Header = () => {
     // className="flex justify-between items-center p-4"
     // 모든 페이지에서 pt-16적용중(App.jsx) (Header.jsx에서 헤더높이를 h-16으로 해둠)
     // style={{ backgroundColor: "#003458" }}
-    <header className="relative top-0 left-0 right-0 flex justify-between items-center p-4 z-[9999] h-16 bg-hmy-blue-1">
+    <header className="relative top-0 left-0 right-0 flex justify-between items-center p-4 z-[999] h-16 bg-hmy-blue-1">
       {/* 별이 빛나는 배경 추가 */}
       <StarryBackground />
 
