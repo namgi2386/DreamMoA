@@ -146,6 +146,8 @@ export default function ChallengeDetailModal() {
     console.log('챌린지 참가하기');
     try {
       // 챌린지 상세 정보 불러오기
+      const response = await challengeApi.joinChallenge(challengeId);
+      console.log("메세지도착: ",response.message);
       navigate(`/video/${challengeId}`);
       // const response = await challengeApi.enterChallenge();
       // console.log("메세지도착: ",response.message);

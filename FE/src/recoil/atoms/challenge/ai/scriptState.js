@@ -23,3 +23,14 @@ export const showSubtitlesState = atom({
   key: "showSubtitlesState",
   default: {}, // { "userId1": true, "userId2": false }
 });
+
+// ✅ 요약창 on off
+export const showSummaryState = atom({
+  key: "showSummaryState",
+  default: false,
+});
+// ✅ 요약창 내용 및 메모 내용
+export const memoListState = atom({
+  key: "memoListState",
+  default: [],  // [{id: 1, content: "첫번째 메모"}, {id: 2, content: "두번째 메모"}] 형태로 저장
+});

@@ -8,7 +8,8 @@ import {
   scriptOnOffState,
   allSubtitlesState,
   processedSubtitlesState,
-  showSubtitlesState
+  showSubtitlesState,
+  showSummaryState
 } from "../../recoil/atoms/challenge/ai/scriptState";
 import { useState, useRef } from "react";
 import axios from "axios";
@@ -49,7 +50,8 @@ export default function VideoControls({
   const [showSubtitles, setShowSubtitles] = useRecoilState(showSubtitlesState);
   const [sttState, setSttState] = useState("START");
   const [eventSource, setEventSource] = useState(null);
-  const [showSummary, setShowSummary] = useState(false);
+  // const [showSummary, setShowSummary] = useState(false);
+  const [showSummary, setShowSummary] = useRecoilState(showSummaryState);
   const navigate = useNavigate();
 
   // ✅ 전체 STT 데이터 저장용 ref (리렌더링 영향 안 받음)
@@ -145,7 +147,7 @@ export default function VideoControls({
       console.error("❌ STT 종료 요청 실패:", error);
     }
   };
-  
+
   const exitButton = async () => {
     try {
       await onLeaveSession();
