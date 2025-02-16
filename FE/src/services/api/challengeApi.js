@@ -185,6 +185,78 @@ const challengeApi = {
       throw new Error(errorMessage);
     }
   },
+  // 챌린지 리스트 검색+태그+초기랜더링 데이터 가져오기
+  getSearchedChallenges: async(keyword,tags) => {
+    const params = {};  // 빈 객체 생성
+  
+    // 값이 있을 때만 params 객체에 추가
+    if (keyword) params.keyword = keyword;
+    if (tags) params.tags = tags;
+
+    const response = await api.get("/challenges/search", { params });
+    console.log("챌린지 검색 결과 :",response.data);
+    
+    
+    // 각 카테고리별 필터링
+    const popularChallenges = response.data.popularChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    const runningChallenges = response.data.runningChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    const recruitingChallenges = response.data.recruitingChallenges.filter(
+      challenge => challenge.currentParticipants !== 0
+    );
+    
+    return {
+      ...response,
+      data: {
+        popularChallenges,
+        runningChallenges,
+        recruitingChallenges
+      }
+    };
+  },
+  // 챌린지 리스트 검색+태그+초기랜더링 데이터 가져오기
+  getMoreSearchedChallenges: async (keyword, tags, page) => {
+    console.log("너가찾는페이지",page);
+    
+    const cacheKey = `${keyword || ''}-${tags?.join(',') || ''}-${page}`;
+    
+    // sessionStorage에서 캐시된 데이터 확인
+    const cachedData = sessionStorage.getItem('challengeSearchCache');
+    const cache = cachedData ? JSON.parse(cachedData) : {};
+    
+    // 캐시에 데이터가 있으면 반환
+    if (cache[cacheKey]) {
+      console.log("캐시된 데이터 사용:", cacheKey);
+      return cache[cacheKey];
+    }
+
+    // API 요청 파라미터 설정
+    const params = {};
+    // if (keyword) params.keyword = keyword;
+    // if (tags) params.tags = tags;
+    if (page !== undefined) params.page = page;
+
+    try {
+      // API 요청
+      const response = await api.get("/challenges/all-challenges", { params });
+      const responseData = response.data;
+
+      // 응답 데이터 캐싱
+      cache[cacheKey] = responseData;
+      sessionStorage.setItem('challengeSearchCache', JSON.stringify(cache));
+
+      console.log("새로운 챌린지 검색 결과:", responseData);
+      return responseData;
+    } catch (error) {
+      console.error("챌린지 검색 중 오류 발생:", error);
+      throw error;
+    }
+  },
 };
 
 export default challengeApi;

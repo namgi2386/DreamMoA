@@ -20,7 +20,7 @@ const ServiceHighlight = () => {
       title: '커뮤니티',
       description: '동료 학습자와 소통',
       color: '#88A9D5',
-      path: '/Community/CommunityListPage'
+      path: '/Community/free'
     }
   ];
 
