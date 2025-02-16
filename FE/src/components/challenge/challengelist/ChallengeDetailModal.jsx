@@ -192,7 +192,7 @@ export default function ChallengeDetailModal() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 flex items-center justify-center p-4 z-50 bg-white bg-opacity-70 backdrop-blur-sm"
       onClick={() => setModalOpen(false)}
     >
       <motion.div

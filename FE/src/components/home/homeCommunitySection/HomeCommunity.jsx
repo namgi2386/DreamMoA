@@ -2,6 +2,7 @@ import { useState, useEffect, useRef  } from 'react'; // useEffect 추가
 import { motion, useInView  } from 'framer-motion';
 import { communityItems } from './HomeCommunityItemDummyData';  
 import HomeCommunityItem from './HomeCommunityItems';
+import { homeApi } from '../../../services/api/homeApi';
 
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -13,6 +14,63 @@ const containerVariants = {
     }
   }
 };
+
+const CARD_STYLES = [
+  {
+    bg: "bg-stone-300",
+    textSize: "text-sm",
+    initialPosition: { x: 50, y: 60 },
+    avatarUrl: "src/assets/default/defaultUserImageGreen.png"
+  },
+  {
+    bg: "bg-yellow-300",
+    textSize: "text-sm",
+    initialPosition: { x: -10, y: 15 },
+    avatarUrl: "src/assets/test/mypagechallenge3.png"
+  },
+  {
+    bg: "bg-violet-300",
+    textSize: "text-lg",
+    initialPosition: { x: -60, y: 65 },
+    avatarUrl: "src/assets/test/mypagechallenge3.png"
+  },
+  {
+    bg: "bg-rose-300",
+    textSize: "text-sm",
+    initialPosition: { x: -10, y: -10 },
+    avatarUrl: "src/assets/test/mypagechallenge4.png"
+  },
+  {
+    bg: "bg-yellow-300",
+    textSize: "text-sm",
+    initialPosition: { x: 60, y: 0 },
+    avatarUrl: "src/assets/test/mypagechallenge3.png"
+  },
+  {
+    bg: "bg-yellow-300",
+    textSize: "text-sm",
+    initialPosition: { x: 140, y: -30 },
+    avatarUrl: "src/assets/test/mypagechallenge3.png"
+  },
+  {
+    bg: "bg-cyan-300",
+    textSize: "text-lg",
+    initialPosition: { x: 50, y: -60 },
+    avatarUrl: "src/assets/test/mypagechallenge1.png"
+  },
+  {
+    bg: "bg-orange-300",
+    textSize: "text-lg",
+    initialPosition: { x: -105, y: -40 },
+    avatarUrl: "src/assets/test/mypagechallenge2.png"
+  },
+  {
+    bg: "bg-green-300",
+    textSize: "text-xl",
+    initialPosition: { x: 120, y: 20 },
+    avatarUrl: "src/assets/default/defaultUserImagePuple.png"
+  }
+];
 
 export default function HomeCommunity() {
   // 보여줄 아이템 배열 상태
@@ -58,25 +116,47 @@ export default function HomeCommunity() {
     }
    }, [isInView]); // isInView 상태 변경 시 재실행
 
+  // useEffect 수정
   useEffect(() => {
-    // isInView : 뷰포트 30% 상태일때 실행
-    if (isInView) {
-      // 각 아이템을 0.5초 간격으로 추가
-      communityItems.forEach((item, index) => {
-        setTimeout(() => {
-          setDisplayedItems(prev => [...prev, item]);
-        }, 300 * index); // 각 카드는 0.5초 간격으로 나타남
-      });
-    } else {
-      setDisplayedItems([]);
-    }
+    const fetchCommunityData = async () => {
+      if (isInView) {
+        try {
+          const response = await homeApi.getRandomCommunity();
+          // 받아온 데이터 중 9개만 선택하고 스타일 정보 추가
+          const processedData = response.slice(0, 9).map((item, index) => ({
+            id: item.postId,
+            content: item.content.replace(/<[^>]*>/g, ''), // HTML 태그 제거
+            nickname: item.userNickname,
+            ...CARD_STYLES[index] // 미리 정의된 스타일 적용
+          }));
+
+          // 각 아이템을 0.5초 간격으로 추가
+          processedData.forEach((item, index) => {
+            setTimeout(() => {
+              setDisplayedItems(prev => [...prev, item]);
+            }, 300 * index);
+          });
+        } catch (error) {
+          console.error('Failed to fetch community data:', error);
+        }
+      } else {
+        setDisplayedItems([]);
+      }
+    };
+
+    fetchCommunityData();
   }, [isInView]);
 
   return (
-    <div className="flex justify-center my-6">
-      <div className="relative w-full max-w-[1400px] min-h-[600px] bg-emerald-500 rounded-lg p-8 overflow-hidden">
-        <h2 className="text-white text-4xl font-bold mb-8 cursor-default select-none">
-          Trusted by {myNumber.toLocaleString()}+ creatives
+    <div className="flex justify-center py-6">
+      <div className="relative w-full max-w-[1380px] min-h-[600px] bg-my-blue-2 rounded-lg p-8 overflow-hidden">
+        <h2 className="text-white   mb-8 cursor-default select-none">
+          <span className="text-4xl">
+          {myNumber.toLocaleString()}
+          </span>
+          <span className='text-2xl'>
+            + 명의 학습자들과 함께해보세요
+            </span>
         </h2>
         <motion.div
           ref={ref}

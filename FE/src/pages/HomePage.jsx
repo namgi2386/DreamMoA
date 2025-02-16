@@ -1,45 +1,14 @@
 import { useState } from "react";
 import MainHero from "../components/home/MainHero";
 import ServiceHighlight from "../components/home/ServiceHighlight";
-// import AIFeatureSection from "../components/home/AIFeatureSection";
 import ChallengeCarousel from "../components/home/challengeSection/ChallengeCarousel";
 import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
+import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
+// import AIFeatureSection from "../components/home/AIFeatureSection";
 // import TopLine from "../components/home/topLineSection/TopLine";
 // import VideoSection from "../components/home/videoSection/VideoSection";
-import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
-
-const generateStars = (count) => {
-  return Array.from({ length: count }, () => ({
-    width: Math.random() * 3 + 1, // 1-4px 크기의 별
-    left: Math.random() * 100, // 0-100% 위치
-    top: Math.random() * 100, // 0-100% 위치
-    delay: Math.random() * 3, // 0-3초 딜레이
-  }));
-};
-
-// 밤하늘 별 생성 (200개의 별)
-const stars = generateStars(200);
-
-// 별 빛나는 배경 컴포넌트
-const StarryBackground = () => (
-  <div className="absolute inset-0 pointer-events-none overflow-hidden">
-    {stars.map((star, i) => (
-      <div
-        key={i}
-        className="absolute bg-white/70 rounded-full animate-twinkle"
-        style={{
-          width: `${star.width}px`,
-          height: `${star.width}px`,
-          left: `${star.left}%`,
-          top: `${star.top}%`,
-          animationDelay: `${star.delay}s`,
-        }}
-      />
-    ))}
-  </div>
-);
 
 
 export default function HomePage() {
@@ -72,16 +41,9 @@ export default function HomePage() {
           setFinalHours={setTotalHours}
         />
       )}
-      {/* <SplashScreen
-        onComplete={handleSplashComplete}
-        setFinalHours={setTotalHours}
-      /> */}
       <div>
-        
-        {/* <TopLine /> */}
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
-          {/* <StarryBackground /> */}
           <HomeCommunity />
         </div>
         <div className="snap-start">
@@ -93,18 +55,11 @@ export default function HomePage() {
               <h2 className="text-3xl tracking-wider font-bold text-gray-900">
                 시작일이 다가오는 챌린지에 참여해보세요!
               </h2>
-              {/* <p className="mt-2 text-gray-600">
-                시작일이 다가오는 챌린지에 참여해보세요!
-              </p> */}
             </div>
             <ChallengeCarousel />
           </div>
         </section>
-        {/* <div className="snap-start">
-          <AIFeatureSection />
-        </div> */}
         <div>
-          {/* <VideoSection/> */}
           <ReviewGradation/>
         </div>
       </div>
