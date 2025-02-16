@@ -67,8 +67,6 @@ export default function ChallengeListSearchSection() {
   const handleSearchClick = async () => {
     try {
       setLoading(true); // 로딩 상태 시작
-      console.log('검색어:', inputValue || '');
-      console.log('선택된 태그:', selectedTags.length > 0 ? selectedTags.join(',') : undefined);
       
       const response = await challengeApi.getSearchedChallenges(
         inputValue || '',           // keyword parameter
