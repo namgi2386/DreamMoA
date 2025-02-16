@@ -132,7 +132,7 @@ export default function ChallengeDetailModal() {
     console.log('챌린지 신청하기 ');
     try {
       // 챌린지 상세 정보 불러오기
-      const response = await challengeApi.joinChallenge();
+      const response = await challengeApi.joinChallenge(challengeId);
       console.log("메세지도착: ",response.message);
       
     } catch (error) {
