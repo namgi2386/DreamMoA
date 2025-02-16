@@ -6,18 +6,17 @@ import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
 import TopLine from "../components/home/topLineSection/TopLine";
-import VideoSection from "../components/home/videoSection/VideoSection";
 import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
 
 // 하루 중 한 번만 띄우고 싶다면
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(() => {
-    // 오늘 날짜를 'YYYY-MM-DD' 형식으로 가져옵니다
+    // 오늘 날짜를 'YYYY-MM-DD' 형식으로 가져옴
     const today = new Date().toISOString().split('T')[0];
-    // localStorage에서 마지막으로 스플래시 스크린을 본 날짜를 가져옵니다
+    // localStorage에서 마지막으로 스플래시 스크린을 본 날짜를 가져옴
     const lastSplashDate = localStorage.getItem('lastSplashDate');
     
-    // 오늘 처음 방문했다면 스플래시 스크린을 보여줍니다
+    // 오늘 처음 방문했다면 스플래시 스크린을 보여줌
     return lastSplashDate !== today;
   });
   
@@ -31,7 +30,7 @@ export default function HomePage() {
     setShowSplash(false);
   };
 
-// 계속 메인화면 뜰 때마다 보이게 하고 싶다면면
+// 계속 메인화면 뜰 때마다 보이게 하고 싶다면
   // export default function HomePage() {
   //   const [showSplash, setShowSplash] = useState(true); // 항상 true로 초기화
   //   const [totalHours, setTotalHours] = useState(0);
@@ -69,11 +68,7 @@ export default function HomePage() {
             <ChallengeCarousel />
           </div>
         </section>
-        {/* <div className="snap-start">
-          <AIFeatureSection />
-        </div> */}
         <div>
-          {/* <VideoSection/> */}
           <ReviewGradation/>
         </div>
       </div>
