@@ -23,10 +23,9 @@ export default function App() {
     window.scrollTo(0, 0); // (x, y) 좌표로 스크롤 이동. (0, 0)은 페이지 최상단
   }, [location.pathname]); // location.pathname이 변경될 때마다 실행
 
-  const shouldHideFooter = hideFooterPaths.includes(location.pathname);
-  const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname);
-  const shouldHideHeader = hideHeaderPaths.includes(location.pathname);
-
+  const shouldHideFooter = hideFooterPaths.includes(location.pathname) || location.pathname.startsWith('/video/');
+  const shouldHideSideNavbar = hideSideNavbarPaths.includes(location.pathname) || location.pathname.startsWith('/video/');
+  const shouldHideHeader = hideHeaderPaths.includes(location.pathname) || location.pathname.startsWith('/video/');
   return (
     <RecoilRoot>
       <div className="h-screen w-full bg-gray-300 dark:bg-gray-800 relative ">  

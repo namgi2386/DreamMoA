@@ -82,7 +82,7 @@ export default function ChallengeListMyTagSorted() {
           </h1>
           {/* 태그 리스트 */}
           <div className="flex gap-6 w-full justify-center">
-            {myTags.map((tag, index) => (
+            {myTags?.map((tag, index) => (
               <span
                 key={index}
                 className="px-3 py-0.5 text-gray-800 bg-hmy-blue-3 rounded-lg whitespace-nowrap text-lg font-medium select-none hover:scale-105 transition duration-300"
