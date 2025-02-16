@@ -65,9 +65,26 @@ export default function VideoControls({
 
   const preprocessText = (text) => {
     if (!text) return "";
-    return text.replace(/[^ㄱ-ㅎ가-힣0-9\s]/g, "").trim();
+  
+    // 1. 특수문자 및 공백 정리
+    let cleanedText = text.replace(/[^ㄱ-ㅎ가-힣0-9\s]/g, "").trim();
+    cleanedText = cleanedText.replace(/\s+/g, " "); // 연속된 공백 제거
+  
+    // 2. 의미 없는 filler words 제거
+    const stopwords = ["음", "어", "그", "이제", "뭐", "근데", "그래서"];
+    cleanedText = cleanedText
+      .split(" ")
+      .filter((word) => !stopwords.includes(word))
+      .join(" ");
+  
+    // 3. 중복 문장 제거 (이전 문장과 비교)
+    const sentences = cleanedText.split(" ");
+    const uniqueSentences = [...new Set(sentences)];
+    cleanedText = uniqueSentences.join(" ");
+  
+    return cleanedText;
   };
-
+  
   const getDisplayedText = (text) => {
     if (!text) return "";
     const words = text.split(" ");

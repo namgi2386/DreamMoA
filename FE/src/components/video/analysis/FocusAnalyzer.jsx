@@ -196,8 +196,6 @@ const FocusAnalysis = ({ serverUrl }) => {
                 } else if (isPalmOpenDetected) {
                     console.log("✋ 손바닥!");
                     stopDetectionForSeconds(3); // 손 감지 후 3초간 비활성화
-                } else {
-                    console.log("🤷 손 제스처 감지 안됨...");
                 }
             });
         });
