@@ -52,15 +52,15 @@ export default function ChallengeListMyTagSorted() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full bg-rose-200 flex items-center justify-center">
-        <p className="text-lg">로딩 중...</p>
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <p className="text-lg"></p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen w-full bg-rose-200 flex items-center justify-center">
+      <div className="min-h-screen w-full  flex items-center justify-center">
         <p className="text-lg text-red-600">{error}</p>
       </div>
     );

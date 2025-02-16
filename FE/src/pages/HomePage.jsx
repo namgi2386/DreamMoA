@@ -1,14 +1,15 @@
 import { useState } from "react";
 import MainHero from "../components/home/MainHero";
 import ServiceHighlight from "../components/home/ServiceHighlight";
-import AIFeatureSection from "../components/home/AIFeatureSection";
 import ChallengeCarousel from "../components/home/challengeSection/ChallengeCarousel";
 import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
-import TopLine from "../components/home/topLineSection/TopLine";
-import VideoSection from "../components/home/videoSection/VideoSection";
 import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
+// import AIFeatureSection from "../components/home/AIFeatureSection";
+// import TopLine from "../components/home/topLineSection/TopLine";
+// import VideoSection from "../components/home/videoSection/VideoSection";
+
 
 export default function HomePage() {
   const [showSplash, setShowSplash] = useState(() => {
@@ -40,13 +41,7 @@ export default function HomePage() {
           setFinalHours={setTotalHours}
         />
       )}
-      {/* <SplashScreen
-        onComplete={handleSplashComplete}
-        setFinalHours={setTotalHours}
-      /> */}
       <div>
-        
-        <TopLine />
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
           <HomeCommunity />
@@ -60,18 +55,11 @@ export default function HomePage() {
               <h2 className="text-3xl tracking-wider font-bold text-gray-900">
                 시작일이 다가오는 챌린지에 참여해보세요!
               </h2>
-              {/* <p className="mt-2 text-gray-600">
-                시작일이 다가오는 챌린지에 참여해보세요!
-              </p> */}
             </div>
             <ChallengeCarousel />
           </div>
         </section>
-        {/* <div className="snap-start">
-          <AIFeatureSection />
-        </div> */}
         <div>
-          {/* <VideoSection/> */}
           <ReviewGradation/>
         </div>
       </div>

@@ -192,6 +192,8 @@ const challengeApi = {
     // 값이 있을 때만 params 객체에 추가
     if (keyword) params.keyword = keyword;
     if (tags) params.tags = tags;
+    console.log("태그확인",tags);
+    
 
     const response = await api.get("/challenges/search", { params });
     console.log("챌린지 검색 결과 :",response.data);

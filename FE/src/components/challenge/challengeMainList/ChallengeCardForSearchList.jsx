@@ -10,8 +10,8 @@ export default function ChallengeCard({ challenge }) {
 
   const { title, thumbnail, tags , currentParticipants, maxParticipants,isActive,startDate,expireDate } = challenge;  
 
-  const formattedStartDate = startDate.split('T')[0];  // "2025-02-06"
-  const formattedExpireDate = expireDate.split('T')[0];  // 마찬가지로 날짜만 추출
+  const formattedStartDate = startDate.split('T')[0].substring(5).replace('-', '/');  // "2025-02-06"
+  const formattedExpireDate = expireDate.split('T')[0].substring(5).replace('-', '/');  // 마찬가지로 날짜만 추출
   const today = new Date();
   const start = new Date(startDate);
   const dayDifference  = Math.floor((today - start) / (1000 * 60 * 60 * 24)) ; 
@@ -47,9 +47,14 @@ export default function ChallengeCard({ challenge }) {
             </div>
           </div>
           {/* 우상단 d-day */}
-          <div className="absolute top-1 right-2 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition duration-300 ease-in">
+          <div className="absolute top-1 right-2 flex flex-wrap gap-1.5 opacity-100 group-hover:opacity-0 transition duration-300 ease-in">
             <div className={`px-4  text-md font-medium rounded-lg  ${isSetup? 'bg-rose-500/80 px-3 rounded-full text-gray-100 ':'bg-black/65 text-white '}`}>
               {isSetup ? 'D - ':''}{currentDay}{isSetup ? '':'일차'}
+            </div>
+          </div>
+          <div className="absolute top-1 right-2 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition duration-300 ease-in">
+            <div className={`px-4  text-md font-medium rounded-lg  ${isSetup? 'bg-black/65 px-3 rounded-full text-gray-100 ':'bg-black/65 text-white '}`}>
+              {formattedStartDate} - {formattedExpireDate}
             </div>
           </div>
           {/* 우하단 태그 */}
