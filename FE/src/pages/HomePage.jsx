@@ -5,8 +5,11 @@ import ChallengeCarousel from "../components/home/challengeSection/ChallengeCaro
 import { useSocialLogin } from "../hooks/useSocialLogin";
 import HomeCommunity from "../components/home/homeCommunitySection/HomeCommunity";
 import SplashScreen from "../components/home/SplashScreen";
-import TopLine from "../components/home/topLineSection/TopLine";
 import ReviewGradation from "../components/home/ReviewSection/ReviewGradation";
+// import AIFeatureSection from "../components/home/AIFeatureSection";
+// import TopLine from "../components/home/topLineSection/TopLine";
+// import VideoSection from "../components/home/videoSection/VideoSection";
+
 
 // 하루 중 한 번만 띄우고 싶다면
 export default function HomePage() {
@@ -49,8 +52,7 @@ export default function HomePage() {
           setFinalHours={setTotalHours}
         />
       )}
-      <div>       
-        <TopLine />
+      <div>
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
           <HomeCommunity />

@@ -8,7 +8,7 @@ const ServiceHighlight = () => {
       title: '챌린지',
       description: '태그 분석을 통한 맞춤형 챌린지',
       color: '#3F628A',
-      path: '/Challenge/ChallengeListPage'
+      path: '/Challenge/list'
     },
     {
       title: '대시보드',
@@ -25,12 +25,14 @@ const ServiceHighlight = () => {
   ];
 
   return (
-    <div className="py-16 px-10 bg-white">
-      <div className="flex justify-between">
+    <div className="py-16  flex justify-center">
+      <div className="flex justify-between max-w-[1380px]  w-full rounded-xl overflow-hidden">
         {services.map((service, index) => (
           <div 
             key={index} 
-            className="w-1/3 p-6 text-center hover:shadow-lg transition cursor-pointer"
+            className={`w-1/3 p-6 text-center hover:shadow-lg transition cursor-pointer
+              ${index === 0 ? 'rounded-l-xl' : ''} 
+              ${index === services.length - 1 ? 'rounded-r-xl' : ''}`}
             style={{ backgroundColor: service.color, color: 'white' }}
             onClick={() => navigate(service.path)}
           >

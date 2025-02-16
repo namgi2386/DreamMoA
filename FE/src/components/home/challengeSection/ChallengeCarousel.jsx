@@ -3,6 +3,10 @@ import { motion, useAnimation } from "framer-motion";
 import ChallengeCard from "./ChallengeCard";
 import "../../../assets/styles/scrollbar-hide.css";
 import { homeApi } from "../../../services/api/homeApi";
+import ChallengeDetailModal from "../../challenge/challengelist/ChallengeDetailModal";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { challengeModalState, selectedChallengeState } from "../../../recoil/atoms/challenge/challengeDetailState";
+import challengeApi from "../../../services/api/challengeApi";
 // import { mockApiResponse } from '../../../utils/mockData';
 
 const ChallengeCarousel = () => {
@@ -10,6 +14,26 @@ const ChallengeCarousel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const carouselRef = useRef(null);
   const controls = useAnimation();
+  const isModalOpen = useRecoilValue(challengeModalState);
+  const setModalOpen = useSetRecoilState(challengeModalState);
+  const setSelectedChallenge = useSetRecoilState(selectedChallengeState);
+
+
+
+  const clickChallengeDetail = async (challenge) => {
+    try {
+      // 챌린지 상세 정보 불러오기
+      const response = await challengeApi.getChallengeDetailInfo(challenge.challengeId);
+      
+      // 상세 정보를 Recoil 상태에 저장
+      setSelectedChallenge(response.data);
+      
+      // 모달 열기
+      setModalOpen(true);
+    } catch (error) {
+      console.error('챌린지 상세 정보 로딩 실패:', error);
+    }
+  }
 
   // 애니메이션 로직
   const startCarouselAnimation = useCallback(() => {
@@ -121,11 +145,14 @@ const ChallengeCarousel = () => {
                 pointerEvents: "auto",
               }}
             >
+              <div onClick={() => clickChallengeDetail(challenge)}>
               <ChallengeCard challenge={challenge} index={index} />
+              </div>
             </motion.div>
           ))
         )}
       </motion.div>
+      {isModalOpen && <ChallengeDetailModal />}
     </div>
   );
 };
