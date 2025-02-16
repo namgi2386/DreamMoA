@@ -9,6 +9,7 @@ import useOpenVidu from "../../hooks/useOpenVidu";
 import ChatPanel from "../../components/video/chat/ChatPanel";
 import VideoSettingForm from "../../components/video/VideoSettingForm";
 import FocusAnalysis from '../../components/video/analysis/FocusAnalyzer'; // ✅ 웹소켓 테스트용
+import TimerModal from "../../components/challenge/challengeModal/TimerModal";
 
 const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
@@ -106,7 +107,9 @@ const VideoRoom = () => {
         // ☆★☆★☆★ 전체영역 ☆★☆★☆★
         <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
           {/* ☆★ 상단10% 영역 ☆★ */}
-          <div className="w-full h-[10%] bg-red-100"></div>
+          <div className="w-full h-[10%] bg-red-100 relative">
+            <TimerModal />
+          </div>
           {/* ☆★ 중앙 화면 영역 ☆★ */}
           <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
             <VideoGrid // 너와나의 비디오 위치 크기 등등
