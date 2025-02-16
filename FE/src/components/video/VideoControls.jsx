@@ -12,12 +12,14 @@ import {
 } from "../../recoil/atoms/challenge/ai/scriptState";
 import { useState, useRef } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function VideoControls({
   publisher,
   subscribers,
   onLeaveSession,
   currentLayout,
+  session,
   onLayoutChange,
   isScreenSharing,
   onToggleScreenShare,
@@ -48,6 +50,7 @@ export default function VideoControls({
   const [sttState, setSttState] = useState("START");
   const [eventSource, setEventSource] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
+  const navigate = useNavigate();
 
   // ✅ 전체 STT 데이터 저장용 ref (리렌더링 영향 안 받음)
   const totalDataRef = useRef("");
@@ -142,6 +145,16 @@ export default function VideoControls({
       console.error("❌ STT 종료 요청 실패:", error);
     }
   };
+  
+  const exitButton = async () => {
+    try {
+      await onLeaveSession();
+    } catch (error) {
+      console.error("Exit error:", error);
+      navigate("/dashboard");
+    }
+  };
+  
 
   return (
     <div className="flex flex-row gap-4 items-center justify-between w-full p-4">
@@ -185,7 +198,7 @@ export default function VideoControls({
       )}
 
       {/* ✅ 나가기 버튼 */}
-      <button onClick={onLeaveSession} className="p-2 bg-red-600 text-white rounded">
+      <button onClick={exitButton} className="p-2 bg-red-600 text-white rounded">
         나가기
       </button>
       

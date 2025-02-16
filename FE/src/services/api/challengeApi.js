@@ -122,6 +122,7 @@ const challengeApi = {
       console.log("챌린지 입장하기 api 실패",e);
     }
   },
+
   // 챌린지 탈퇴하기
   leaveChallengeNamgiver: async(challengeId) => {
     try {
