@@ -79,13 +79,13 @@ const useOpenVidu = () => {
       });
 
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
-      const fullUrl = await getToken(sessionName);
-      console.log("토큰테스트");
+      // const fullUrl = await getToken(sessionName);
+      // console.log("토큰테스트");
       // console.log("기본토큰",fullUrl);
       
       
-      // const response = await challengeApi.enterChallenge(sessionName)
-      // const fullUrl = response.data.token;
+      const response = await challengeApi.enterChallenge(sessionName)
+      const fullUrl = response.data.token;
 
       // const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0];
       // const tokenInResponse = fullUrl.split('token=')[1];
