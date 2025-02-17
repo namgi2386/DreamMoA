@@ -134,14 +134,15 @@ const VideoRoom = () => {
         // /> */}
         // 세션 연결 후: 비디오 폼 표시
         // ☆★☆★☆★ 전체영역 ☆★☆★☆★
-
         <div
           className="w-full h-screen bg-gray-900 text-white"
           ref={videoRoomRef}
         >
           <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
             {/* ☆★ 상단10% 영역 ☆★ */}
-            <div className="w-full h-[10%] bg-red-100"></div>
+            <div className="w-full h-[10%] bg-red-100">
+              <TimerModal />
+            </div>
             {/* ☆★ 중앙 화면 영역 ☆★ */}
             <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
               <VideoGrid // 너와나의 비디오 위치 크기 등등
@@ -183,32 +184,6 @@ const VideoRoom = () => {
               onDataReceived={handleWebSocketData}
             />
           </div>
-          {/* ☆★ 하단10% 영역 ☆★ */}
-          <div className="w-full h-[10%] bg-red-200 overflow-auto ">
-            <VideoControls // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
-              publisher={publisher} // 내 화면
-              subscribers={subscribers} // 친구들 화면
-              onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
-              currentLayout={currentLayout}
-              session={session}
-              onLayoutChange={setCurrentLayout}
-              // 화면공유 관련 props
-              isScreenSharing={isScreenSharing}
-              onToggleScreenShare={handleToggleScreenShare}
-            />
-          </div>
-          {/* ☆★ z-index걸린 모달 영역 ☆★ */}
-          <ChatPanel // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
-            session={session} // 세션상태
-            sessionTitle={dummySessionRoomName} //방이름
-            isChatOpen={isChatOpen} // 채팅창 on off
-            setIsChatOpen={setIsChatOpen} // 채팅창 on off
-          />
-          {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
-          <FocusAnalysis
-            serverUrl={SERVER_URL}
-            onDataReceived={handleWebSocketData}
-          />
         </div>
       )}
     </div>
