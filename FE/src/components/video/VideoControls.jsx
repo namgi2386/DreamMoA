@@ -145,15 +145,15 @@ export default function VideoControls({
     try {
       console.log("📩 STT 데이터 요약 요청 중...");
   
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
         { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
-          },
-        }
+        // {
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
+        //   },
+        // }
       );
   
       console.log("📜 STT 요약 결과:", response.data);  // ✅ 요약된 데이터 콘솔에 출력

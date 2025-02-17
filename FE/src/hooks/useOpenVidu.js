@@ -113,6 +113,8 @@ const useOpenVidu = () => {
       // console.log("기본토큰",fullUrl);
 
       const response = await challengeApi.enterChallenge(sessionName);
+      console.log("connection응답",response.data);
+      
       const fullUrl = response.data.token;
       setPureStudyTime(response.data.pureStudyTime || 0);
       setScreenTime(response.data.screenTime || 0);
@@ -290,19 +292,19 @@ const useOpenVidu = () => {
 
 
   // 타이머 관련 effect
-  useEffect(() => {
-    let timer;
-    if (session) {
-      timer = setInterval(() => {
-        setScreenTime(prev => prev + 1);
-      }, 1000);
-    }
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, [session]);
+  // useEffect(() => {
+  //   let timer;
+  //   if (session) {
+  //     timer = setInterval(() => {
+  //       setScreenTime(prev => prev + 1);
+  //     }, 1000);
+  //   }
+  //   return () => {
+  //     if (timer) {
+  //       clearInterval(timer);
+  //     }
+  //   };
+  // }, [session]);
 
   // AI 결과에 따른 순공시간 갱신
   // useEffect(() => {

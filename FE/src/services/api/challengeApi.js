@@ -1,6 +1,4 @@
-import { useRecoilState } from "recoil";
 import api from "./axios";
-import { pureTimeState, screenTimeState } from "../../recoil/atoms/ai/aiState";
 
 
 const challengeApi = {
@@ -118,8 +116,6 @@ const challengeApi = {
   },
   // 챌린지 입장하기(내꺼 입장) === 참가하기(이미시작날짜지났지만 입장)
   enterChallenge: async(challengeId) => {
-    const [screenTime, setScreenTime] = useRecoilState(screenTimeState);
-    const [pureTime, setPureTime] = useRecoilState(pureTimeState);
     try {
       console.log("세션id체크", challengeId);
       
@@ -132,10 +128,6 @@ const challengeApi = {
           recordAt: today
         }
       );
-      console.log("입장시스터디타임 :" , response.data.screenTime);
-      console.log("입장시퓨어타임 :" , response.data.pureStudyTime);
-      setScreenTime(response.data.screenTime)
-      setPureTime(response.data.pureStudyTime)
       return response;
     } catch (e) {
       console.log("챌린지 입장하기 api 실패", e);
