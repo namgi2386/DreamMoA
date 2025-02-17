@@ -32,6 +32,7 @@ export default {
 
       animation: {
         'sparkle': 'sparkle 3s ease-in-out infinite',
+        'badge-glow': 'badge-glow 3s ease-in-out infinite',
       },
       keyframes: {
         'sparkle': {
@@ -41,6 +42,16 @@ export default {
           },
           '50%': {
             'text-shadow': '0 0 8px rgba(255, 255, 180, 0.6), 0 0 20px rgba(255, 255, 180, 0.4), 0 0 30px rgba(255, 255, 180, 0.2)',
+            'opacity': '1'
+          }
+        },
+        'badge-glow': {
+          '0%, 100%': {
+            'box-shadow': '0 0 4px rgba(219, 242, 255, 0.5), 0 0 8px rgba(63, 98, 138, 0.3)', // my-blue-3, my-blue-2
+            'opacity': '0.95'
+          },
+          '50%': {
+            'box-shadow': '0 0 8px rgba(219, 242, 255, 0.7), 0 0 15px rgba(63, 98, 138, 0.5), 0 0 20px rgba(0, 52, 88, 0.3)', // my-blue-3, my-blue-2, my-blue-1
             'opacity': '1'
           }
         },

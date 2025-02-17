@@ -44,7 +44,7 @@ export default function ChallengeImages() {
       const data = await challengeApi.getMyParticipatingChallenges();
       
       setChallenges(
-        data.slice(0, 7).map((challenge) => ({
+        data.map((challenge) => ({
           ...challenge,
           id: challenge.challengeId,
           // 썸네일 url 사용

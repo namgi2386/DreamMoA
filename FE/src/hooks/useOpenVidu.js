@@ -47,7 +47,6 @@ const useOpenVidu = () => {
   const getToken = async (sessionId) => {
     return await videoApi.getToken(sessionId);
   };
-
   // ▽▼▽▼▽▼▽▼▽▼▽▼▽▼ 아래 부터가 진짜 기능들 ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
   // ☆★☆★☆★ 세션 연결 함수 (방생성 방참가) ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
