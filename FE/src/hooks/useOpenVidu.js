@@ -80,7 +80,7 @@ const useOpenVidu = () => {
 
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
       // const fullUrl = await getToken(sessionName);
-      // console.log("토큰테스트");
+      console.log("토큰테스트");
       // console.log("기본토큰",fullUrl);
       
       
