@@ -1,5 +1,6 @@
 import api from "./axios";
 
+
 const challengeApi = {
   /**
    * 챌린지 방 생성

@@ -150,7 +150,8 @@ export default function VideoControls({
   
       const response = await api.post(
         "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
-        { script: totalDataRef.current }  // ✅ JSON 형식으로 데이터 전송
+        { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
+
         // {
         //   headers: {
         //     "Content-Type": "application/json",

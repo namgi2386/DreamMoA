@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Hands } from "@mediapipe/hands";
 import { Camera } from "@mediapipe/camera_utils";
+import { useSetRecoilState } from "recoil";
+import { aiFocusState } from "../../../recoil/atoms/ai/aiState";
 
 const FocusAnalysis = ({ serverUrl }) => {
     const socketRef = useRef(null);
@@ -12,6 +14,8 @@ const FocusAnalysis = ({ serverUrl }) => {
     const mediaStreamRef = useRef(null); // ✅ WebRTC 스트림 추적용
     const intervalRef = useRef(null); // ✅ `setInterval` 추적용
     const detectionTimeout = useRef(false); // ✅ 탐지 일시 중지 상태 추적
+    const setAiFocusValue = useSetRecoilState(aiFocusState);
+
 
     // ✅ 손바닥(✋) & 따봉(👍) 감지 상태 변수
     const [isThumbsUp, setIsThumbsUp] = useState(false);
@@ -35,17 +39,18 @@ const FocusAnalysis = ({ serverUrl }) => {
                 }
                 const data = JSON.parse(event.data);
                 console.log("📡 집중도 분석 결과:", data.focus_prediction);
+                setAiFocusValue(data.focus_prediction)
                 if (data.focus_prediction == 1) {
                     studyAttitude = true;
                 }
                 else {
                     studyAttitude = false;
                 }
-                console.log("📊 신뢰도:", data.confidence);
-                console.log("👀 시선 방향:", data.eye_direction);
-                console.log("🤖 머리 기울기:", data.head_tilt);
-                console.log(studyTimer)
-                console.log("----------------------------------------------------");
+                // console.log("📊 신뢰도:", data.confidence);
+                // console.log("👀 시선 방향:", data.eye_direction);
+                // console.log("🤖 머리 기울기:", data.head_tilt);
+                // console.log(studyTimer)
+                // console.log("----------------------------------------------------");
             } catch (error) {
                 console.error("❌ WebSocket 데이터 오류:", error);
             }
