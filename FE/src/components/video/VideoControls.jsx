@@ -15,6 +15,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api/axios";
+import InviteModal from "./inviteModal/InviteModal";
 
 export default function VideoControls({
   publisher,
@@ -54,6 +55,8 @@ export default function VideoControls({
   const [showSubtitles, setShowSubtitles] = useRecoilState(showSubtitlesState);
   const [sttState, setSttState] = useState("START");
   const [eventSource, setEventSource] = useState(null);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false); // 초대 모달 on off
+  const [inviteUrl, setInviteUrl] = useState(""); // 초대 response내용
   // const [showSummary, setShowSummary] = useState(false);
   const [showSummary, setShowSummary] = useRecoilState(showSummaryState);
   const navigate = useNavigate();
@@ -145,15 +148,15 @@ export default function VideoControls({
     try {
       console.log("📩 STT 데이터 요약 요청 중...");
   
-      const response = await axios.post(
+      const response = await api.post(
         "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
-        { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
-          },
-        }
+        { script: totalDataRef.current }  // ✅ JSON 형식으로 데이터 전송
+        // {
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
+        //   },
+        // }
       );
   
       console.log("📜 STT 요약 결과:", response.data);  // ✅ 요약된 데이터 콘솔에 출력
@@ -187,8 +190,9 @@ export default function VideoControls({
   const inviteButton = async () => {
     try {
       const response = await api.get(`http://localhost:8080/challenges/invite/${sessionId}`)
+      setInviteUrl(response.data)
       console.log("초대코드성공 : ",response.data); // http://localhost:5173/challenges/invite/accept?encryptedId=alVlY2xDRnZCTTBiX200al9tYk1EQT09
-      
+      setIsInviteModalOpen(true)
     } catch (e) {
       console.log("초대코드에러",e);
       
@@ -262,6 +266,12 @@ export default function VideoControls({
           <div>invite</div>
         </button>
       </div>
+      <InviteModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        inviteUrl={inviteUrl}
+      />
+
 
       {/* ✅ 그리드 스타일 조정 버튼 */}
       <div className="flex gap-2 items-center">
@@ -271,7 +281,7 @@ export default function VideoControls({
           </button>
         ))}
       </div>
-
+      
     </div>
   );
 }

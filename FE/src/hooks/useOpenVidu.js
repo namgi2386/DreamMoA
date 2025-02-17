@@ -168,7 +168,7 @@ const useOpenVidu = () => {
       setSession(undefined);
       setSubscribers([]);
       setMainStreamManager(undefined);
-      setPublisher(undefined);
+      setPublisher(undefined);  
     }
   }, [session]);
 
