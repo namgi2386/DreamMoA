@@ -3,7 +3,8 @@ import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import { motion, AnimatePresence } from "framer-motion";
 import TagSelector from "./TagSelector";
-// import { PencilIcon } from "@heroicons/react/24/outline";
+import { useEffect } from "react";
+import { tagApi } from "../../../services/api/tagApi";
 
 export default function EditableTagList({
   isEdittag,
@@ -12,10 +13,56 @@ export default function EditableTagList({
 }) {
   const [selectedTags, setSelectedTags] = useRecoilState(selectedTagsState);
 
+  // 초기 태그 로딩
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        // 로컬 스토리지에서 태그 확인
+        const localTags = localStorage.getItem("userTags");
+
+        if (!localTags) {
+          // 로컬 스토리지에 태그가 없으면 서버에서 조회
+          const serverTags = await tagApi.getUserTags();
+          if (serverTags.length > 0) {
+            setSelectedTags(serverTags);
+            localStorage.setItem("userTags", JSON.stringify(serverTags));
+          }
+        } else {
+          setSelectedTags(JSON.parse(localTags));
+        }
+      } catch (error) {
+        console.error("태그 로딩 중 에러 발생:", error);
+      }
+    };
+
+    loadTags();
+  }, [setSelectedTags]);
+
   // 태그 삭제 핸들러
   const handleTagDelete = (tagToDelete) => {
     setSelectedTags(selectedTags.filter((tag) => tag !== tagToDelete));
   };
+
+  // complete 버튼 클릭 시 서버 업데이트
+  const handleTagComplete = async () => {
+    try {
+      // 서버에 태그 업데이트
+      await tagApi.updateUserTags(selectedTags);
+      // 로컬 스토리지 업데이트
+      localStorage.setItem("userTags", JSON.stringify(selectedTags));
+      setIsEdittag(false);
+    } catch (error) {
+      console.error("태그 업데이트 중 에러 발생:", error);
+      // 에러 처리 로직 추가 가능
+    }
+  };
+
+  // 부모 컴포넌트의 complete 버튼 클릭 이벤트를 감지
+  useEffect(() => {
+    if (!isEdittag && selectedTags.length > 0) {
+      handleTagComplete();
+    }
+  }, [isEdittag]);
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
