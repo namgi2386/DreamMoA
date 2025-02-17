@@ -1,9 +1,11 @@
 import { FaClock, FaBrain } from "react-icons/fa";
 import { useRecoilState } from "recoil";
-import { aiFocusState } from "../../../recoil/atoms/ai/aiState";
+import { aiFocusState, pureTimeState, screenTimeState } from "../../../recoil/atoms/ai/aiState";
 
 const TimerModal = ({ screenTime, pureStudyTime  }) => {
   const aiFocusValue = useRecoilState(aiFocusState);
+      const [screenTimeRecoil, setScreenTime] = useRecoilState(screenTimeState);
+      const [pureTime, setPureTime] = useRecoilState(pureTimeState);
 
   // 시간 포맷팅 함수 (초 -> HH:MM:SS)
   const formatTime = (seconds) => {
