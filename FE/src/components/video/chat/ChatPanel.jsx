@@ -7,23 +7,29 @@ import ChatInput from './ChatInput';
 import useOpenViduChat from '../../../hooks/useOpenViduChat';
 import { useRecoilState } from "recoil";
 import { memoListState, showSummaryState } from "../../../recoil/atoms/challenge/ai/scriptState";
+import { FaCopy } from "react-icons/fa6";
 
   // ☆★☆★☆★ 채팅창main ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
 
 const ChatPanel = ({ session, sessionTitle, isChatOpen, setIsChatOpen }) => {
   const { messages, sendMessage } = useOpenViduChat(session);
   const messagesEndRef = useRef(null);
+  const memoEndRef = useRef(null);
   const [showSummary, setShowSummary] = useRecoilState(showSummaryState); // 요약창 on off
   const [memoList, setMemoList] = useRecoilState(memoListState); // 채팅 기록저장용
 
   // 새 메시지가 올 때마다 스크롤을 맨 아래로
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!showSummary) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      memoEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
   // 기본 스크롤 아래 유지
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages,memoList, showSummary]);
 
   return (
     <>
@@ -41,11 +47,11 @@ const ChatPanel = ({ session, sessionTitle, isChatOpen, setIsChatOpen }) => {
         initial={{ x: "100%" }}
         animate={{ x: isChatOpen ? 0 : "120%" }}
         transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }}
-        className="fixed top-0 right-0 h-screen w-96 bg-gray-100 rounded-l-3xl z-50 flex flex-col "
+        className="fixed top-0 right-0 h-screen w-96 bg-white rounded-l-3xl z-50 flex flex-col "
       >
         {/* 열림상태 : OnOff 채팅창버튼 */}
         <button onClick={() => setIsChatOpen(false)}>
-          <div className="rounded-full bg-gray-100 text-my-blue-4 text-3xl 
+          <div className="rounded-full bg-white text-my-blue-4 text-3xl 
               p-2 top-1/2 fixed -translate-x-6">
           <HiOutlineChevronDoubleRight/>
           </div>
@@ -77,9 +83,9 @@ const ChatPanel = ({ session, sessionTitle, isChatOpen, setIsChatOpen }) => {
             </>
           ) : (
             // 메모장 컴포넌트
-            <div className="relative h-full bg-white rounded-lg p-4 shadow-inner flex flex-col">
+            <div className="relative h-full bg-white rounded-lg  shadow-inner flex flex-col">
               {/* 복사 버튼 추가 */}
-              <div className="absolute top-0 right-0 mb-4 flex justify-end">
+              <div className="absolute bottom-0 right-0 mb-4 flex justify-end">
                 <button
                   onClick={() => {
                     const allMemos = memoList.map(memo => memo.content).join('\n\n');
@@ -92,18 +98,28 @@ const ChatPanel = ({ session, sessionTitle, isChatOpen, setIsChatOpen }) => {
                         alert('클립보드 복사에 실패했습니다.');
                       });
                   }}
-                  className=" bg-my-blue-4 text-white rounded-lg hover:bg-hmy-blue-4 transition-colors"
+                  className="bg-my-blue-3 p-1 rounded-md text-xl text-my-blue-1 hover:bg-my-yellow hover:text-gray-400 transition-colors duration-300 ease-in"
                 >
-                  copy
+                  <FaCopy />
                 </button>
               </div>
               {/* 메모 내용 표시 영역 */}
-              <div className="flex-1 overflow-y-auto mb-4 space-y-2">
+              <div className="flex-1 overflow-y-auto mb-4 space-y-2 ">
                 {memoList.map((memo) => (
-                  <div key={memo.id} className=" bg-gray-50 rounded text-gray-800">
-                    {memo.content}
+                  <div 
+                    key={memo.id} 
+                    className={`rounded text-gray-800 font-user-input text-sm ${
+                      memo.content.startsWith('Memo : ') ? 'bg-my-yellow py-2 px-1' : 'bg-gray-50'
+                    }`}
+                  >
+                    {/* content가 userinput으로 시작하면 해당 부분을 제거하고, 아니면 원본 그대로 표시 */}
+                    {memo.content.startsWith('Memo : ') 
+                      ? memo.content.replace('Memo : ', '').trim()
+                      : memo.content
+                    }
                   </div>
                 ))}
+                <div ref={memoEndRef} />
               </div>
             </div>
           )}

@@ -38,7 +38,7 @@ const FocusAnalysis = ({ serverUrl }) => {
                     studyTimer += 1;
                 }
                 const data = JSON.parse(event.data);
-                console.log("📡 집중도 분석 결과:", data.focus_prediction);
+                // console.log("📡 집중도 분석 결과:", data.focus_prediction);
                 setAiFocusValue(data.focus_prediction)
                 if (data.focus_prediction == 1) {
                     studyAttitude = true;
@@ -146,7 +146,7 @@ const FocusAnalysis = ({ serverUrl }) => {
             return;
         }
 
-        console.log(`📤 ${batchSize}개 프레임 한 번에 전송 중...`);
+        // console.log(`📤 ${batchSize}개 프레임 한 번에 전송 중...`);
 
         // 🔥 JSON으로 변환하여 한 번에 전송
         socketRef.current.send(JSON.stringify({ frames: frameBuffer.current }));

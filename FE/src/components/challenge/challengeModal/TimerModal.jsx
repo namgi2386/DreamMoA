@@ -56,7 +56,7 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
             <FaClock className="text-white text-lg" />
           </div>
           <div>
-            <p className="text-sm text-gray-400">스크린타임{aiFocusValue}</p>
+            <p className="text-sm text-gray-400">스크린타임</p>
             <p className="text-2xl font-mono text-blue-400 font-semibold tracking-wider">
               {formatTime(currentScreenTime)}
             </p>

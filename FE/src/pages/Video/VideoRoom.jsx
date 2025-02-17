@@ -141,16 +141,16 @@ const VideoRoom = () => {
           className="w-full h-screen bg-gray-900 text-white"
           ref={videoRoomRef}
         >
-          <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
+          <div className="h-screen w-full flex flex-col overflow-auto">
             {/* ☆★ 상단10% 영역 ☆★ */}
-            <div className="w-full h-[10%] bg-red-100">
+            <div className="w-full h-[10%] bg-gray-900">
               <TimerModal
                 screenTime={screenTime}
                 pureStudyTime={pureStudyTime}
               />
             </div>
             {/* ☆★ 중앙 화면 영역 ☆★ */}
-            <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
+            <div className="w-full h-[80%] flex-grow  overflow-auto">
               <VideoGrid // 너와나의 비디오 위치 크기 등등
                 mainStreamManager={mainStreamManager}
                 publisher={publisher} // 내 화면
@@ -161,7 +161,7 @@ const VideoRoom = () => {
               />
             </div>
             {/* ☆★ 하단10% 영역 ☆★ */}
-            <div className="w-full h-[10%] bg-red-200 overflow-auto ">
+            <div className="w-full h-[10%]  overflow-auto ">
               <VideoControls // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
                 publisher={publisher} // 내 화면
                 subscribers={subscribers} // 친구들 화면
@@ -175,6 +175,7 @@ const VideoRoom = () => {
                 onToggleScreenShare={handleToggleScreenShare}
                 isFullscreen={isFullscreen}
                 onToggleFullscreen={handleToggleFullscreen}
+                setIsChatOpen={setIsChatOpen} // 채팅창 on off
               />
             </div>
             {/* ☆★ z-index걸린 모달 영역 ☆★ */}

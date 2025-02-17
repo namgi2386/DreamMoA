@@ -27,7 +27,7 @@ export default function ProgressDashboard() {
               cy="60" // 중심좌표
               r="55" // 반지름
               transform="rotate(-90 60 60)"
-              stroke-linecap="round"
+              strokeLinecap="round"
               initial={{ strokeDasharray: "345.7 345.7", strokeDashoffset: 345.7 }} // 345.7은 2파이r 수치값이라 고정
               animate={{ strokeDashoffset: 345.7 * (1 - 0.6) }} // 오늘할일 60% 완료 
               transition={{ duration: 1.5, ease: "easeOut" }} // 1.5초동안 , 시작은빠르게 끝은부드럽게게

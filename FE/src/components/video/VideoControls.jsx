@@ -9,7 +9,8 @@ import {
   allSubtitlesState,
   processedSubtitlesState,
   showSubtitlesState,
-  showSummaryState
+  showSummaryState,
+  memoListState
 } from "../../recoil/atoms/challenge/ai/scriptState";
 import { useState, useRef } from "react";
 import axios from "axios";
@@ -31,6 +32,7 @@ export default function VideoControls({
   onToggleScreenShare,
   isFullscreen,
   onToggleFullscreen,
+  setIsChatOpen,
 }) {
   const layouts = [
     { id: "default", icon: BsGrid1X2, label: "기본" },
@@ -61,6 +63,7 @@ export default function VideoControls({
   const [inviteUrl, setInviteUrl] = useState(""); // 초대 response내용
   // const [showSummary, setShowSummary] = useState(false);
   const [showSummary, setShowSummary] = useRecoilState(showSummaryState);
+  const [memoList, setMemoList] = useRecoilState(memoListState); // 채팅 기록저장용
   const navigate = useNavigate();
 
   // ✅ 전체 STT 데이터 저장용 ref (리렌더링 영향 안 받음)
@@ -75,6 +78,24 @@ export default function VideoControls({
       eventSource.close();
       setEventSource(null);
     }
+  };
+
+  // STT 토글 핸들러
+  const handleSTTToggle = () => {
+    if (sttState === "START") {
+      startSTT();
+      handleSubtitleToggle()
+    } else {
+      stopSTT();
+    }
+  };
+
+  // 자막 표시 토글 핸들러
+  const handleSubtitleToggle = () => {
+    setShowSubtitles((prev) => ({
+      ...prev,
+      [userId]: !prev[userId]
+    }));
   };
 
   const preprocessText = (text) => {
@@ -149,19 +170,28 @@ export default function VideoControls({
   const summarizeScript = async () => {
     try {
       console.log("📩 STT 데이터 요약 요청 중...");
-  
+      setShowSummary(true)
+      setIsChatOpen(true)
       const response = await api.post(
         "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
         { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
-
-        // {
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
-        //   },
-        // }
       );
-  
+
+      setMemoList(prev => [...prev, {
+        id: Date.now(),
+        content: (() => {
+          // response.data가 객체인 경우 summary 필드 사용
+          const content = typeof response.data === 'object' 
+            ? response.data.summary 
+            : response.data;
+          
+          // 문자열로 변환 후 처리
+          const strContent = String(content);
+          return strContent.startsWith("## 요약본") 
+            ? strContent.replace("## 요약본", "").trim() 
+            : strContent.trim();
+        })()
+      }]);
       console.log("📜 STT 요약 결과:", response.data);  // ✅ 요약된 데이터 콘솔에 출력
     } catch (error) {
       console.error("❌ STT 요약 요청 실패:", error);
@@ -219,19 +249,25 @@ export default function VideoControls({
 
       {/* ✅ STT & 자막 버튼 */}
       <div className="flex gap-4 items-center">
-        <button onClick={sttState === "START" ? startSTT : stopSTT} className="p-2 rounded bg-green-500 text-white">
-          {sttState === "STOP" ? "자막 OFF" : "자막 ON"}
-        </button>
-        <button onClick={() => setShowSubtitles((prev) => ({ ...prev, [userId]: !prev[userId] }))} className="p-2 rounded bg-blue-500 text-white">
-          {showSubtitles[userId] ? "자막 숨기기" : "자막 보기"}
-        </button>
+      <button 
+      onClick={handleSTTToggle} 
+      className="p-2 rounded bg-green-500 text-white"
+    >
+      {sttState === "STOP" ? "자막 OFF" : "자막 ON"}
+    </button>
+    <button 
+      onClick={handleSubtitleToggle} 
+      className="p-2 rounded bg-blue-500 text-white"
+    >
+      {showSubtitles[userId] ? "자막 숨기기" : "자막 보기"}
+    </button>
         <button onClick={summarizeScript} className="mt-4 bg-blue-500 text-white p-2 rounded">
           요약 보기
         </button>
       </div>
 
       {/* ✅ 요약 창 */}
-      {showSummary && (
+      {/* {showSummary && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center transition-opacity duration-300">
           <div className="bg-white p-6 rounded-lg max-w-lg shadow-lg">
             <h2 className="text-lg font-bold mb-4 text-black">📜 STT 요약</h2>
@@ -241,7 +277,7 @@ export default function VideoControls({
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ✅ 나가기 버튼 */}
       {/* <button onClick={exitButton} className="p-2 bg-red-600 text-white rounded">

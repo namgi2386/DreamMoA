@@ -26,7 +26,7 @@ export default function ChatInput({ onSendMessage }) {
     if (showSummary && chatInput.trim()) {
       setMemoList(prev => [...prev, {
         id: Date.now(),  // 고유 ID 생성
-        content: chatInput.trim()
+        content: "Memo : " + chatInput.trim()
       }]);
       setChatInput('');
     }
@@ -58,6 +58,16 @@ export default function ChatInput({ onSendMessage }) {
     <div className="">
       <div className="flex flex-col items-center  ">
         {/* 입력 section */}
+        <div className="flex  w-full gap-4  px-3  text-gray-800 pb-1">
+        <button onClick={()=> {setShowSummary(true)}}
+          className=' font-user-input  rounded-md px-4  bg-my-blue-4 text-hmy-blue-1 hover:bg-my-yellow/50 ease-in transition-colors duration-200 font-medium'>
+          Dream Note
+        </button>
+        <button onClick={()=> {setShowSummary(false)}}
+          className=' font-user-input  rounded-md px-4  bg-my-blue-4 text-hmy-blue-1 hover:bg-my-yellow/50 ease-in transition-colors duration-200 font-medium'>
+          Chat
+        </button>
+        </div>
         <form onSubmit={chatRequest}
           className="w-full p-1 rounded-2xl border border-my-blue-2 border-2 
           focus:outline-none focus:border-blue-500 flex ">
@@ -69,7 +79,7 @@ export default function ChatInput({ onSendMessage }) {
             rows={1}
             placeholder="대화를 입력하세요"
             style={{ height: 'auto', minHeight: '24px', maxHeight: '150px' }}
-            className="bg-gray-100 w-full focus:outline-none ml-3 font-user-input resize-none overflow-hidden text-gray-800"
+            className="bg-white w-full focus:outline-none ml-3 font-user-input resize-none overflow-hidden text-gray-800"
           />
           {/* 입력 버튼 */}
           <button  type="submit"
@@ -84,7 +94,7 @@ export default function ChatInput({ onSendMessage }) {
             onClick={handleClipClick}
             className="text-gray-500 hover:text-gray-700"
           >
-            <Paperclip size={20} />
+            {/* <Paperclip size={20} /> */}
           </button>
           <button
             type="button"
