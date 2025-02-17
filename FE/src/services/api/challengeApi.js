@@ -116,10 +116,20 @@ const challengeApi = {
   // 챌린지 입장하기(내꺼 입장) === 참가하기(이미시작날짜지났지만 입장)
   enterChallenge: async(challengeId) => {
     try {
-      const response = await api.post(`/challenges/${challengeId}/enter`);
-      return response
-    } catch (e){
-      console.log("챌린지 입장하기 api 실패",e);
+      console.log("세션id체크", challengeId);
+      
+      // 현재 날짜를 YYYY-MM-DD 형식으로 포맷팅
+      const today = new Date().toISOString().split('T')[0];
+      
+      const response = await api.post(
+        `/challenges/${challengeId}/enter`,
+        {
+          recordAt: today
+        }
+      );
+      return response;
+    } catch (e) {
+      console.log("챌린지 입장하기 api 실패", e);
     }
   },
   // 챌린지 탈퇴하기
@@ -192,6 +202,8 @@ const challengeApi = {
     // 값이 있을 때만 params 객체에 추가
     if (keyword) params.keyword = keyword;
     if (tags) params.tags = tags;
+    console.log("태그확인",tags);
+    
 
     const response = await api.get("/challenges/search", { params });
     console.log("챌린지 검색 결과 :",response.data);

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useParams } from 'react-router-dom';
 
 import VideoControls from "/src/components/video/VideoControls";
 import VideoGrid from "/src/components/video/VideoGrid";
@@ -13,14 +14,44 @@ const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {
   // 사용자 입력 상태
+  const { roomId } = useParams();
   // const [myUserName, setMyUserName] = useState('');// 유저이름  VideoJoinForm 버전
   // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off 
   const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-  const dummySessionRoomName = "13" // 이거 챌린지 선택했을때 가져와야됨.
-  const dummyUserName = userInfo?.nickname || "testUser"
+  const dummySessionRoomName = roomId || "106" // 이거 챌린지 선택했을때 가져와야됨.
+  const dummyUserName = userInfo?.nickname || "Guest"
   // const dummyUserName = "namhui"
+
+  // 전체화면 관련 상태와 ref 추가
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const videoRoomRef = useRef(null);
+  // 전체화면 토글 함수
+  const handleToggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await videoRoomRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    } catch (error) {
+      console.error('Fullscreen error:', error);
+    }
+  };
+  // 전체화면 변경 이벤트 감지
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   // OpenVidu hook에서 정의한 함수 전부 가져와서 사용
   const {
@@ -102,42 +133,48 @@ const VideoRoom = () => {
       ) : (
         // 세션 연결 후: 비디오 폼 표시
         // ☆★☆★☆★ 전체영역 ☆★☆★☆★
-        <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
-          {/* ☆★ 상단10% 영역 ☆★ */}
-          <div className="w-full h-[10%] bg-red-100"></div>
-          {/* ☆★ 중앙 화면 영역 ☆★ */}
-          <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
-            <VideoGrid // 너와나의 비디오 위치 크기 등등
-              mainStreamManager={mainStreamManager}
-              publisher={publisher} // 내 화면
-              subscribers={subscribers} // 친구들 화면
-              screenPublisher={screenPublisher}
-              onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
-              currentLayout={currentLayout}
+        <div className="w-full h-screen bg-gray-900 text-white" ref={videoRoomRef}>
+          <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
+            {/* ☆★ 상단10% 영역 ☆★ */}
+            <div className="w-full h-[10%] bg-red-100"></div>
+            {/* ☆★ 중앙 화면 영역 ☆★ */}
+            <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
+              <VideoGrid // 너와나의 비디오 위치 크기 등등
+                mainStreamManager={mainStreamManager}
+                publisher={publisher} // 내 화면
+                subscribers={subscribers} // 친구들 화면
+                screenPublisher={screenPublisher}
+                onStreamClick={updateMainStreamManager} // 친구화면 클릭시 크게만드는 그런함수
+                currentLayout={currentLayout}
+              />
+            </div>
+            {/* ☆★ 하단10% 영역 ☆★ */}
+            <div className='w-full h-[10%] bg-red-200 overflow-auto '>
+              <VideoControls // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
+                publisher={publisher} // 내 화면
+                subscribers={subscribers} // 친구들 화면
+                onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
+                currentLayout={currentLayout}
+                session={session}
+                sessionId = {dummySessionRoomName}
+                onLayoutChange={setCurrentLayout}
+                // 화면공유 관련 props
+                isScreenSharing={isScreenSharing}
+                onToggleScreenShare={handleToggleScreenShare}
+                isFullscreen={isFullscreen}
+                onToggleFullscreen={handleToggleFullscreen}
+              />
+            </div>
+            {/* ☆★ z-index걸린 모달 영역 ☆★ */}
+            <ChatPanel // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
+              session={session} // 세션상태
+              sessionTitle={dummySessionRoomName} //방이름
+              isChatOpen={isChatOpen} // 채팅창 on off
+              setIsChatOpen={setIsChatOpen} // 채팅창 on off
             />
+            {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
+            <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
           </div>
-          {/* ☆★ 하단10% 영역 ☆★ */}
-          <div className='w-full h-[10%] bg-red-200 overflow-auto '>
-            <VideoControls // 컨트롤러 (지금은 카메라전환 + 나가기버튼밖에 없음)
-              publisher={publisher} // 내 화면
-              subscribers={subscribers} // 친구들 화면
-              onLeaveSession={disconnectSession} // 나가기 함수 매개변수로 넘겨줌
-              currentLayout={currentLayout}
-              onLayoutChange={setCurrentLayout}
-              // 화면공유 관련 props
-              isScreenSharing={isScreenSharing}
-              onToggleScreenShare={handleToggleScreenShare}
-            />
-          </div>
-          {/* ☆★ z-index걸린 모달 영역 ☆★ */}
-          <ChatPanel // 채팅창모달 (테스트하려고 입장화면에 넣어둠)
-            session={session} // 세션상태
-            sessionTitle={dummySessionRoomName} //방이름
-            isChatOpen={isChatOpen} // 채팅창 on off
-            setIsChatOpen={setIsChatOpen} // 채팅창 on off
-          />
-          {/* ✅ UI에 영향 없이 WebSocket 테스트 실행 */}
-          <FocusAnalysis serverUrl={SERVER_URL} onDataReceived={handleWebSocketData} />
         </div>
       )}
     </div>

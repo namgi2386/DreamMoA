@@ -3,6 +3,8 @@ import { useState, useCallback, useRef } from "react";
 import { OpenVidu } from "openvidu-browser";
 import { videoApi } from "../services/api/videoApi";
 import useScreenShare from "./useScreenShare";
+import { useNavigate } from "react-router-dom";
+import challengeApi from "../services/api/challengeApi";
 
 const useOpenVidu = () => {
   // 상태 관리
@@ -13,6 +15,7 @@ const useOpenVidu = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null); // 현재 사용 중인 카메라 장치
   const [isLoading, setIsLoading] = useState(false); // 로딩상태관리
   const [error, setError] = useState(null); // 에러상태관리
+  const navigate = useNavigate();
 
   // ▽▼▽▼▽ 기본 함수(환경설정 및 세션연결 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
@@ -76,12 +79,25 @@ const useOpenVidu = () => {
       });
 
       // 토큰 발급 및 연결 (세션+토큰발급 하기)
-      const token = await getToken(sessionName);
-      console.log("토큰줘", token, userName, encodedUserName); // 토큰 도착 성공
+      // const fullUrl = await getToken(sessionName);
+      console.log("토큰테스트");
+      // console.log("기본토큰",fullUrl);
+      
+      
+      const response = await challengeApi.enterChallenge(sessionName)
+      const fullUrl = response.data.token;
+      //dddddddddddddddddddddd++++++++++++++++++++=
+
+      // const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0];
+      // const tokenInResponse = fullUrl.split('token=')[1];
+      
+      console.log("토큰테스트 응답", fullUrl);
       console.log("마이세션", mySession);
+      // console.log("토큰줘", tokenInResponse, userName, encodedUserName); // 토큰 도착 성공
+      // console.log("마이세션 in response", sessionIdInResponse);
 
       // clientData에 원본 userName과 인코딩된 userName 모두 포함
-      await mySession.connect(token, {
+      await mySession.connect(fullUrl, {
         clientData: JSON.stringify({
           originalName: userName,
           encodedName: encodedUserName,
@@ -144,9 +160,12 @@ const useOpenVidu = () => {
   // 세션 나가기 : 모든 상태를 초기화하고 연결 종료
   const disconnectSession = useCallback(() => {
     if (session) {
-      //세션 끊어버리기
       session.disconnect();
-      // 상태 초기화
+      navigate("/dashboard");
+      //세션 끊어버리기
+      setTimeout(() => {
+        window.location.reload();
+      }, 10);
       setSession(undefined);
       setSubscribers([]);
       setMainStreamManager(undefined);

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import ReviewMain from './ReviewMain';
+// import ReviewMain from './ReviewMain';
 import VideoSection from '../videoSection/VideoSection';
 
 export default function ReviewGradation() {
@@ -8,7 +8,7 @@ export default function ReviewGradation() {
   // 컴포넌트의 중간 지점을 지났는지 여부를 추적하는 상태값
   const [isScrolledPast, setIsScrolledPast] = useState(false);
   // DOM 요소를 참조하기 위한 ref 생성
-  const componentRef = useRef(null);
+  const componentGradationRef = useRef(null);
   const c1 = [0, 52, 88];    // 그라데이션 시작 색상
   const c2 = [15, 15, 20];   // 그라데이션 끝 색상
 
@@ -16,11 +16,11 @@ export default function ReviewGradation() {
     // 스크롤 이벤트 핸들러 함수
     const handleScroll = () => {
       // 컴포넌트의 현재 뷰포트 상대 위치 계산
-      const componentTop = componentRef.current.getBoundingClientRect().top;
+      const componentTop = componentGradationRef.current.getBoundingClientRect().top;
       // 브라우저 창의 높이 가져오기
       const windowHeight = window.innerHeight;
       // 컴포넌트의 실제 높이 가져오기
-      const componentHeight = componentRef.current.clientHeight;
+      const componentHeight = componentGradationRef.current.clientHeight;
       // 컴포넌트의 중간 지점 위치 계산
       const componentMiddle = componentTop + componentHeight / 2;
       // 컴포넌트 중간 지점이 뷰포트 내에 있고, 아직 지나지 않았을 때
@@ -44,7 +44,7 @@ export default function ReviewGradation() {
   }, [isScrolledPast]); // isScrolledPast가 변경될 때마다 effect 재실행
 
   return (
-    <div ref={componentRef} className="h-[1000px] relative">
+    <div ref={componentGradationRef} className="h-[1000px] relative">
       {/* 그라데이션 배경 div */}
       <div 
         className="absolute inset-0 w-full h-full" // 절대위치 tblr-0설정 즉 전체화면

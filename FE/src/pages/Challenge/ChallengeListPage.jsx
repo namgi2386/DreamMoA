@@ -18,14 +18,13 @@ export default function ChallengeListPage() {
       <div className={`min-h-screen w-full bg-white py-12 ${isHideSidebar ? 'pl-6':'pl-20'}  pr-6 transition-[padding] ease-in-out duration-300 max-w-[1600px]`}>
         {/* 내 태그기반 챌린지리스트 */}
         <ChallengeListMyTagSorted/>
-
         {/* 챌린지 검색창+태그창 */}
         <ChallengeListSearchSection/>
         {/* 챌린지리스트 결과전부 */}
         <ChallengeListSearchResultSection/> 
         {/* 챌린지리스트 더보기 part */}
         <ChallengeListMoreMoreSection/>
-
+        {/* 챌린지상세모달 */}
         {isModalOpen && <ChallengeDetailModal />}
       </div>
     </div>

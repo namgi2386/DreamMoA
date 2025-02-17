@@ -45,9 +45,11 @@ export default function HomeCommunityItem({ item, initialPosition, maxZ, setMaxZ
     setMaxZ(newZ);
     setZIndex(newZ);
   };
+  // console.log(item);
+  
   return (
     <motion.div
-      className={`absolute w-60 p-4 rounded-lg shadow-lg cursor-move ${item.bg} min-h-[200px]`}
+      className={`absolute w-60 p-4 rounded-lg shadow-lg cursor-move ${item.bg} h-[200px]`}
       style={{ 
         left: '35%',
         top: '35%',
@@ -74,16 +76,16 @@ export default function HomeCommunityItem({ item, initialPosition, maxZ, setMaxZ
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      <div className={`flex flex-col gap-3 `}>
-        <p className={`${item.textsize} text-gray-600`}>{item.content}</p>
+      <div className={`flex flex-col gap-3  h-full justify-between`}>
+        <p className={`${item.textsize} text-gray-600 line-clamp-5 overflow-hidden`}>{item.content}</p>
         <div className='flex  space-x-3 items-center'>
           <img 
             src={item.avatarUrl} 
-            alt={item.author}
+            alt={item.userNickname}
             className="w-8 h-8 rounded-full"
           />
           {/* <p>{item.avatarUrl}</p> */}
-          <p className="font-medium text-sm ">{item.author}</p>
+          <p className="font-medium text-sm ">{item.nickname}</p>
         </div>
       </div>
     </motion.div>
