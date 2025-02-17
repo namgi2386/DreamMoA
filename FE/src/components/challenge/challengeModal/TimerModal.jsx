@@ -1,14 +1,22 @@
 import { FaClock, FaBrain } from "react-icons/fa";
 import { useRecoilState } from "recoil";
-import { aiFocusState } from "../../../recoil/atoms/ai/aiState";
+import { aiFocusState,currentScreenTimeState,currentPureTimeState } from "../../../recoil/atoms/ai/aiState";
 import { useEffect, useState } from "react";
 
 const TimerModal = ({ screenTime, pureStudyTime  }) => {
   const aiFocusValue = useRecoilState(aiFocusState);
-  console.log("@@@@@@@@@@@@1" , screenTime);
-  console.log("@@@@@@@@@@@@2" , pureStudyTime);
-  const [currentScreenTime, setCurrentScreenTime] = useState(screenTime);
-  const [currentPureTime, setCurrentPureTime] = useState(pureStudyTime);
+  // console.log("@@@@@@@@@@@@1" , screenTime);
+  // console.log("@@@@@@@@@@@@2" , pureStudyTime);
+  // const [currentScreenTime, setCurrentScreenTime] = useState(screenTime);
+  // const [currentPureTime, setCurrentPureTime] = useState(pureStudyTime);
+  const [currentScreenTime, setCurrentScreenTime] = useRecoilState(currentScreenTimeState);
+  const [currentPureTime, setCurrentPureTime] = useRecoilState(currentPureTimeState);
+
+  // 컴포넌트 마운트 시 초기값 설정
+  useEffect(() => {
+    setCurrentScreenTime(screenTime);
+    setCurrentPureTime(pureStudyTime);
+  }, []);
 
   // 시간 포맷팅 함수 (초 -> HH:MM:SS)
   const formatTime = (seconds) => {
@@ -23,22 +31,21 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
   
   // 타이머 로직 추가
   useEffect(() => {
-    // 타이머 로직
     const timer = setInterval(() => {
-      // 스크린타임은 항상 증가
       setCurrentScreenTime(prev => prev + 1);  
       
-      // aiFocusValue가 1일 때만 순공시간 증가, 0일 때는 일시정지
-      if (aiFocusValue[0] === 1) {  // aiFocusValue가 1일 때
+      if (aiFocusValue[0] === 1) {
         setCurrentPureTime(prev => prev + 1);
       }
-      // aiFocusValue가 0일 때는 setCurrentPureTime이 호출되지 않으므로 시간이 멈춤
     }, 1000);
   
-    // 클린업 함수
-    return () => clearInterval(timer);
-  }, [aiFocusValue]); // aiFocusValue 의존성 유지
-
+    // 클린업 함수: 컴포넌트 언마운트 시 localStorage에 현재 시간 저장
+    return () => {
+      clearInterval(timer);
+      localStorage.setItem('screenTime', currentScreenTime.toString());
+      localStorage.setItem('pureTime', currentPureTime.toString());
+    };
+  }, [aiFocusValue, setCurrentScreenTime, setCurrentPureTime, currentScreenTime, currentPureTime]); // 의존성 배열에 현재 시간 상태 추가
   return (
     <div className="absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
       {/* 컨테이너 */}

@@ -10,9 +10,10 @@ export default function ProgressDashboard() {
     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
           bg-gray-100 rounded-3xl pt-4 pb-2 w-80 shadow-lg z-50">
       <div className="w-full flex flex-col items-center">
-        <div className="flex flex-col  items-center mb-4 uppercase text-3xl">
-          <h1>your challenge</h1>
-          <h2>progress</h2>
+        <div className="flex flex-col  items-center mb-4 uppercase text-2xl">
+          <h1>오늘도 꿈을 꾸는 </h1>
+          <h1>⭐당신을 응원합니다!⭐</h1>
+          {/* <h2>progress</h2> */}
         </div>
 
         <div className="relative flex justify-center items-center ">
@@ -35,7 +36,7 @@ export default function ProgressDashboard() {
         </div>
         <div className="flex justify-start w-full px-14">
         <button 
-            className={`px-1 py-0.3  text-white rounded text-sm
+            className={`px-1 py-0.3 mb-0.5  text-white rounded text-sm
               ${isAutoFalling ? 'bg-my-red hover:bg-hmy-red' : 'bg-my-blue-4 hover:bg-hmy-blue-4' }`}
             onClick={() => setIsAutoFalling(!isAutoFalling)}
           >

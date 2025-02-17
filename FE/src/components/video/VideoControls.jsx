@@ -16,6 +16,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api/axios";
 import InviteModal from "./inviteModal/InviteModal";
+import EndButton from "/src/components/challenge/finish/EndButton";
+
 
 export default function VideoControls({
   publisher,
@@ -242,10 +244,13 @@ export default function VideoControls({
       )}
 
       {/* ✅ 나가기 버튼 */}
-      <button onClick={exitButton} className="p-2 bg-red-600 text-white rounded">
-        나가기
-      </button>
-      
+      {/* <button onClick={exitButton} className="p-2 bg-red-600 text-white rounded">
+      나가기
+      </button> */}
+      {/* ✅ 나가기 버튼 */}
+      <div className="fixed top-0 left-0 right-0 z-10 p-4 flex justify-start ">
+        <EndButton onLeaveSession={onLeaveSession} sessionId={sessionId}/>
+      </div>
       {/* ✅ 전체화면 버튼 */}
       <button onClick={onToggleFullscreen} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
         {isFullscreen ? (

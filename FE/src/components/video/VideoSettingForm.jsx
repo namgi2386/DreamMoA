@@ -72,7 +72,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
 
   const handleExit = () => {
     console.log('나가기');
-    navigate('/documents');
+    navigate('/challenge/list');
   };
   // 폼 제출 핸들러
   // const handleSubmit = (e) => {

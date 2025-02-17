@@ -15,6 +15,7 @@ import DocumentsPage from "../pages/User/DocumentsPage";
 import CommunityForm from "../components/community/CommunityForm";
 
 import VideoRoom from '../pages/Video/VideoRoom';
+import EndMiddlePage from '../pages/Video/EndMiddlePage';
 // import OAuth2RedirectHandler from "../pages/User/OAuth2RedirectHandler";
 
 
@@ -124,6 +125,7 @@ export default function AppRoutes() {
         }
       />
       <Route path="/video/:roomId" element={<VideoRoom />} />
+      <Route path="/video/:roomId/ending" element={<EndMiddlePage />} />
       <Route path="/admin" element={<AdminPage />} />
 
       <Route path="*" element={<Notfound />} />

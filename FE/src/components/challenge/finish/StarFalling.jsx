@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useRecoilValue } from 'recoil';
 import {autoFallingState} from  '../../../recoil/atoms/challenge/starState';
+import { IoCall } from "react-icons/io5";
 import star1 from "./../../../assets/stars/star1.png";
 import star2 from "./../../../assets/stars/star2.png";
 import star3 from "./../../../assets/stars/star3.png";
@@ -39,7 +40,7 @@ export default function StarFalling() {
   }, [isAutoFalling, createStar]);
 
   return (
-    <div className="fixed w-full h-screen overflow-hidden z-40">
+    <div className="fixed w-full h-screen overflow-hidden z-40 bg-black">
       
       <FinalMotion />
 
@@ -65,6 +66,15 @@ export default function StarFalling() {
           }}
         />
       ))}
+            <div id="homebutton" className="fixed z-10 bottom-8 left-1/2 -translate-x-1/2">
+              <button 
+                className=" rounded-lg  border-4 border-gray-700 bg-gray-700"
+                >
+                <div className="bg-my-red rounded-md p-2 hover:bg-hmy-red text-gray-700">
+                  <IoCall />
+                </div>
+              </button>
+            </div>
     </div>
   );
 };

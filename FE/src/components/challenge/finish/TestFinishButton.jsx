@@ -3,10 +3,12 @@ import { motion } from 'framer-motion';
 import testlogo from '../../../assets/logo/testlogo.png';
 import { useSetRecoilState  } from 'recoil';
 import {starState } from  '../../../recoil/atoms/challenge/starState';
+import { useNavigate } from "react-router-dom";
 
 const TestFinishButton = () => {
   const [isChecked, setIsChecked] = useState(false);
   const setIsRunStar = useSetRecoilState(starState)
+  const navigate = useNavigate();
 
   return (
     <>
@@ -40,6 +42,7 @@ const TestFinishButton = () => {
             setIsChecked(true);   
             setTimeout(() => {
             setIsRunStar(false);
+            navigate("/dashboard");
             }, 2300); 
             // delay(1.7초) duration(0.3초) + 우선 0.3초 
           }} 
