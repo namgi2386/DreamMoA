@@ -1,53 +1,155 @@
 import TitleSection from "../../components/dashboard/TitleSection";
 import ComponentButton from "../../components/dashboard/ComponentButton";
-import DataSection from "../../components/dashboard/DataSection";
-import ChartSection from "../../components/dashboard/ChartSection";
+import DateChartSection from "../../components/dashboard/date/DateChartSection";
 import QuoteSection from "../../components/dashboard/QuoteSection";
 import CalendarSection from "../../components/dashboard/CalendarSection";
 import ChallengeDataSection from "../../components/dashboard/challenge/ChallengeDataSection";
 import DateDataSection from "../../components/dashboard/date/DateDataSection";
-
-import { useState } from "react";
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
+import ChallengeChartSection from "../../components/dashboard/challenge/ChallengeChartSection";
+import useDailyStudyTime from "../../hooks/useDailyStudyTime";
+import dashboardApi from "../../services/api/dashboardApi";
+import { formatTime } from "../../utils/formatTime";
+import { useState, useEffect } from "react";
 
 export default function Dashboard() {
   const [date, setDate] = useState(new Date());
   const [dashboardType, setDashboardType] = useState("date");
 
+  // 날짜별 모드 관련 데이터
+  const { dailyStudyList, todayStudyTimeSec, averageStudyTimeSec } =
+    useDailyStudyTime(date, dashboardType);
 
-  // 테스트용 임시 데이터
-  // 공부시간 데이터: 1행 1열 (오늘 공부 시간), 2행 1열 (총 공부 시간)
-  const testStudyItems = [
-    { label: "오늘 공부 시간", value: "120분" },
-    { label: "총 공부 시간", value: "500분" },
+  // 날짜별 챌린지 데이터
+  const [topChallenges, setTopChallenges] = useState([]);
+  const fetchTopChallenges = async (year, month, day) => {
+    try {
+      const data = await dashboardApi.getTopChallengesForDay(year, month, day);
+      setTopChallenges(data);
+    } catch (error) {
+      console.error("챌린지 데이터 조회 실패:", error);
+      setTopChallenges([]);
+    }
+  };
+
+  useEffect(() => {
+    if (dashboardType === "date") {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      fetchTopChallenges(year, month, day);
+    }
+  }, [dashboardType, date]);
+
+  // 챌린지별 모드 관련 데이터
+  const [monthlyChallenges, setMonthlyChallenges] = useState([]);
+  const [myChallenges, setMyChallenges] = useState([]);
+
+  const fetchMonthlyChallenges = async (year, month) => {
+    try {
+      const data = await dashboardApi.getMonthlyChallengeHistory(year, month);
+      setMonthlyChallenges(data);
+    } catch (error) {
+      console.error("챌린지 히스토리 조회 실패:", error);
+      setMonthlyChallenges([]);
+    }
+  };
+
+  const fetchMyChallenges = async () => {
+    try {
+      const data = await dashboardApi.getMyChallenges();
+      setMyChallenges(data);
+    } catch (error) {
+      console.error("내 챌린지 조회 실패:", error);
+      setMyChallenges([]);
+    }
+  };
+
+  useEffect(() => {
+    if (dashboardType === "challenge") {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      fetchMonthlyChallenges(year, month);
+      fetchMyChallenges();
+    }
+  }, [dashboardType, date]);
+
+  // 날짜별 모드: 챌린지 셀 데이터
+  const challengeItems =
+    topChallenges.length > 0
+      ? topChallenges.slice(0, 4).map((ch) => ({
+          label: ch.title,
+          value: formatTime(ch.totalPureStudyTime),
+        }))
+      : [];
+
+  // 날짜별 모드: 날짜 셀 데이터
+  const dateStudyItems = [
+    {
+      label: "오늘 공부 시간",
+      value: formatTime(todayStudyTimeSec),
+    },
+    {
+      label: "월 평균 공부시간",
+      value: formatTime(averageStudyTimeSec),
+    },
   ];
 
-  // 챌린지 데이터: 순서대로 1행2열, 1행3열, 2행2열, 2행3열에 매핑됨
-  const testChallengeItems = [
-    { label: "챌린지 항목 1", value: "값 1" },
-    { label: "챌린지 항목 2", value: "값 2" },
-    { label: "챌린지 항목 3", value: "값 3" },
-    { label: "챌린지 항목 4", value: "값 4" },
-  ];
+  // 달력 표시용 (챌린지별 모드)
+  const [selectedChallengeDetails, setSelectedChallengeDetails] = useState([]);
+  const [selectedChallengeInfo, setSelectedChallengeInfo] = useState(null);
+
+  const handleSelectChallengeForCalendar = async (challengeId) => {
+    console.log(
+      "[DashboardPage] handleSelectChallengeForCalendar() called:",
+      challengeId
+    );
+    try {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const details = await dashboardApi.getMonthlyDetailsForChallenge(
+        challengeId,
+        year,
+        month
+      );
+      console.log("[DashboardPage] getMonthlyDetailsForChallenge =>", details);
+      setSelectedChallengeDetails(details || []);
+
+      // myChallenges에서 정보 찾기
+      const info = myChallenges.find((ch) => ch.challengeId === challengeId);
+      setSelectedChallengeInfo(info || null);
+    } catch (error) {
+      console.error("챌린지 날짜별 상세 조회 실패:", error);
+      setSelectedChallengeDetails([]);
+      setSelectedChallengeInfo(null);
+    }
+  };
 
   return (
-    <div className="w-full h-screen p-4 flex flex-col bg-white">
+    <div className="w-full min-h-screen p-4 flex flex-col bg-white">
       {/* Title 영역 */}
-      <div className="w-full h-24 flex items-center  justify-center text-xl font-bold">
-        Title 영역
+      <div className="w-full h-24">
+        <TitleSection />
       </div>
 
-      {/* Content 영역 */}
-      <div className="w-full h-3/4 mt-4 flex h-full">
-        {/* Section 1 (60%) */}
-        <div className="pl-32 bg-green-100 w-3/5 h-full flex flex-col">
-          {/* Component 영역 */}
-          <div className="w-full  h-1/6 ">
-            <div className="flex items-center justify-between text-lg bg-red-100 h-full">
+      {/* 기존 데스크탑 구조는 그대로 두고, 모바일일 때만 flex-col 및 순서(order)를 변경 */}
+      <div className="w-full mt-4 ml-10 flex flex-col md:flex-row items-stretch justify-center">
+        {/* Section 1: 데이터/차트 영역 (데스크탑: 왼쪽 - 60%) */}
+        {/* 모바일에서는 아래쪽에 표시 */}
+        <div className="order-2 md:order-1 w-full md:w-3/5 flex flex-col border-2 border-gray-300 rounded-xl p-4 mt-4 md:mt-0">
+          {/* 상단 버튼 영역 */}
+          <div className="w-full">
+            <div className="flex items-center justify-between text-lg">
               {/* 왼쪽: 날짜 표시 버튼 */}
-              <ComponentButton isDate date={date} mode={dashboardType} />
+              <ComponentButton
+                isDate
+                date={date}
+                mode={dashboardType}
+                challengeName={
+                  dashboardType === "challenge" && selectedChallengeInfo
+                    ? selectedChallengeInfo.title
+                    : undefined
+                }
+              />
               {/* 오른쪽: 모드 전환 버튼 */}
               <ComponentButton
                 text={dashboardType === "date" ? "날짜별" : "챌린지별"}
@@ -61,71 +163,76 @@ export default function Dashboard() {
           </div>
 
           {/* Data + Chart 영역 */}
-          <div className="w-full flex flex-col h-5/6 bg-blue-100">
+          <div className="w-full flex flex-col mt-4">
             {dashboardType === "date" ? (
               <>
-                <div className="w-full h-1/3">
-                <DateDataSection
-                    studyItems={testStudyItems}
-                    challengeItems={testChallengeItems}
+                {/* 공부시간 / 챌린지 데이터 */}
+                <div className="w-full flex-none">
+                  <DateDataSection
+                    studyItems={dateStudyItems}
+                    challengeItems={challengeItems}
                   />
                 </div>
-                <div className="w-full flex items-center justify-center text-lg h-2/3">
-                  Chart 영역
+                {/* 차트 영역: 높이를 늘리고 싶다면 h-80, h-96 등 지정 */}
+                <div className="w-full flex-auto flex items-center justify-center text-lg h-96 mt-4">
+                  <DateChartSection
+                    dailyStudyList={dailyStudyList}
+                    selectedDate={date}
+                  />
                 </div>
               </>
             ) : (
               <>
-                {/* 챌린지 모드에서 Data 영역: ChallengeDataSection 컴포넌트를 사용 */}
-                <div className="w-full h-1/3">
-                  <ChallengeDataSection />
+                <div className="w-full flex-none">
+                  <ChallengeDataSection
+                    monthlyChallenges={monthlyChallenges}
+                    myChallenges={myChallenges}
+                    year={date.getFullYear()}
+                    month={date.getMonth() + 1}
+                    onChallengeSelectedDetails={handleSelectChallengeForCalendar}
+                  />
                 </div>
-                <div className="w-full flex items-center justify-center text-lg h-2/3">
-                  챌린지 차트 영역
+                <div className="w-full flex-auto flex items-center justify-center text-lg h-96">
+                  <ChallengeChartSection
+                    details={selectedChallengeDetails}
+                    challengePeriod={
+                      selectedChallengeInfo && {
+                        startDate: selectedChallengeInfo.startDate,
+                        expireDate: selectedChallengeInfo.expireDate,
+                      }
+                    }
+                  />
                 </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Section 2 (40%) */}
-        <div className="w-2/5 flex flex-col -ml-8">
-          {/* Component 영역 */}
-          <div className="w-full flex items-center justify-center text-lg h-1/6">
-            Component 영역
-          </div>
-
-          {/* Quote + Calendar 영역 */}
-          <div className="w-full flex items-start justify-center  text-lg h-5/6">
+        {/* Section 2: 인용구/달력 영역 (데스크탑: 오른쪽 - 40%) */}
+        {/* 모바일에서는 상단에 표시 */}
+        <div className="order-1 md:order-2 w-full md:w-2/5 flex flex-col -ml-8">
+          <div className="w-full flex items-start justify-center text-lg">
             <div>
-              <div className="w-full flex items-center justify-center text-lg h-1/3">
+              <div className="w-full flex items-center justify-center text-lg mt-10">
                 <QuoteSection />
               </div>
-              <div className="w-full flex items-end bg-yellow-100 justify-center text-lg h-2/3 mt-10">
-                {/* 날짜별 모드에서만 캘린더 표시 (챌린지 모드라면 다른 방식의 세부 캘린더를 사용하도록 수정 가능) */}
-                {dashboardType === "date" && (
+              <div className="w-full flex items-end justify-center text-lg mt-6">
+                {dashboardType === "date" ? (
                   <CalendarSection
                     value={date}
-                    onChange={(e) => {
-                      console.log("선택한 날짜:", e.value);
-                      setDate(e.value);
+                    onChange={(selectedDate) => {
+                      console.log("선택한 날짜:", selectedDate);
+                      setDate(selectedDate);
                     }}
                     mode={dashboardType}
-                    inline
-                    showButtonBar
+                    details={[]} // 날짜 모드: success/fail 데이터 없음
                   />
-                )}
-                {dashboardType === "challenge" && (
-                  // 챌린지 모드에서도 기본 캘린더를 표시하되, 모드 prop을 통해 내부 렌더링을 다르게 함
+                ) : (
                   <CalendarSection
                     value={date}
-                    onChange={(e) => {
-                      console.log("챌린지 모드에서 선택한 날짜:", e.value);
-                      setDate(e.value);
-                    }}
+                    onChange={(selectedDate) => setDate(selectedDate)}
                     mode={dashboardType}
-                    inline
-                    showButtonBar
+                    details={selectedChallengeDetails}
                   />
                 )}
               </div>

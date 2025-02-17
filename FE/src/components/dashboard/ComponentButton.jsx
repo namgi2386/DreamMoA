@@ -1,13 +1,14 @@
-export default function ComponentButton({ text, isDate, date, mode, onClick }) {
+export default function ComponentButton({ text, isDate, date, mode, challengeName, onClick }) {
   return (
     <button 
       onClick={onClick}
-      className="px-6 py-3 bg-blue-300 text-white rounded-md text-center min-w-[150px] text-3xl"
+      className="px-6 py-3 bg-my-blue-4 text-white rounded-md text-center min-w-[150px] text-2xl"
+      style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
     >
       {isDate 
         ? (mode === "date" 
               ? (date ? formatDate(date) : "날짜 선택") 
-              : "챌린지명" // 챌린지 모드라면 여기서 챌린지명을 표시 (추후 state나 props로 받아올 수 있음)
+              : (challengeName ? challengeName : "챌린지명")
           )
         : text}
     </button>
