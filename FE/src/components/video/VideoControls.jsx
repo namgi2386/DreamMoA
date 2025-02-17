@@ -2,6 +2,11 @@ import { IoIosSquareOutline } from "react-icons/io";
 import { CiGrid41, CiGrid2H, CiGrid42 } from "react-icons/ci";
 import { BsGrid1X2 } from "react-icons/bs";
 import { LuScreenShare, LuScreenShareOff } from "react-icons/lu";
+import { GoScreenFull } from "react-icons/go";
+import { MdSubtitles } from "react-icons/md";
+import { HiUserAdd } from "react-icons/hi";
+import { MdOutlineAutoAwesome } from "react-icons/md";
+import { FaVideo, FaVideoSlash,FaMicrophoneSlash ,FaMicrophone } from "react-icons/fa";
 import useOpenViduSetting from "../../hooks/useOpenViduSetting";
 import { useRecoilState } from "recoil";
 import {
@@ -165,7 +170,7 @@ export default function VideoControls({
     setScriptOnOff((prev) => ({ ...prev, [userId]: true }));
     setSttState("STOP");
   };
-  const [summaryText, setSummaryText] = useState(""); // ✅ 요약된 STT 데이터 상태 추가
+  // const [summaryText, setSummaryText] = useState(""); // ✅ 요약된 STT 데이터 상태 추가
 
   const summarizeScript = async () => {
     try {
@@ -211,14 +216,14 @@ export default function VideoControls({
     }
   };
   // 나가기
-  const exitButton = async () => {
-    try {
-      await onLeaveSession();
-    } catch (error) {
-      console.error("Exit error:", error);
-      navigate("/dashboard");
-    }
-  };
+  // const exitButton = async () => {
+  //   try {
+  //     await onLeaveSession();
+  //   } catch (error) {
+  //     console.error("Exit error:", error);
+  //     navigate("/dashboard");
+  //   }
+  // };
   // 초대하기
   const inviteButton = async () => {
     try {
@@ -233,37 +238,84 @@ export default function VideoControls({
   }
 
   return (
-    <div className="flex flex-row gap-4 items-center justify-between w-full p-4">
+    <div className="flex flex-row gap-4 items-start  justify-between w-full px-4 pt-1">
       {/* ✅ 마이크 & 스피커 컨트롤 */}
       <div className="flex gap-4 items-center">
-        <button onClick={toggleMicMute} className={`p-2 rounded ${isMicMuted ? "bg-red-500" : "bg-blue-500"} text-white`}>
-          {isMicMuted ? "마이크 켜기" : "마이크 끄기"}
+        <button onClick={toggleMicMute} className={`p-2 rounded ${isMicMuted ? "bg-red-500" : "bg-gray-800"} text-white`}>
+          {isMicMuted ? <FaMicrophone /> : <FaMicrophoneSlash />}
         </button>
         <input type="range" min="0" max="1" step="0.01" value={micVolume} onChange={(e) => adjustMicVolume(parseFloat(e.target.value))} className="w-24" />
 
-        <button onClick={toggleCamera} className={`p-2 rounded ${isCameraOff ? "bg-red-500" : "bg-blue-500"} text-white`}>
-          {isCameraOff ? "카메라 켜기" : "카메라 끄기"}
+        <button onClick={toggleCamera} className={`p-2 rounded ${isCameraOff ? "bg-red-500" : "bg-gray-800"} text-white`}>
+          {isCameraOff ? <FaVideo /> : <FaVideoSlash />}
         </button>
         <input type="range" min="0" max="1" step="0.01" value={speakerVolume} onChange={(e) => adjustSpeakerVolume(parseFloat(e.target.value))} className="w-24" />
       </div>
 
-      {/* ✅ STT & 자막 버튼 */}
-      <div className="flex gap-4 items-center">
-      <button 
-      onClick={handleSTTToggle} 
-      className="p-2 rounded bg-green-500 text-white"
-    >
-      {sttState === "STOP" ? "자막 OFF" : "자막 ON"}
-    </button>
-    <button 
-      onClick={handleSubtitleToggle} 
-      className="p-2 rounded bg-blue-500 text-white"
-    >
-      {showSubtitles[userId] ? "자막 숨기기" : "자막 보기"}
-    </button>
-        <button onClick={summarizeScript} className="mt-4 bg-blue-500 text-white p-2 rounded">
-          요약 보기
+      <div className="flex gap-4">
+        {/* ✅ STT & 자막 버튼 */}
+        <div className="flex gap-2">
+          <button 
+          onClick={handleSTTToggle} 
+          className={`p-2 rounded bg-gray-800 text-2xl text-white `}
+          >
+            <MdSubtitles className={`${sttState === "STOP" ? 'border-b-2 border-my-red pb-0.5 ' : ''}`} />
+          </button>
+          <button 
+            onClick={handleSubtitleToggle} 
+            className={`py-1 px-2 rounded bg-gray-800 text-xl  ${showSubtitles[userId] ? 'text-my-red' : 'text-gray-200'}`}
+          >
+            {showSubtitles[userId] ? 'on' : 'off'}
+          </button>
+        </div>
+
+        <button onClick={summarizeScript} className="  bg-gray-800 text-white p-2 rounded flex items-center gap-2">
+          <MdOutlineAutoAwesome className="text-xl"/>
+          <div>AI 요약</div>
         </button>
+      </div>
+
+      <div className="flex gap-4 ">
+        {/* ✅ 나가기 버튼 */}
+        <div className=" ">
+          <EndButton onLeaveSession={onLeaveSession} sessionId={sessionId}/>
+        </div>
+        {/* ✅ 전체화면 버튼 */}
+        <button onClick={onToggleFullscreen} className="p-2 bg-gray-800 rounded text-xl hover:bg-gray-700 transition-colors ">
+          {isFullscreen ? (
+            <div><GoScreenFull /></div>
+          ) : (
+              <div><GoScreenFull /></div>
+          )}
+        </button>
+        
+        {/* ✅ 화면 공유 버튼 */}
+        <div className="flex gap-4 items-center">
+          <button onClick={onToggleScreenShare} className="p-2 rounded bg-gray-800 text-gray-200 text-xl">
+            {isScreenSharing ? <LuScreenShareOff className="w-6 h-6" /> : <LuScreenShare className="w-6 h-6" />}
+          </button>
+        </div>
+        {/* ✅ 초대하기 버튼 */}
+        <div>
+          <button onClick={inviteButton} className="p-2 bg-gray-800 rounded text-gray-200 text-xl hover:bg-gray-700 transition-colors">
+            <div><HiUserAdd /></div>
+          </button>
+        </div>
+        <InviteModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          inviteUrl={inviteUrl}
+        />
+      </div>
+
+
+      {/* ✅ 그리드 스타일 조정 버튼 */}
+      <div className="flex gap-2 items-center">
+        {layouts.map(({ id, icon: Icon }) => (
+          <button key={id} onClick={() => onLayoutChange(id)} className={`p-2 rounded ${currentLayout === id ? "bg-green-500 text-white" : "bg-gray-500 text-white"}`}>
+            <Icon className="w-6 h-6" />
+          </button>
+        ))}
       </div>
 
       {/* ✅ 요약 창 */}
@@ -283,46 +335,6 @@ export default function VideoControls({
       {/* <button onClick={exitButton} className="p-2 bg-red-600 text-white rounded">
       나가기
       </button> */}
-      {/* ✅ 나가기 버튼 */}
-      <div className="fixed top-0 left-0 right-0 z-10 p-4 flex justify-start ">
-        <EndButton onLeaveSession={onLeaveSession} sessionId={sessionId}/>
-      </div>
-      {/* ✅ 전체화면 버튼 */}
-      <button onClick={onToggleFullscreen} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
-        {isFullscreen ? (
-          <div>unfull</div>
-        ) : (
-            <div>full</div>
-        )}
-      </button>
-      
-      {/* ✅ 화면 공유 버튼 */}
-      <div className="flex gap-4 items-center">
-        <button onClick={onToggleScreenShare} className="p-2 rounded bg-yellow-500 text-white">
-          {isScreenSharing ? <LuScreenShareOff className="w-6 h-6" /> : <LuScreenShare className="w-6 h-6" />}
-        </button>
-      </div>
-      {/* ✅ 초대하기 버튼 */}
-      <div>
-        <button onClick={inviteButton} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
-          <div>invite</div>
-        </button>
-      </div>
-      <InviteModal
-        isOpen={isInviteModalOpen}
-        onClose={() => setIsInviteModalOpen(false)}
-        inviteUrl={inviteUrl}
-      />
-
-
-      {/* ✅ 그리드 스타일 조정 버튼 */}
-      <div className="flex gap-2 items-center">
-        {layouts.map(({ id, icon: Icon }) => (
-          <button key={id} onClick={() => onLayoutChange(id)} className={`p-2 rounded ${currentLayout === id ? "bg-green-500 text-white" : "bg-gray-500 text-white"}`}>
-            <Icon className="w-6 h-6" />
-          </button>
-        ))}
-      </div>
       
     </div>
   );

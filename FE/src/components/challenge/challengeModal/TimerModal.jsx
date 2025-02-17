@@ -1,7 +1,7 @@
 import { FaClock, FaBrain } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { aiFocusState,currentScreenTimeState,currentPureTimeState } from "../../../recoil/atoms/ai/aiState";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const TimerModal = ({ screenTime, pureStudyTime  }) => {
   const aiFocusValue = useRecoilState(aiFocusState);

@@ -12,6 +12,7 @@ import FocusAnalysis from "../../components/video/analysis/FocusAnalyzer"; // �
 import TimerModal from "../../components/challenge/challengeModal/TimerModal";
 // import EndButton from "/src/components/challenge/finish/EndButton";
 
+
 const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {

@@ -1,6 +1,6 @@
 import { useState,useEffect  } from 'react';
 import { IoCall } from "react-icons/io5";
-import StarFalling from './StarFalling';
+// import StarFalling from './StarFalling';
 import { useRecoilState } from 'recoil';
 import {starState} from  '../../../recoil/atoms/challenge/starState';
 import { useNavigate } from "react-router-dom";
@@ -61,7 +61,7 @@ export default function EndButton({onLeaveSession,sessionId}) {
   };
   return (
     <>
-      <div id="homebutton" className="fixed z-10 bottom-8 left-1/2 -translate-x-1/2">
+      <div id="homebutton" className="">
         <button 
           className=" rounded-lg  border-4 border-gray-700 bg-gray-700"
           onClick={() => setAreYouSetDone(!areYouSetDone)}
