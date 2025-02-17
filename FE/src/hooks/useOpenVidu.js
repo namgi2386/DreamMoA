@@ -6,11 +6,16 @@ import { videoApi } from "../services/api/videoApi";
 import useScreenShare from "./useScreenShare";
 import { useNavigate } from "react-router-dom";
 import challengeApi from "../services/api/challengeApi";
-import {
-  enterChallenge,
-  exitChallenge,
-  formatDate,
-} from "../services/api/studyTimeApi";
+import api from "../services/api/axios";
+// import {
+//   enterChallenge,
+//   exitChallenge,
+//   formatDate,
+// } from "../services/api/studyTimeApi"; 
+
+export const formatDate = (date) => {
+  return date.toISOString().split('T')[0];
+};
 
 const useOpenVidu = () => {
   // 상태 관리
@@ -22,11 +27,12 @@ const useOpenVidu = () => {
   const [currentVideoDevice, setCurrentVideoDevice] = useState(null); // 현재 사용 중인 카메라 장치
   const [isLoading, setIsLoading] = useState(false); // 로딩상태관리
   const [error, setError] = useState(null); // 에러상태관리
+  const [sessionName, setSessionName] = useState(null); // 방번호
   const navigate = useNavigate();
   // 타이머 관련 상태
   const [screenTime, setScreenTime] = useState(0);
   const [pureStudyTime, setPureStudyTime] = useState(0);
-  const [challengeLogId, setChallengeLogId] = useState(null);
+  // const [challengeLogId, setChallengeLogId] = useState(null);
 
   // ▽▼▽▼▽ 기본 함수(환경설정 및 세션연결 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
@@ -54,10 +60,10 @@ const useOpenVidu = () => {
   //   mediaServer: 'http://dreammoa.duckdns.org:8080'
   // });
 
-  // 세션참여에 필요한 토큰 가져오기 위에서 정의한 두개의 함수 여기서 사용함 세션만들고 토큰받아오고 토큰 리턴해주고.
-  const getToken = async (sessionId) => {
-    return await videoApi.getToken(sessionId);
-  };
+  // 과거 은창이가 만든 세션토큰함수라서 이제 안씀
+  // const getToken = async (sessionId) => {
+  //   return await videoApi.getToken(sessionId);
+  // };
 
   // ▽▼▽▼▽▼▽▼▽▼▽▼▽▼ 아래 부터가 진짜 기능들 ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
@@ -65,18 +71,19 @@ const useOpenVidu = () => {
   const connectSession = useCallback(async (sessionName, userName) => {
     setIsLoading(true);
     setError(null);
+    setSessionName(sessionName);
 
     try {
       // 챌린지 입장하면서 API 호출
-      const challengeResponse = await enterChallenge(
-        sessionName,
-        formatDate(new Date())
-      );
-      if (challengeResponse.challengeLogId) {
-        setChallengeLogId(challengeResponse.challengeLogId);
-        setPureStudyTime(challengeResponse.pureStudyTime || 0);
-        setScreenTime(challengeResponse.screenTime || 0);
-      }
+      // const challengeResponse = await enterChallenge(
+      //   sessionName,
+      //   formatDate(new Date())
+      // );
+      // if (challengeResponse.challengeLogId) {
+      //   setChallengeLogId(challengeResponse.challengeLogId);
+      //   setPureStudyTime(challengeResponse.pureStudyTime || 0);
+      //   setScreenTime(challengeResponse.screenTime || 0);
+      // }
 
       const mySession = OV.current.initSession();
       // Base64로 userName 인코딩
@@ -107,14 +114,16 @@ const useOpenVidu = () => {
 
       const response = await challengeApi.enterChallenge(sessionName);
       const fullUrl = response.data.token;
+      setPureStudyTime(response.data.pureStudyTime || 0);
+      setScreenTime(response.data.screenTime || 0);
 
-      // const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0];
-      // const tokenInResponse = fullUrl.split('token=')[1];
+      // const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0]; // 테스트코드
+      // const tokenInResponse = fullUrl.split('token=')[1]; // 테스트코드
 
       console.log("토큰테스트 응답", fullUrl);
       console.log("마이세션", mySession);
       // console.log("토큰줘", tokenInResponse, userName, encodedUserName); // 토큰 도착 성공
-      // console.log("마이세션 in response", sessionIdInResponse);
+      // console.log("마이세션 in response", sessionIdInResponse); // 테스트코드
 
       // clientData에 원본 userName과 인코딩된 userName 모두 포함
       await mySession.connect(fullUrl, {
@@ -237,16 +246,31 @@ const useOpenVidu = () => {
     if (session) {
       try {
         // 챌린지 퇴장 API 호출
-        await exitChallenge(session.sessionId, {
-          recordAt: formatDate(new Date()),
-          pureStudyTime,
-          screenTime,
-          isSuccess: true, // 이거 버튼 구현한 다음에 연동!!!!!!!!!
-        });
+        // await exitChallenge(session.sessionId, {
+        //   recordAt: formatDate(new Date()),
+        //   pureStudyTime,
+        //   screenTime,
+        //   isSuccess: true, // 이거 버튼 구현한 다음에 연동!!!!!!!!!
+        // });
+        console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+        console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+        console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+        console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+        
+        await api.post(`/challenges/${sessionName}/exit`, {
+        // await api.post(`/challenges/15/exit`, {
+            recordAt: formatDate(new Date()),
+            pureStudyTime,
+            screenTime,
+            isSuccess: true, 
+          });
 
         session.disconnect();
         navigate("/dashboard");
 
+        setTimeout(() => {
+          window.location.reload();
+        }, 10);
         // 상태 초기화
         setSession(undefined);
         setSubscribers([]);
@@ -254,13 +278,16 @@ const useOpenVidu = () => {
         setPublisher(undefined);
         setScreenTime(0);
         setPureStudyTime(0);
-        setChallengeLogId(null);
+        // setChallengeLogId(null);
 
       } catch (error) {
         console.error("세션 종료 중 오류:", error);
       }
     }
-  }, [session, challengeId, pureStudyTime, screenTime, navigate]);
+  }, [session]);
+
+
+
 
   // 타이머 관련 effect
   useEffect(() => {

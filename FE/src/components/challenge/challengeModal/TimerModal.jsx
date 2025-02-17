@@ -1,6 +1,9 @@
 import { FaClock, FaBrain } from "react-icons/fa";
+import { useRecoilState } from "recoil";
+import { aiFocusState } from "../../../recoil/atoms/ai/aiState";
 
-const TimerModal = ({ screenTime, pureStudyTime }) => {
+const TimerModal = ({ screenTime, pureStudyTime  }) => {
+  const aiFocusValue = useRecoilState(aiFocusState);
 
   // 시간 포맷팅 함수 (초 -> HH:MM:SS)
   const formatTime = (seconds) => {
@@ -12,6 +15,7 @@ const TimerModal = ({ screenTime, pureStudyTime }) => {
       "0"
     )}:${String(secs).padStart(2, "0")}`;
   };
+  
 
   return (
     <div className="absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
@@ -23,7 +27,7 @@ const TimerModal = ({ screenTime, pureStudyTime }) => {
             <FaClock className="text-white text-lg" />
           </div>
           <div>
-            <p className="text-sm text-gray-400">스크린타임</p>
+            <p className="text-sm text-gray-400">스크린타임{aiFocusValue}</p>
             <p className="text-2xl font-mono text-blue-400 font-semibold tracking-wider">
               {formatTime(screenTime)}
             </p>

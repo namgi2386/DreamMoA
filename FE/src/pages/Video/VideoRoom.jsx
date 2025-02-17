@@ -16,13 +16,13 @@ const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
 const VideoRoom = () => {
   // 사용자 입력 상태
   const { roomId } = useParams();
-  // const [myUserName, setMyUserName] = useState('');// 유저이름  VideoJoinForm 버전
-  // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전
+  // const [myUserName, setMyUserName] = useState('');// 유저이름  VideoJoinForm 버전 // 테스트코드
+  // const [mySessionRoomName, setMySessionRoomName] = useState('');// 방이름 VideoJoinForm 버전 // 테스트코드
   const [isChatOpen, setIsChatOpen] = useState(false); // 채팅창 on off
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const dummySessionRoomName = roomId || "106"; // 이거 챌린지 선택했을때 가져와야됨.
   const dummyUserName = userInfo?.nickname || "Guest";
-  // const dummyUserName = "namhui"
+  // const dummyUserName = "namhui" // 테스트코드
 
   // 전체화면 관련 상태와 ref 추가
   const [currentLayout, setCurrentLayout] = useState("grid"); // 레이아웃 상태
@@ -110,8 +110,8 @@ const VideoRoom = () => {
   }, [disconnectSession]);
 
   return (
-    // <div className="w-full h-full bg-gray-900 text-white p-4">
-    // <div className="w-full h-screen bg-gray-900 text-white p-4">
+    // <div className="w-full h-full bg-gray-900 text-white p-4"> // 테스트코드
+    // <div className="w-full h-screen bg-gray-900 text-white p-4"> // 테스트코드
     <div className="w-full h-screen bg-gray-900 text-white">
       {" "}
       {/* h-full -> h-screen으로 변경 */}
@@ -146,7 +146,6 @@ const VideoRoom = () => {
               <TimerModal
                 screenTime={screenTime}
                 pureStudyTime={pureStudyTime}
-                aiResult={handleWebSocketData} // WebSocket 데이터 전달
               />
             </div>
             {/* ☆★ 중앙 화면 영역 ☆★ */}
