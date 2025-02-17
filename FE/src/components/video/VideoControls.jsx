@@ -14,6 +14,7 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api/axios";
 
 export default function VideoControls({
   publisher,
@@ -21,9 +22,12 @@ export default function VideoControls({
   onLeaveSession,
   currentLayout,
   session,
+  sessionId,
   onLayoutChange,
   isScreenSharing,
   onToggleScreenShare,
+  isFullscreen,
+  onToggleFullscreen,
 }) {
   const layouts = [
     { id: "default", icon: BsGrid1X2, label: "기본" },
@@ -170,7 +174,7 @@ export default function VideoControls({
       console.error("❌ STT 종료 요청 실패:", error);
     }
   };
-
+  // 나가기
   const exitButton = async () => {
     try {
       await onLeaveSession();
@@ -179,7 +183,17 @@ export default function VideoControls({
       navigate("/dashboard");
     }
   };
-  
+  // 초대하기
+  const inviteButton = async () => {
+    try {
+      const response = await api.get(`http://localhost:8080/challenges/invite/${sessionId}`)
+      console.log("초대코드성공 : ",response.data); // http://localhost:5173/challenges/invite/accept?encryptedId=alVlY2xDRnZCTTBiX200al9tYk1EQT09
+      
+    } catch (e) {
+      console.log("초대코드에러",e);
+      
+    }
+  }
 
   return (
     <div className="flex flex-row gap-4 items-center justify-between w-full p-4">
@@ -227,13 +241,28 @@ export default function VideoControls({
         나가기
       </button>
       
-
+      {/* ✅ 전체화면 버튼 */}
+      <button onClick={onToggleFullscreen} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
+        {isFullscreen ? (
+          <div>unfull</div>
+        ) : (
+            <div>full</div>
+        )}
+      </button>
+      
       {/* ✅ 화면 공유 버튼 */}
       <div className="flex gap-4 items-center">
         <button onClick={onToggleScreenShare} className="p-2 rounded bg-yellow-500 text-white">
           {isScreenSharing ? <LuScreenShareOff className="w-6 h-6" /> : <LuScreenShare className="w-6 h-6" />}
         </button>
       </div>
+      {/* ✅ 초대하기 버튼 */}
+      <div>
+        <button onClick={inviteButton} className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors">
+          <div>invite</div>
+        </button>
+      </div>
+
       {/* ✅ 그리드 스타일 조정 버튼 */}
       <div className="flex gap-2 items-center">
         {layouts.map(({ id, icon: Icon }) => (
@@ -242,6 +271,7 @@ export default function VideoControls({
           </button>
         ))}
       </div>
+
     </div>
   );
 }
