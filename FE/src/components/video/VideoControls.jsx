@@ -135,7 +135,30 @@ export default function VideoControls({
     setScriptOnOff((prev) => ({ ...prev, [userId]: true }));
     setSttState("STOP");
   };
+  const [summaryText, setSummaryText] = useState(""); // ✅ 요약된 STT 데이터 상태 추가
 
+  const summarizeScript = async () => {
+    try {
+      console.log("📩 STT 데이터 요약 요청 중...");
+  
+      const response = await axios.post(
+        "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
+        { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoidGxzZG53bHMiLCJyb2xlIjoiUk9MRV9VU0VSIiwibmlja25hbWUiOiJ0bHNkbndscyIsInVzZXJJZCI6IjEiLCJzdWIiOiJ6ZWJyYTAzNDVAbmF2ZXIuY29tIiwiaWF0IjoxNzM5NzM0MDA2LCJleHAiOjE3Mzk3MzQ2MDZ9.5P5NxfqSgQeTo_iZi-4k-zHCBWWIYn4VlM45Sc8gMNU",
+          },
+        }
+      );
+  
+      console.log("📜 STT 요약 결과:", response.data);  // ✅ 요약된 데이터 콘솔에 출력
+    } catch (error) {
+      console.error("❌ STT 요약 요청 실패:", error);
+    }
+  };
+  
+  
   const stopSTT = async () => {
     console.log(`🛑 [${userId}] STT 종료 요청 보냄...`);
     try {
@@ -181,8 +204,8 @@ export default function VideoControls({
         <button onClick={() => setShowSubtitles((prev) => ({ ...prev, [userId]: !prev[userId] }))} className="p-2 rounded bg-blue-500 text-white">
           {showSubtitles[userId] ? "자막 숨기기" : "자막 보기"}
         </button>
-        <button onClick={() => setShowSummary(!showSummary)} className="p-2 rounded bg-purple-500 text-white">
-          {showSummary ? "요약 닫기" : "요약 보기"}
+        <button onClick={summarizeScript} className="mt-4 bg-blue-500 text-white p-2 rounded">
+          요약 보기
         </button>
       </div>
 
@@ -190,8 +213,8 @@ export default function VideoControls({
       {showSummary && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center transition-opacity duration-300">
           <div className="bg-white p-6 rounded-lg max-w-lg shadow-lg">
-            <h2 className="text-lg font-bold mb-4 text-black">📜 STT 원본 요약</h2>
-            <p className="text-black">{totalDataRef.current || "요약된 내용이 없습니다."}</p>
+            <h2 className="text-lg font-bold mb-4 text-black">📜 STT 요약</h2>
+            <p className="text-black">{summaryText || "요약된 내용이 없습니다."}</p>
             <button onClick={() => setShowSummary(false)} className="mt-4 bg-red-500 text-white p-2 rounded">
               닫기
             </button>
