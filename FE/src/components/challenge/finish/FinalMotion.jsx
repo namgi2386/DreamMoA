@@ -5,6 +5,18 @@ import TestFinishButton from './TestFinishButton';
 
 export default function ProgressDashboard() {
   const [isAutoFalling, setIsAutoFalling] = useRecoilState(autoFallingState); // on off 버튼
+  const screenStudyTime = localStorage.getItem('screenTime') // 1242
+  const pureStudyTime = localStorage.getItem('pureTime') // 1242
+  const timePercent = pureStudyTime / screenStudyTime
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    // const secs = seconds % 60;
+    return `${String(hours).padStart(2, "0")}h ${String(minutes).padStart(
+      2,
+      "0"
+    )}m`;
+  };
 
   return (
     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
@@ -17,7 +29,7 @@ export default function ProgressDashboard() {
         </div>
 
         <div className="relative flex justify-center items-center ">
-          <h2 className="absolute top-[35px] ">3h 20m</h2>
+          <h2 className="absolute top-[35px] ">{formatTime(screenStudyTime)}</h2>
           <p className="absolute top-[65px] ">SUCCESS</p>
           <svg className="w-[120px] h-[120px] mb-3">
             <circle className="stroke-my-blue-1 stroke-[10px] fill-none" cx="60" cy="60" r="55" />
@@ -29,7 +41,7 @@ export default function ProgressDashboard() {
               transform="rotate(-90 60 60)"
               strokeLinecap="round"
               initial={{ strokeDasharray: "345.7 345.7", strokeDashoffset: 345.7 }} // 345.7은 2파이r 수치값이라 고정
-              animate={{ strokeDashoffset: 345.7 * (1 - 0.6) }} // 오늘할일 60% 완료 
+              animate={{ strokeDashoffset: 345.7 * (1 - timePercent) }} // 오늘할일 60% 완료 ★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆
               transition={{ duration: 1.5, ease: "easeOut" }} // 1.5초동안 , 시작은빠르게 끝은부드럽게게
             />
           </svg>
