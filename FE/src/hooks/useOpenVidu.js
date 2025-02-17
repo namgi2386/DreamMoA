@@ -1,13 +1,20 @@
 // hooks/useOpenVidu.js
-import { useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { OpenVidu } from "openvidu-browser";
 import { videoApi } from "../services/api/videoApi";
 import useScreenShare from "./useScreenShare";
 import { useNavigate } from "react-router-dom";
 import challengeApi from "../services/api/challengeApi";
+import {
+  enterChallenge,
+  exitChallenge,
+  formatDate,
+} from "../services/api/studyTimeApi";
 
 const useOpenVidu = () => {
   // 상태 관리
+  const { challengeId } = useParams();
   const [session, setSession] = useState(undefined); // OpenVidu 세션 객체
   const [mainStreamManager, setMainStreamManager] = useState(undefined); // 메인 화면에 표시될 스트림
   const [publisher, setPublisher] = useState(undefined); // 자신의 비디오 스트림
@@ -16,6 +23,10 @@ const useOpenVidu = () => {
   const [isLoading, setIsLoading] = useState(false); // 로딩상태관리
   const [error, setError] = useState(null); // 에러상태관리
   const navigate = useNavigate();
+  // 타이머 관련 상태
+  const [screenTime, setScreenTime] = useState(0);
+  const [pureStudyTime, setPureStudyTime] = useState(0);
+  const [challengeLogId, setChallengeLogId] = useState(null);
 
   // ▽▼▽▼▽ 기본 함수(환경설정 및 세션연결 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
 
@@ -28,14 +39,14 @@ const useOpenVidu = () => {
   const OV = useRef(new OpenVidu());
   // 개발환경인 경우
   OV.current.setAdvancedConfiguration({
-    websocket: `wss://dreammoa.duckdns.org/openvidu`,  // /443 제거
-    mediaServer: "https://dreammoa.duckdns.org:8443",  // 포트 수정
+    websocket: `wss://dreammoa.duckdns.org/openvidu`, // /443 제거
+    mediaServer: "https://dreammoa.duckdns.org:8443", // 포트 수정
     iceServers: [
-      { urls: ['stun:stun.l.google.com:19302'] },
+      { urls: ["stun:stun.l.google.com:19302"] },
       // TURN 서버 추가가 필요할 수 있습니다
     ],
     forceTurn: false,
-    timeout: 60000  // 타임아웃 시간 증가
+    timeout: 60000, // 타임아웃 시간 증가
   });
   // 배포 환경
   // OV.current.setAdvancedConfiguration({
@@ -56,6 +67,17 @@ const useOpenVidu = () => {
     setError(null);
 
     try {
+      // 챌린지 입장하면서 API 호출
+      const challengeResponse = await enterChallenge(
+        sessionName,
+        formatDate(new Date())
+      );
+      if (challengeResponse.challengeLogId) {
+        setChallengeLogId(challengeResponse.challengeLogId);
+        setPureStudyTime(challengeResponse.pureStudyTime || 0);
+        setScreenTime(challengeResponse.screenTime || 0);
+      }
+
       const mySession = OV.current.initSession();
       // Base64로 userName 인코딩
       const encodedUserName = btoa(unescape(encodeURIComponent(userName)));
@@ -82,14 +104,13 @@ const useOpenVidu = () => {
       // const fullUrl = await getToken(sessionName);
       console.log("토큰테스트");
       // console.log("기본토큰",fullUrl);
-      
-      
-      const response = await challengeApi.enterChallenge(sessionName)
+
+      const response = await challengeApi.enterChallenge(sessionName);
       const fullUrl = response.data.token;
 
       // const sessionIdInResponse = fullUrl.split('sessionId=')[1].split('&')[0];
       // const tokenInResponse = fullUrl.split('token=')[1];
-      
+
       console.log("토큰테스트 응답", fullUrl);
       console.log("마이세션", mySession);
       // console.log("토큰줘", tokenInResponse, userName, encodedUserName); // 토큰 도착 성공
@@ -106,15 +127,16 @@ const useOpenVidu = () => {
 
       // 게시자 초기화 (자신의 비디오 스트림 설정)
       const publisher = await OV.current.initPublisherAsync(undefined, {
-        audioSource: undefined,  // 기본 마이크
-        videoSource: undefined,  // 기본 카메라
-        publishAudio: true,      // 오디오 활성화
-        publishVideo: true,      // 비디오 활성화
-        resolution: '640x480',   // 해상도
-        frameRate: 30,           // FPS
-        insertMode: 'APPEND',    
-        mirror: true,           // 미러링 비활성화
-        audioConstraints: {       // 오디오 제약조건 추가
+        audioSource: undefined, // 기본 마이크
+        videoSource: undefined, // 기본 카메라
+        publishAudio: true, // 오디오 활성화
+        publishVideo: true, // 비디오 활성화
+        resolution: "640x480", // 해상도
+        frameRate: 30, // FPS
+        insertMode: "APPEND",
+        mirror: true, // 미러링 비활성화
+        audioConstraints: {
+          // 오디오 제약조건 추가
           echoCancellation: true, // 에코 제거
           noiseSuppression: true, // 노이즈 제거
           autoGainControl: true, // 자동 게인 제어
@@ -124,8 +146,8 @@ const useOpenVidu = () => {
         videoConstraints: {
           width: { ideal: 640 },
           height: { ideal: 480 },
-          frameRate: { ideal: 30 }
-        }
+          frameRate: { ideal: 30 },
+        },
       });
       // 스트림 발행( 나의 비디오 스트림 설정으로 )
       await mySession.publish(publisher);
@@ -155,23 +177,7 @@ const useOpenVidu = () => {
       setIsLoading(false);
     }
   }, []);
-
-  // 세션 나가기 : 모든 상태를 초기화하고 연결 종료
-  const disconnectSession = useCallback(() => {
-    if (session) {
-      session.disconnect();
-      navigate("/dashboard");
-      //세션 끊어버리기
-      setTimeout(() => {
-        window.location.reload();
-      }, 10);
-      setSession(undefined);
-      setSubscribers([]);
-      setMainStreamManager(undefined);
-      setPublisher(undefined);
-    }
-  }, [session]);
-
+  
   // 카메라 전환 함수 : 사용 가능한 다른 카메라로 전환
   const switchCamera = useCallback(async () => {
     try {
@@ -226,6 +232,59 @@ const useOpenVidu = () => {
     screenPublisher,
   } = useScreenShare(session, publisher, OV);
 
+  // 세션 나가기 : 모든 상태를 초기화하고 연결 종료
+  const disconnectSession = useCallback(async () => {
+    if (session) {
+      try {
+        // 챌린지 퇴장 API 호출
+        await exitChallenge(session.sessionId, {
+          recordAt: formatDate(new Date()),
+          pureStudyTime,
+          screenTime,
+          isSuccess: true, // 이거 버튼 구현한 다음에 연동!!!!!!!!!
+        });
+
+        session.disconnect();
+        navigate("/dashboard");
+
+        // 상태 초기화
+        setSession(undefined);
+        setSubscribers([]);
+        setMainStreamManager(undefined);
+        setPublisher(undefined);
+        setScreenTime(0);
+        setPureStudyTime(0);
+        setChallengeLogId(null);
+
+      } catch (error) {
+        console.error("세션 종료 중 오류:", error);
+      }
+    }
+  }, [session, challengeId, pureStudyTime, screenTime, navigate]);
+
+  // 타이머 관련 effect
+  useEffect(() => {
+    let timer;
+    if (session) {
+      timer = setInterval(() => {
+        setScreenTime(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [session]);
+
+  // AI 결과에 따른 순공시간 갱신
+  // useEffect(() => {
+  //   if (aiResult?.face?.attention >= 70 || aiResult?.posture?.status === "GOOD") {
+  //     setPureStudyTime(prev => prev + 1);
+  //   }
+  // }, [aiResult]);
+  
+
   return {
     session, // OpenVidu 세션 객체
     mainStreamManager, // // 메인 화면에 표시될 스트림
@@ -242,6 +301,9 @@ const useOpenVidu = () => {
     startScreenShare, // 화면공유시작
     stopScreenShare, // 화면공유중지
     screenPublisher, // 화면공유 스트림
+    screenTime,
+    pureStudyTime,
+    setPureStudyTime,
   };
 };
 

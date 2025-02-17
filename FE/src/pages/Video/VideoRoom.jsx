@@ -71,6 +71,8 @@ const VideoRoom = () => {
     startScreenShare,
     stopScreenShare,
     screenPublisher,
+    screenTime,
+    pureStudyTime,
   } = useOpenVidu();
 
   // ✅ 웹소켓에서 받은 데이터 처리
@@ -141,7 +143,11 @@ const VideoRoom = () => {
           <div className="h-screen w-full flex flex-col bg-green-100 overflow-auto">
             {/* ☆★ 상단10% 영역 ☆★ */}
             <div className="w-full h-[10%] bg-red-100">
-              <TimerModal />
+              <TimerModal
+                screenTime={screenTime}
+                pureStudyTime={pureStudyTime}
+                aiResult={handleWebSocketData} // WebSocket 데이터 전달
+              />
             </div>
             {/* ☆★ 중앙 화면 영역 ☆★ */}
             <div className="w-full h-[80%] flex-grow bg-yellow-200 overflow-auto">
