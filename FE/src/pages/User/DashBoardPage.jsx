@@ -125,7 +125,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen p-4 flex flex-col bg-white items-center">
+    <div className="w-full min-h-screen p-4 flex flex-col bg-white items-center overflow-hidden">
       {/* Title 영역 */}
       <div className="w-full h-24 max-w-[1800px]">
         <TitleSection />
@@ -210,7 +210,7 @@ export default function Dashboard() {
 
         {/* Section 2: 인용구/달력 영역 (데스크탑: 오른쪽 - 40%) */}
         {/* 모바일에서는 상단에 표시 */}
-        <div className="order-1 lg:order-2 w-full lg:w-2/5 flex flex-col ">
+        <div className="order-1 lg:order-2 w-full lg:w-2/5 flex flex-col -ml-12">
           <div className="w-full flex items-start justify-center text-lg">
             <div>
               <div className="w-full flex items-center justify-center text-lg mt-10">
