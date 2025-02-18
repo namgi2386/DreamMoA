@@ -6,14 +6,8 @@ import { userState } from "../../recoil/atoms/authState";
 import "react-quill/dist/quill.snow.css";
 import "../../components/community/CommunityForm.css";
 import ReactQuill from "react-quill";
-import { Quill } from "react-quill";
-import { ImageActions } from "@xeger/quill-image-actions";
-import { ImageFormats } from "@xeger/quill-image-formats";
-import { modules, formats} from "../../components/community/quillModules";
+import { modules, formats } from "../../components/community/quillModules";
 import PostTags from "./PostTags";
-
-// Quill.register("modules/imageActions", ImageActions);
-// Quill.register("modules/imageFormats", ImageFormats);
 
 export default function CommunityForm({
   boardCategory,
@@ -51,7 +45,7 @@ export default function CommunityForm({
 
   console.log("📌 현재 formData:", formData);
   console.log("🏷 현재 태그 목록:", tags);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -62,7 +56,7 @@ export default function CommunityForm({
     }
 
     try {
-      console.log("🚀 전송할 데이터:", formData); // 🟢 formData 확인 로그
+      console.log("🚀 전송할 데이터:", formData); // formData 확인 로그
 
       await (mode === "create"
         ? communityApi.create(formData) // 태그 포함하여 저장
@@ -80,55 +74,33 @@ export default function CommunityForm({
     }
   };
 
-  // const modules = {
-  //   toolbar: [
-  //     [{ header: [1, 2, false] }],
-  //     ["bold", "italic", "underline", "strike", "blockquote"],
-  //     [
-  //       { list: "ordered" },
-  //       { list: "bullet" },
-  //       { indent: "-1" },
-  //       { indent: "+1" },
-  //     ],
-  //     ["link", "image"],
-  //     [{ align: [] }],
-  //     ["clean"],
-  //   ],
-  //   imageActions: {},
-  //   imageFormats: {},
-  // };
-
-  // const formats = [
-  //   "header",
-  //   "bold",
-  //   "italic",
-  //   "underline",
-  //   "strike",
-  //   "blockquote",
-  //   "list",
-  //   "bullet",
-  //   "indent",
-  //   "link",
-  //   "image",
-  //   "height",
-  //   "width",
-  //   "align",
-  //   "float",
-  // ];
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>카테고리: {formData.category}</div>
 
-      <input
-        type="text"
-        value={formData.title}
-        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        className="w-full p-2 border rounded"
-        placeholder="제목"
-      />
+      <div className="relative">
+        <input
+          type="text"
+          value={formData.title}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (value.length <= 100) {
+              setFormData({ ...formData, title: value });
+            }
+          }}
+          className="w-full p-2 border rounded"
+          placeholder="제목"
+        />
+        <p
+          className={`text-sm mt-1 ${
+            formData.title.length > 90 ? "text-red-500" : "text-gray-500"
+          }`}
+        >
+          {formData.title.length}/100자
+        </p>
+      </div>
 
-      {/* 🟢 Quill 에디터 */}
+      {/* Quill 에디터 */}
       <div className="bg-white border border-gray-300 rounded-lg shadow-md">
         <ReactQuill
           value={formData.content}
@@ -137,26 +109,20 @@ export default function CommunityForm({
           formats={formats}
           placeholder="내용을 입력하세요"
           className="custom-quill-editor font-user-input"
+          style={{ height: "400px" }}
         />
       </div>
 
-      {/* 🟢 태그 입력 컴포넌트 추가 */}
-      <PostTags tags={formData.tags} setTags={(newTags) => setFormData({ ...formData, tags: newTags })} className="w-full"/>
-
-      {/* <div className="bg-white border border-gray-300 rounded-lg shadow-md">
-        <ReactQuill
-          value={formData.content}
-          onChange={(content) => setFormData({ ...formData, content })}
-          modules={modules}
-          formats={formats}
-          placeholder="내용을 입력하세요"
-          className="custom-quill-editor font-user-input"
-        />
-      </div> */}
+      {/* 태그 입력 컴포넌트 추가 */}
+      <PostTags
+        tags={formData.tags}
+        setTags={(newTags) => setFormData({ ...formData, tags: newTags })}
+        className="w-full"
+      />
 
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded"
+        className="px-4 py-2 bg-my-blue-1 text-white rounded"
       >
         {mode === "create" ? "작성하기" : "수정하기"}
       </button>
