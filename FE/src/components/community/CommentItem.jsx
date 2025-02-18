@@ -98,13 +98,12 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
             <span className="font-bold">{nickname}</span>{" "}
             <span className="text-sm text-gray-500">
               {createdAt?.slice(0, 10)} {createdAt?.slice(11, 16)}
-              {updatedAt && updatedAt !== createdAt && (
+              {/* 댓글이 삭제되지 않았고, 수정된 경우에만 (수정됨) 표시 */}
+              {!isDeleted && updatedAt && updatedAt !== createdAt && (
                 <span className="text-xs text-gray-400 ml-1">(수정됨)</span>
               )}
             </span>
           </div>
-
-          {/* 본인이 작성한 댓글일 경우에만 수정/삭제 버튼 표시 */}
           {isOwner && (
             <div className="space-x-2 text-sm">
               <button
@@ -125,10 +124,10 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
 
         {/* 부모 댓글이 삭제된 경우 메시지 표시 */}
         {isDeleted ? (
-          // ✅ (1) 댓글이 삭제되었을 때
-          <p className="mt-2 text-gray-500 italic">댓글이 삭제되었습니다</p>
+          // 댓글이 삭제되었을 때
+          <p className="mt-2 text-gray-500">댓글이 삭제되었습니다</p>
         ) : isEditing ? (
-          // ✅ (2) 수정 중일 때
+          // 수정 중일 때
           <div className="mt-2">
             <textarea
               className="w-full p-2 border rounded focus:outline-none focus:ring focus:ring-blue-200"
@@ -155,7 +154,7 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
             </div>
           </div>
         ) : (
-          // ✅ (3) 일반 상태 (삭제도 아니고 수정 중도 아님)
+          // 일반 상태 (삭제도 아니고 수정 중도 아님)
           <p className="mt-2">{content}</p>
         )}
 
@@ -164,7 +163,7 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
           <div className="flex items-center space-x-2 mt-2">
             <button
               onClick={() => setIsReplying(!isReplying)}
-              className="text-sm text-blue-500 hover:underline"
+              className="text-sm text-my-blue-2 hover:underline"
             >
               답글 달기
             </button>
@@ -184,7 +183,7 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
             <div className="mt-1 space-x-2">
               <button
                 onClick={handleReplyComment}
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-3 py-1 bg-my-blue-1 text-white rounded hover:bg-my-blue-2"
               >
                 등록
               </button>
@@ -205,15 +204,18 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
       {/* 자식 댓글(대댓글) 목록을 재귀적으로 렌더링 */}
       {replies && replies.length > 0 && (
         <div className="mt-2 space-y-2">
-          {replies.map((reply) => (
-            <CommentItem
-              key={reply.commentId}
-              comment={reply}
-              postId={postId}
-              fetchComments={fetchComments}
-              depth={depth + 1} // 깊이를 1 증가
-            />
-          ))}
+          {replies
+            .slice() // 원본 배열 복사
+            .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)) // 생성일 오름차순 정렬 (오래된 댓글이 위쪽)
+            .map((reply) => (
+              <CommentItem
+                key={reply.commentId}
+                comment={reply}
+                postId={postId}
+                fetchComments={fetchComments}
+                depth={depth + 1} // 깊이를 1 증가
+              />
+            ))}
         </div>
       )}
     </div>

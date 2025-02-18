@@ -17,9 +17,12 @@ export default function PostContent({
         작성자: {userNickname} • {new Date(createdAt).toLocaleString()}
       </div>
 
+      <div className="border-t border-gray-300 my-4"></div>
+
       {/* 본문 내용 */}
       <div
         className="mt-4 text-gray-700 text-xl font-normal not-italic"
+        style={{ minHeight: "180px" }}
         dangerouslySetInnerHTML={{
           __html: DOMPurify.sanitize(content).replace(/<i>|<\/i>|<em>|<\/em>/g, ""),
         }}

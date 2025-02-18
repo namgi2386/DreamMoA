@@ -13,7 +13,7 @@ export default function CommentSection({ postId }) {
   // 새로 작성할 '최상위 댓글' 입력값
   const [newComment, setNewComment] = useState("");
   
-   // ✅ `fetchComments`를 useEffect 바깥에서 정의
+   // `fetchComments`를 useEffect 바깥에서 정의
    const fetchComments = async () => {
     try {
       const response = await communityApi.getCommentsHierarchy(postId);
@@ -61,10 +61,12 @@ export default function CommentSection({ postId }) {
           placeholder="댓글을 작성하세요."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
+          style={{ resize: "none", height: "70px" }}
         />
         <button
           onClick={handleCreateComment}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 w-auto whitespace-nowrap bg-my-blue-1 text-white rounded hover:bg-my-blue-2"
+          style={{ height: "70px" }}
         >
           등록
         </button>
