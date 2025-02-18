@@ -20,9 +20,9 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import api, { API_BASE_URL } from "./axios";
 import InviteModal from "./inviteModal/InviteModal";
 import EndButton from "/src/components/challenge/finish/EndButton";
+import api, { API_BASE_URL } from "../../services/api/axios";
 
 
 export default function VideoControls({
