@@ -51,7 +51,7 @@ const useOpenVidu = () => {
   // 개발환경인 경우
   OV.current.setAdvancedConfiguration({
     websocket: `wss://dreammoa.duckdns.org/openvidu`, // /443 제거
-    mediaServer: "https://dreammoa.duckdns.org:8443", // 포트 수정
+    mediaServer: "https://dreammoa.duckdns.org/openvidu", // 포트 수정
     iceServers: [
       { urls: ["stun:stun.l.google.com:19302"] },
       // TURN 서버 추가가 필요할 수 있습니다

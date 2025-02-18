@@ -10,10 +10,12 @@ import ChatPanel from "../../components/video/chat/ChatPanel";
 import VideoSettingForm from "../../components/video/VideoSettingForm";
 import FocusAnalysis from "../../components/video/analysis/FocusAnalyzer"; // ✅ 웹소켓 테스트용
 import TimerModal from "../../components/challenge/challengeModal/TimerModal";
+import { WS_FASTAPI_BASE_URL } from "../../services/api/axios";
 // import EndButton from "/src/components/challenge/finish/EndButton";
 
 
-const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
+// const SERVER_URL = "ws://localhost:8000/focus"; // ✅ WebSocket 서버 주소
+const SERVER_URL = WS_FASTAPI_BASE_URL; // ✅ WebSocket 서버 주소
 
 const VideoRoom = () => {
   // 사용자 입력 상태

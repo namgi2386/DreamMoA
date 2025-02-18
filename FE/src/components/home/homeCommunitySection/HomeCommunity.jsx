@@ -29,55 +29,55 @@ const CARD_STYLES = [
     bg: "bg-stone-300",
     textSize: "text-sm",
     initialPosition: { x: 50, y: 60 },
-    avatarUrl: {m1}
+    avatarUrl: m1
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: -10, y: 15 },
-    avatarUrl: {m2}
+    avatarUrl: m2
   },
   {
     bg: "bg-violet-300",
     textSize: "text-lg",
     initialPosition: { x: -60, y: 65 },
-    avatarUrl: {m3}
+    avatarUrl: m3
   },
   {
     bg: "bg-rose-300",
     textSize: "text-sm",
     initialPosition: { x: -10, y: -10 },
-    avatarUrl: {m4}
+    avatarUrl: m4
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: 60, y: 0 },
-    avatarUrl: {m5}
+    avatarUrl: m5
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: 140, y: -30 },
-    avatarUrl: {m6}
+    avatarUrl: m6
   },
   {
     bg: "bg-cyan-300",
     textSize: "text-lg",
     initialPosition: { x: 50, y: -60 },
-    avatarUrl: {m7}
+    avatarUrl: m7
   },
   {
     bg: "bg-orange-300",
     textSize: "text-lg",
     initialPosition: { x: -105, y: -40 },
-    avatarUrl: {m8}
+    avatarUrl: m8
   },
   {
     bg: "bg-green-300",
     textSize: "text-xl",
     initialPosition: { x: 120, y: 20 },
-    avatarUrl: {m9}
+    avatarUrl: m9
   }
 ];
 

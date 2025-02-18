@@ -20,7 +20,7 @@ import {
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api/axios";
+import api, { API_BASE_URL } from "./axios";
 import InviteModal from "./inviteModal/InviteModal";
 import EndButton from "/src/components/challenge/finish/EndButton";
 
@@ -135,7 +135,7 @@ export default function VideoControls({
     console.log(`🎤 [${userId}] STT 시작 요청 보냄...`);
     closeExistingEventSource();
 
-    const eventSrc = new EventSource(`http://localhost:8080/stt-start`);
+    const eventSrc = new EventSource(`${API_BASE_URL}/stt-start`); 
     setEventSource(eventSrc);
 
     eventSrc.onmessage = (event) => {
@@ -178,7 +178,7 @@ export default function VideoControls({
       setShowSummary(true)
       setIsChatOpen(true)
       const response = await api.post(
-        "http://localhost:8080/gpt-summary",  // ✅ 엔드포인트 수정
+        `${API_BASE_URL}/gpt-summary`,  // ✅ 엔드포인트 수정
         { script: totalDataRef.current },  // ✅ JSON 형식으로 데이터 전송
       );
 
@@ -207,7 +207,7 @@ export default function VideoControls({
   const stopSTT = async () => {
     console.log(`🛑 [${userId}] STT 종료 요청 보냄...`);
     try {
-      await axios.post("http://localhost:8080/stt-stop");
+      await axios.post(`${API_BASE_URL}/stt-stop`);
       closeExistingEventSource();
       setScriptOnOff((prev) => ({ ...prev, [userId]: false }));
       setSttState("START");
@@ -227,9 +227,9 @@ export default function VideoControls({
   // 초대하기
   const inviteButton = async () => {
     try {
-      const response = await api.get(`http://localhost:8080/challenges/invite/${sessionId}`)
+      const response = await api.get(`${API_BASE_URL}/challenges/invite/${sessionId}`)
       setInviteUrl(response.data)
-      console.log("초대코드성공 : ",response.data); // http://localhost:5173/challenges/invite/accept?encryptedId=alVlY2xDRnZCTTBiX200al9tYk1EQT09
+      console.log("초대코드성공 : ",response.data); 
       setIsInviteModalOpen(true)
     } catch (e) {
       console.log("초대코드에러",e);

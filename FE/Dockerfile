@@ -16,7 +16,6 @@ COPY . .
 # 리액트 애플리케이션 빌드
 RUN npm run build
 
-RUN ls -l /app/dist
 # 2단계: Nginx를 사용해 빌드된 파일을 서빙
 FROM nginx:alpine
 
@@ -26,11 +25,12 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # 기본 nginx 설정 파일을 삭제한다. (custom 설정과 충돌 방지)
 RUN rm /etc/nginx/nginx.conf
 
-# custom 설정파일을 컨테이너 내부로 복사한다.
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # 포트 80을 외부로 노출
-EXPOSE 80
+EXPOSE 80 433
 
 # Nginx 실행
 CMD ["nginx", "-g", "daemon off;"]
+
+
+
+

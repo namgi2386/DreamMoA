@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { WS_FASTAPI_BASE_URL } from "../../services/api/axios";
 
 const useVideoFrameCapture = (streamManager, isMyVideo) => {
     const socketRef = useRef(null);
@@ -8,7 +9,9 @@ const useVideoFrameCapture = (streamManager, isMyVideo) => {
         if (!isMyVideo || !streamManager) return;
 
         // ✅ WebSocket 연결
-        socketRef.current = new WebSocket("ws://localhost:8000/focus");
+        
+        // socketRef.current = new WebSocket("ws://localhost:8000/focus");
+        socketRef.current = new WebSocket(WS_FASTAPI_BASE_URL);
 
         socketRef.current.onopen = () => console.log("✅ WebSocket 연결 성공");
         socketRef.current.onerror = (error) => console.error("❌ WebSocket 에러:", error);

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from '../../services/api/axios';
 
 const OAuth2RedirectHandler = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const OAuth2RedirectHandler = () => {
     
     if (code) {
       // provider별로 다른 처리가 필요한 경우를 대비해 백엔드로 provider 정보도 함께 전달
-      axios.post(`http://localhost:8080/api/auth/${provider}/callback`, { code })
+      axios.post(`${API_BASE_URL}/api/auth/${provider}/callback`, { code })
         .then(response => {
           const { accessToken } = response.data;
           localStorage.setItem('accessToken', accessToken);
