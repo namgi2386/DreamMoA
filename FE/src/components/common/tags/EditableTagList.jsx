@@ -1,4 +1,3 @@
-// src\components\common\tags\EditableTagList.jsx
 import { useRecoilState } from "recoil";
 import { selectedTagsState } from "/src/recoil/atoms/tags/selectedTagsState";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,11 +52,10 @@ export default function EditableTagList({
       setIsEdittag(false);
     } catch (error) {
       console.error("태그 업데이트 중 에러 발생:", error);
-      // 에러 처리 로직 추가 가능
     }
   };
 
-  // 부모 컴포넌트의 complete 버튼 클릭 이벤트를 감지
+  // complete 버튼 클릭 이벤트 감지
   useEffect(() => {
     if (!isEdittag && selectedTags.length > 0) {
       handleTagComplete();
@@ -117,7 +115,7 @@ export default function EditableTagList({
         <div className="flex justify-center items-center h-full">
           <motion.p
             variants={tagVariants}
-            // 와 이거 엄청 좋다 폰트 특성에 따라서 여백이 이상해질 때 relative top-[?px] 이렇게 미세조정 가능능
+            // 와 이거 엄청 좋다 폰트 특성에 따라서 여백이 이상해질 때 relative top-[?px] 이렇게 미세조정 가능
             className="text-gray-500 text-lg leading-none relative top-[10px]"
           >
             관심 있는 태그를 설정해보세요
