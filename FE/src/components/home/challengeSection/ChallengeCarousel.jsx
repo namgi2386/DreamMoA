@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, useAnimation } from "framer-motion";
 import ChallengeCard from "./ChallengeCard";
-import "../../../assets/styles/scrollbar-hide.css";
+import "../../../styles/scrollbar-hide.css";
 import { homeApi } from "../../../services/api/homeApi";
 import ChallengeDetailModal from "../../challenge/challengelist/ChallengeDetailModal";
 import { useRecoilValue, useSetRecoilState } from "recoil";

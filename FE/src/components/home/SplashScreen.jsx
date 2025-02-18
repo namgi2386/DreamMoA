@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { homeApi } from "../../services/api/homeApi";
-import dreammoaLogo from "../../assets/logo/dreammoa.png";
+import dreammoaLogo from "/logo/dreammoa.png";
 
 // 랜덤한 별 생성 함수
 const generateStars = (count) => {

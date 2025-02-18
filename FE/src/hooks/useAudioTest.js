@@ -1,6 +1,6 @@
 // hooks/useAudioTest.js
 import { useEffect, useRef } from 'react';
-import TestAudioSampleLostFound from '/src/assets/test/TestAudioSampleLostFound.mp3'
+import TestAudioSampleLostFound from '/test/TestAudioSampleLostFound.mp3'
 
 const useAudioTest = (speakerOn, selectedSpeaker, speakerVolume) => {
   const audioRef = useRef(null);

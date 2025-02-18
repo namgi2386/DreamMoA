@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
-import defaultImage from "../../../assets/default/defaultChallengePicture.png";
+import defaultImage from "/logo/dreammoa-bg.png";
 
 const ChallengeCard = ({ challenge, onHover }) => {
 

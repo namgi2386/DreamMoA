@@ -3,6 +3,15 @@ import { motion, useInView  } from 'framer-motion';
 import { communityItems } from './HomeCommunityItemDummyData';  
 import HomeCommunityItem from './HomeCommunityItems';
 import { homeApi } from '../../../services/api/homeApi';
+import m1 from "/peaples/m1.png";
+import m2 from "/peaples/m2.jpeg";
+import m3 from "/peaples/m3.jpeg";
+import m4 from "/peaples/m4.jpeg";
+import m5 from "/peaples/m5.jpeg";
+import m6 from "/peaples/m6.jpeg";
+import m7 from "/peaples/m7.jpeg";
+import m8 from "/peaples/m8.jpeg";
+import m9 from "/peaples/m9.jpeg";
 
 const containerVariants = {
   hidden: { opacity: 1 },
@@ -20,55 +29,55 @@ const CARD_STYLES = [
     bg: "bg-stone-300",
     textSize: "text-sm",
     initialPosition: { x: 50, y: 60 },
-    avatarUrl: "src/assets/default/defaultUserImageGreen.png"
+    avatarUrl: {m1}
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: -10, y: 15 },
-    avatarUrl: "src/assets/test/mypagechallenge3.png"
+    avatarUrl: {m2}
   },
   {
     bg: "bg-violet-300",
     textSize: "text-lg",
     initialPosition: { x: -60, y: 65 },
-    avatarUrl: "src/assets/test/mypagechallenge3.png"
+    avatarUrl: {m3}
   },
   {
     bg: "bg-rose-300",
     textSize: "text-sm",
     initialPosition: { x: -10, y: -10 },
-    avatarUrl: "src/assets/test/mypagechallenge4.png"
+    avatarUrl: {m4}
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: 60, y: 0 },
-    avatarUrl: "src/assets/test/mypagechallenge3.png"
+    avatarUrl: {m5}
   },
   {
     bg: "bg-yellow-300",
     textSize: "text-sm",
     initialPosition: { x: 140, y: -30 },
-    avatarUrl: "src/assets/test/mypagechallenge3.png"
+    avatarUrl: {m6}
   },
   {
     bg: "bg-cyan-300",
     textSize: "text-lg",
     initialPosition: { x: 50, y: -60 },
-    avatarUrl: "src/assets/test/mypagechallenge1.png"
+    avatarUrl: {m7}
   },
   {
     bg: "bg-orange-300",
     textSize: "text-lg",
     initialPosition: { x: -105, y: -40 },
-    avatarUrl: "src/assets/test/mypagechallenge2.png"
+    avatarUrl: {m8}
   },
   {
     bg: "bg-green-300",
     textSize: "text-xl",
     initialPosition: { x: 120, y: 20 },
-    avatarUrl: "src/assets/default/defaultUserImagePuple.png"
+    avatarUrl: {m9}
   }
 ];
 

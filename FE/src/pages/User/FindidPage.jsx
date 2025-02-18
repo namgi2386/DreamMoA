@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import testlogo from "/src/assets/logo/testlogo.png";
+import testlogo from "/logo/dreammoa-bg.png";
+
 import { useEffect, useState } from "react";
 import authChangeApi from "../../services/api/authChangeApi.js";
 

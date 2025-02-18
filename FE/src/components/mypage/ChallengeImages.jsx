@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 // import TestChallengeList from "../challenge/challengelist/TestChallengeList";
 import challengeApi from "../../services/api/challengeApi";
 // 기본 이미지
-import defaultChallengeImage from "/src/assets/default/defaultChallengePicture.png";
+import defaultChallengeImage from "/logo/dreammoa-bg.png";
 import ChallengeDetailModal from "../challenge/challengelist/ChallengeDetailModal";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { challengeModalState, selectedChallengeState } from "../../recoil/atoms/challenge/challengeDetailState";

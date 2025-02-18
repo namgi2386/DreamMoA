@@ -1,6 +1,8 @@
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import defaultImage from "/logo/dreammoa-bg.png";
+
 
 import {
   speakerOnState,
@@ -101,7 +103,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <img 
-                  src="/src/assets/test/peaples/m6.jpeg" 
+                  src={defaultImage}
                   alt="Preview" 
                   className="rounded-full w-32 h-32 object-cover object-center" 
                 />
