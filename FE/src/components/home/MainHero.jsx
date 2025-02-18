@@ -78,7 +78,7 @@ const MainHero = () => {
       try {
         const totalMinutes = await homeApi.getTotalScreenTime();
         // 분 단위를 시간 단위로 변환 (소수점 첫째자리까지 표시)
-        const hoursValue = Number((totalMinutes / 60).toFixed(1));
+        const hoursValue = Number((totalMinutes / 60).toFixed(0));
         setTotalHours(hoursValue);
       } catch (error) {
         console.error("Error fetching total screen time:", error);
@@ -106,26 +106,26 @@ const MainHero = () => {
         }}
       >
       </div>
-      <div className="container mx-auto h-full px-10 flex items-center justify-center">
+      <div className="container mx-auto h-full px-10 flex items-center justify-center ">
         <div className="text-center space-y-8 z-10">
           <h1 className="font-bold text-my-yellow">
-            <span className="text-[66px] block mb-0 tracking-wider">
+            <span className="text-[66px] block mb-0 tracking-wider select-none">
               우리의 꿈이 모인지
             </span>
             <div className="whitespace-nowrap block -mt-5">
-              <span className="text-[135px] tracking-wider inline-block animate-sparkle">
+              <span className="text-[135px] tracking-wider inline-block animate-sparkle select-none">
                 {totalHours.toLocaleString()}
               </span>
-              <span className="text-[98px] tracking-wider inline-block">
+              <span className="text-[98px] tracking-wider inline-block select-none ">
                 시간째
               </span>
             </div>
           </h1>
           <div className="flex items-center justify-center whitespace-nowrap mt-12">
-            <span className="text-[32px] text-my-blue-3 font-bold tracking-wider">
-              dreammoa
+            <span className="text-[32px] text-my-blue-3 font-bold tracking-wider select-none">
+              DreamMoA
             </span>
-            <span className="text-[26px] text-my-blue-3 ml-2 tracking-wider">
+            <span className="text-[26px] text-my-blue-3 ml-2 tracking-wider select-none">
               에서 당신의 꿈을 이뤄보세요
             </span>
           </div>

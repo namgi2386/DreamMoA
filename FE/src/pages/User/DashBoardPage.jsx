@@ -125,17 +125,17 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen p-4 flex flex-col bg-white">
+    <div className="w-full min-h-screen p-4 flex flex-col bg-white items-center">
       {/* Title 영역 */}
-      <div className="w-full h-24">
+      <div className="w-full h-24 max-w-[1800px]">
         <TitleSection />
       </div>
 
       {/* 기존 데스크탑 구조는 그대로 두고, 모바일일 때만 flex-col 및 순서(order)를 변경 */}
-      <div className="w-full mt-4 ml-10 flex flex-col md:flex-row items-stretch justify-center">
+      <div className="w-full mt-4 ml-32 flex flex-col lg:flex-row items-stretch justify-center gap-8 max-w-[1800px]">
         {/* Section 1: 데이터/차트 영역 (데스크탑: 왼쪽 - 60%) */}
         {/* 모바일에서는 아래쪽에 표시 */}
-        <div className="order-2 md:order-1 w-full md:w-3/5 flex flex-col border-2 border-gray-300 rounded-xl p-4 mt-4 md:mt-0">
+        <div className="order-2 lg:order-1 w-full lg:w-3/5 flex flex-col border-2 border-gray-300 rounded-xl p-4 mt-4 md:mt-0 ">
           {/* 상단 버튼 영역 */}
           <div className="w-full">
             <div className="flex items-center justify-between text-lg">
@@ -210,7 +210,7 @@ export default function Dashboard() {
 
         {/* Section 2: 인용구/달력 영역 (데스크탑: 오른쪽 - 40%) */}
         {/* 모바일에서는 상단에 표시 */}
-        <div className="order-1 md:order-2 w-full md:w-2/5 flex flex-col -ml-8">
+        <div className="order-1 lg:order-2 w-full lg:w-2/5 flex flex-col ">
           <div className="w-full flex items-start justify-center text-lg">
             <div>
               <div className="w-full flex items-center justify-center text-lg mt-10">

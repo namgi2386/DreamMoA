@@ -8,6 +8,7 @@ import ChallengeImages from "../../components/mypage/ChallengeImages";
 import PasswordVerificationModal from "/src/components/common/modal/PasswordVerificationModal";
 import authChangeApi from "../../services/api/authChangeApi";
 import EditableTagList from "../../components/common/tags/EditableTagList";
+import BadgeIsMine from "../../components/mypage/BadgeIsMine";
 
 export default function MyPage() {
   const userInfo = useRecoilValue(userState);
@@ -152,10 +153,21 @@ export default function MyPage() {
             setIsVerified={setIsVerified}
           />
 
+          {/* 뱃지 섹션 */}
+          <h1
+            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+                        text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
+          >
+            my badge
+          </h1>
+          <div>
+            <BadgeIsMine/>
+          </div>
+
           {/* 관심 태그 섹션 */}
           <div className="flex justify-between items-center mt-20 mb-4">
             <h1
-              className="bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
+              className="ml-4 bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
               text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60"
             >
               관심 태그
@@ -203,6 +215,8 @@ export default function MyPage() {
             isEdittag={isEdittagState}
             setIsEdittag={setIsEdittagState}
           />
+
+
           {/* 챌린지 섹션 */}
           <h1
             className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider

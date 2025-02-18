@@ -7,6 +7,8 @@ import useScreenShare from "./useScreenShare";
 import { useNavigate } from "react-router-dom";
 import challengeApi from "../services/api/challengeApi";
 import api from "../services/api/axios";
+import { useRecoilValue } from "recoil";
+import { currentPureTimeState, currentScreenTimeState, isMyChallengeSuccessedState } from "../recoil/atoms/ai/aiState";
 // import {
 //   enterChallenge,
 //   exitChallenge,
@@ -32,6 +34,9 @@ const useOpenVidu = () => {
   // 타이머 관련 상태
   const [screenTime, setScreenTime] = useState(0);
   const [pureStudyTime, setPureStudyTime] = useState(0);
+  const screenTimeForEnding = useRecoilValue(currentScreenTimeState);
+  const pureTimeForEnding = useRecoilValue(currentPureTimeState);
+  const isMyChallengeSuccessed = useRecoilValue(isMyChallengeSuccessedState);
   // const [challengeLogId, setChallengeLogId] = useState(null);
 
   // ▽▼▽▼▽ 기본 함수(환경설정 및 세션연결 등) (57 Line부터 실사용기능 함수나옴) ▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼
@@ -188,7 +193,7 @@ const useOpenVidu = () => {
       setIsLoading(false);
     }
   }, []);
-  
+
   // 카메라 전환 함수 : 사용 가능한 다른 카메라로 전환
   const switchCamera = useCallback(async () => {
     try {
@@ -254,21 +259,28 @@ const useOpenVidu = () => {
         //   screenTime,
         //   isSuccess: true, // 이거 버튼 구현한 다음에 연동!!!!!!!!!
         // });
+        const localSavedScreenTime = localStorage.getItem('screenTime');
+        const localSavedPureTime = localStorage.getItem('pureTime');
+        const isMyChallengeSuccessedInLocal = localStorage.getItem('isMyChallengeSuccessedInLocal');
+        const exitData = {
+          recordAt: formatDate(new Date()),
+          pureStudyTime: localSavedPureTime, // 키 이름 맞추기
+          screenTime: localSavedScreenTime,   // 키 이름 맞추기
+          isSuccess: isMyChallengeSuccessedInLocal
+        };
         console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
         console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
         console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+        console.log(localSavedPureTime);
+        console.log(localSavedScreenTime);
+        console.log(isMyChallengeSuccessedInLocal);
         console.log("★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★ [ 수고하셨습니다! ] ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
         
-        await api.post(`/challenges/${sessionName}/exit`, {
-        // await api.post(`/challenges/15/exit`, {
-            recordAt: formatDate(new Date()),
-            pureStudyTime,
-            screenTime,
-            isSuccess: true, 
-          });
-
-        session.disconnect();
-        navigate("/dashboard");
+        await api.post(`/challenges/${sessionName}/exit`, exitData);
+        await navigate(`/video/${sessionName}/ending`);
+          
+        await session.disconnect();
+        // navigate("/dashboard");
 
         setTimeout(() => {
           window.location.reload();

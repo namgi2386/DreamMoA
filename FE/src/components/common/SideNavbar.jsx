@@ -11,8 +11,8 @@ import { isHideSideState } from '../../recoil/atoms/SidebarState';
 import { BsStars } from "react-icons/bs";
 
 // 공통 스타일 상수화
-const commonStyles = "fixed left-0   dark:bg-gray-800 cursor-grab z-50 bg-white rounded-tr-xl rounded-br-xl bg-opacity-0 hover:bg-opacity-60  hover:bg-hmy-blue-4";
-const buttonStyles = "w-full text-3xl hover:bg-hmy-blue-4 py-4 flex justify-center items-center text-opacity-70 hover:text-opacity-90";
+const commonStyles = "fixed left-0 cursor-grab z-50 bg-my-blue-1 rounded-tr-xl rounded-br-xl   hover:bg-hmy-blue-1 transition-colors duration-300 ease-in";
+const buttonStyles = "w-full text-3xl hover:bg-my-blue-1 py-4 flex justify-center items-center text-opacity-70 hover:text-opacity-90 transition-colors duration-300 ease-in";
 
 
 
@@ -24,6 +24,17 @@ const NavButton = ({ icon, additionalStyles = "", to = null }) => (
     </Link>
   ) : (
     <button className={`${buttonStyles} ${additionalStyles}`}>
+      {icon}
+    </button>
+  )
+);
+const NavButtonStar = ({ icon, additionalStyles = "", to = null }) => (
+  to ? (
+    <Link to={to} className={`w-full text-3xl hover:bg-my-blue-1 py-4 flex justify-center items-center  hover:text-opacity-90 transition-colors duration-300 ease-in ${additionalStyles}`}>
+      {icon}
+    </Link>
+  ) : (
+    <button className={` w-full text-3xl hover:bg-my-blue-1 py-4 flex justify-center items-center text-my-yellow  hover:text-opacity-90 transition-colors duration-300 ease-in${additionalStyles}`}>
       {icon}
     </button>
   )
@@ -143,9 +154,9 @@ export default function SideNavbar() {
           <FaStar />
         </div>
         <div className={`${isSmall ? 'hidden' : 'h-full flex flex-col items-center '}`}>
-          <NavButton 
+          <NavButtonStar 
             icon={<FaStar />} 
-            additionalStyles={`text-my-yellow rounded-tr-xl hover:rounded-tl-xl cursor-grab border-b-2` }
+            additionalStyles={`text-my-yellow rounded-tr-xl hover:rounded-tl-xl cursor-grab border-b-2 ` }
           />
           <NavButton icon={<BsStars />} additionalStyles='text-white border-b-2' to="/challenge/list"/>
           <NavButton icon={<BsClipboard2CheckFill />} additionalStyles='text-white border-b-2' to="/dashboard"/>
@@ -153,7 +164,7 @@ export default function SideNavbar() {
 
 
 
-          <div className='hover:bg-hmy-blue-1 w-full rounded-br-xl h-full flex flex-col items-center hover:rounded-bl-xl'>
+          <div className='hover:bg-my-blue-1 w-full rounded-br-xl h-full flex flex-col items-center hover:rounded-bl-xl'>
             <NavButton icon={<CgProfile />} additionalStyles="border-b-0 text-white" to="/mypage"/>
             <button className='text-white'
             onClick={() => setIsHideSide(true)}>

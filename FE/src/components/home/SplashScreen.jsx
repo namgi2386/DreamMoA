@@ -61,7 +61,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     const fetchAndSetupAnimation = async () => {
       try {
         const totalMinutes = await homeApi.getTotalScreenTime();
-        const hours = Math.floor(totalMinutes / 60);
+        const hours = Math.round(totalMinutes / 60);
         setFinalHours(hours);
 
         // 카운터 애니메이션
@@ -174,7 +174,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                   꿈을 모으다
                 </div>
                 <div className="text-white text-8xl font-extrabold tracking-wider">
-                  DREAMMOA
+                  DreamMoA
                 </div>
               </motion.div>
             )}

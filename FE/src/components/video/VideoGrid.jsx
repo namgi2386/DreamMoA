@@ -19,7 +19,7 @@ const VideoGrid = ({
       ...(screenPublisher ? [screenPublisher] : []), // 화면 공유 중이면 가장 먼저 추가
       ...subscribers, // 다른 참가자들의 스트림 추가
     ];
-    console.log("통합된 스트림 목록:", allStreams);
+    // console.log("통합된 스트림 목록:", allStreams);
 
     switch (currentLayout) {
       case "default":
