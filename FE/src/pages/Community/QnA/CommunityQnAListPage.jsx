@@ -7,6 +7,7 @@ import SearchBar from "../../../components/community/SearchBar";
 import SortButtons from "../../../components/community/SortButtons";
 import Pagination from "../../../components/community/Pagination";
 import { fetchPosts } from "../../../utils/fetchPosts";
+import CommunityTab from "../../../components/community/CommunityTab";
 
 export default function CommunityQnAListPage() {
   const setPosts = useSetRecoilState(communityListState);
@@ -40,7 +41,7 @@ export default function CommunityQnAListPage() {
 
   // 페이지 변경 시 `URL` 업데이트
   const handlePageChange = (newPage) => {
-    console.log("📌 페이지 변경:", newPage, "현재 정렬:", sortOption); // ✅ 디버깅 로그 추가
+    console.log("📌 페이지 변경:", newPage, "현재 정렬:", sortOption); // 디버깅 로그 추가
     navigate(`/community/qna?page=${newPage}&sort=${sortOption}&search=${searchQuery}&size=5`);
   };
 
@@ -73,13 +74,14 @@ export default function CommunityQnAListPage() {
   return (
     <div className="bg-gray-100">
       <div className="max-w-4xl mx-auto p-4 min-h-screen bg-white ">
+      <CommunityTab />
         <div className="flex justify-between mb-4 ">
         <h1
             className="text-2xl font-bold cursor-pointer"
             onClick={() => {
               navigate("/community/qna?page=1&sort=최신순", { replace: true }); // ✅ URL 변경
               setTimeout(() => {
-                window.location.reload(); // ✅ 강제 리렌더링
+                window.location.reload(); // 강제 리렌더링
               }, 100);
             }}
           >
@@ -87,7 +89,7 @@ export default function CommunityQnAListPage() {
           </h1>
           <Link
             to="/community/qna/write"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            className="px-4 py-2 bg-my-blue-1 text-white rounded"
           >
             글쓰기
           </Link>
