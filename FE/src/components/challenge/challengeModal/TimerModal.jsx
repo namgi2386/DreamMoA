@@ -47,7 +47,7 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
     };
   }, [aiFocusValue, setCurrentScreenTime, setCurrentPureTime, currentScreenTime, currentPureTime]); // 의존성 배열에 현재 시간 상태 추가
   return (
-    <div className="absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
+    <div className="z-[999] absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
       {/* 컨테이너 */}
       <div className="flex items-center space-x-6 p-3">
         {/* 스크린타임 */}

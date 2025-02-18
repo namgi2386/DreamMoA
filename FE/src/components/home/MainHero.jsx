@@ -78,7 +78,7 @@ const MainHero = () => {
       try {
         const totalMinutes = await homeApi.getTotalScreenTime();
         // 분 단위를 시간 단위로 변환 (소수점 첫째자리까지 표시)
-        const hoursValue = Number((totalMinutes / 60).toFixed(0));
+        const hoursValue = Number((totalMinutes / 3600).toFixed(0));
         setTotalHours(hoursValue);
       } catch (error) {
         console.error("Error fetching total screen time:", error);

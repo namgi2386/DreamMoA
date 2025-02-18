@@ -17,12 +17,12 @@ const GridMatrixLayout = ({
       {/* 컨테이너로 감싸기 */}
       <div className="w-full max-w-7xl flex  lg:flex-row gap-10 h-full justify-center">
         {/* 메인 스트림 영역 */}
-        <div className="w-full md:w-4/5 bg-blue-200 rounded-lg overflow-hidden h-full min-w-[640px] flex justify-center ">
+        <div className="w-full md:w-4/5 bg-black rounded-lg overflow-hidden h-full min-w-[640px] flex justify-center ">
           {mainStreamManager && <UserVideo streamManager={mainStreamManager} isMainStream={true}/>}
         </div>
 
         {/* 참가자 목록 영역 */}
-        <div className="hidden lg:block lg:w-1/5 bg-green-200 space-y-4 overflow-y-auto h-full">
+        <div className="hidden lg:block lg:w-1/5 bg-gray-800 rounded-xl p-1 space-y-4 overflow-y-auto h-full">
           {/* 자신의 스트림 */}
           {publisher && (
             <div

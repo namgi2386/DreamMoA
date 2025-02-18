@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import UserVideo from '../UserVideo';
+import { CiCircleChevUp,CiCircleChevDown  } from "react-icons/ci";
 
 const SpotlightLayout = ({ mainStreamManager, publisher, subscribers, onStreamClick }) => {
   // 스포트라이트에 표시될 참가자들 (자신 + 다른 참가자들)
+  const [isClosedBottom,setIsClosedBottom ] = useState(false)
   const allParticipants = publisher 
     ? [publisher, ...subscribers]
     : subscribers;
@@ -18,7 +21,11 @@ const SpotlightLayout = ({ mainStreamManager, publisher, subscribers, onStreamCl
       </div>
 
       {/* 하단 참가자 목록 */}
-      <div className="h-32 flex gap-2 overflow-x-auto">
+      <button className="flex justify-center ">
+        {isClosedBottom ?<CiCircleChevUp onClick={()=> setIsClosedBottom(!isClosedBottom)} className='text-2xl'/> : 
+        <CiCircleChevDown onClick={()=> setIsClosedBottom(!isClosedBottom)} className='text-2xl'/>}
+      </button>
+      <div className={`h-60 flex gap-2 overflow-x-auto ${isClosedBottom? 'hidden': ''}`}>
         {allParticipants.map((participant) => (
           <div
             key={participant.stream?.connection?.connectionId || 'publisher'}

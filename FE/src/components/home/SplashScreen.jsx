@@ -61,7 +61,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     const fetchAndSetupAnimation = async () => {
       try {
         const totalMinutes = await homeApi.getTotalScreenTime();
-        const hours = Math.round(totalMinutes / 60);
+        const hours = Math.round(totalMinutes / 3600);
         setFinalHours(hours);
 
         // 카운터 애니메이션
