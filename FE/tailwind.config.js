@@ -28,6 +28,7 @@ export default {
       },
       fontFamily: {
         'user-input': ['Noto Sans KR', 'sans-serif'],
+        'main-title': ['kumar', 'sans-serif'],
       },
 
       animation: {

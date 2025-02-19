@@ -187,7 +187,7 @@ const ConstellationFooter = () => {
 
       {/* Bottom Bar */}
       <div className="text-center mt-8 pt-4 border-t border-gray-700 text-sm text-gray-400">
-        © 2024 꿈모아. All rights reserved.
+        © 2025 꿈모아. All rights reserved.
       </div>
     </footer>
   );

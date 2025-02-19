@@ -138,7 +138,7 @@ export default function CommentItem({ comment, postId, fetchComments, depth }) {
             <div className="mt-1 space-x-2">
               <button
                 onClick={handleUpdateComment}
-                className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="px-3 py-1 bg-my-blue-1 text-white rounded hover:bg-my-blue-2"
               >
                 저장
               </button>
