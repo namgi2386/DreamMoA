@@ -156,23 +156,23 @@ export default function Dashboard() {
               <div className="flex space-x-4 p-2 bg-gray-100 rounded-lg">
                 <button
                   onClick={() => setDashboardType("date")}
-                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-2xl ${
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-xl ${
                     dashboardType === "date"
                       ? "bg-my-blue-4 text-white"
                       : "bg-gray-300 text-white hover:bg-my-blue-4"
                   }`}
                 >
-                  📅 날짜별
+                  📅 날짜별 보기
                 </button>
                 <button
                   onClick={() => setDashboardType("challenge")}
-                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-2xl ${
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-xl ${
                     dashboardType === "challenge"
                       ? "bg-my-blue-4 text-white"
                       : "bg-gray-300 text-white hover:bg-my-blue-4"
                   }`}
                 >
-                  🎯 챌린지별
+                  🎯 챌린지별 보기
                 </button>
               </div>
             </div>
