@@ -85,6 +85,7 @@ export default function ChallengeListMyTagSorted() {
             {myTags?.map((tag, index) => (
               <span
                 key={index}
+                style={{fontFamily:"mbc"}}
                 className="px-3 py-0.5 text-gray-800 bg-hmy-blue-3 rounded-lg whitespace-nowrap text-lg font-medium select-none hover:scale-105 transition duration-300"
               >
                 #{tag}

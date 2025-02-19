@@ -60,7 +60,7 @@ export default function HomePage() {
         <section className="w-full py-16 snap-start bg-my-blue-3 overflow-visible">
           <div className="container mx-auto px-4 bg-my-blue-3 overflow-visible">
             <div className="mb-8">
-              <h2 className="text-3xl tracking-wider font-bold text-gray-900">
+              <h2 className="text-3xl font-semibold font-main-title text-gray-900 "  >
                 시작일이 다가오는 챌린지에 참여해보세요!
               </h2>
             </div>

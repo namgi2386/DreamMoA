@@ -138,7 +138,7 @@ export default function Dashboard() {
         <div className="order-2 lg:order-1 w-full lg:w-3/5 flex flex-col border-2 border-gray-300 rounded-xl p-4 mt-4 md:mt-0 ">
           {/* 상단 버튼 영역 */}
           <div className="w-full">
-            <div className="flex items-center justify-between text-lg">
+            <div className="flex items-center justify-center relative text-lg">
               {/* 왼쪽: 날짜 표시 버튼 */}
               <ComponentButton
                 isDate
@@ -151,14 +151,29 @@ export default function Dashboard() {
                 }
               />
               {/* 오른쪽: 모드 전환 버튼 */}
-              <ComponentButton
-                text={dashboardType === "date" ? "날짜별" : "챌린지별"}
-                onClick={() =>
-                  setDashboardType(
-                    dashboardType === "date" ? "challenge" : "date"
-                  )
-                }
-              />
+              
+              <div className="flex space-x-4 p-2 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setDashboardType("date")}
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-2xl ${
+                    dashboardType === "date"
+                      ? "bg-my-blue-4 text-white"
+                      : "bg-gray-300 text-white hover:bg-my-blue-4"
+                  }`}
+                >
+                  📅 날짜별
+                </button>
+                <button
+                  onClick={() => setDashboardType("challenge")}
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-2xl ${
+                    dashboardType === "challenge"
+                      ? "bg-my-blue-4 text-white"
+                      : "bg-gray-300 text-white hover:bg-my-blue-4"
+                  }`}
+                >
+                  🎯 챌린지별
+                </button>
+              </div>
             </div>
           </div>
 

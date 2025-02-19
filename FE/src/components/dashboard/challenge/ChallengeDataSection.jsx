@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import dashboardApi from "../../../services/api/dashboardApi";
 import DataLabel from "../common/DataLabel";
 import { formatTime } from "../../../utils/formatTime";
+
+
 
 // 날짜 형식 변환 (YYYY.M.D)
 function formatLocalDate(dateStr) {
@@ -15,7 +17,7 @@ function formatLocalDate(dateStr) {
 
 // 공부 시간을 원하는 형식으로 변환하는 함수
 // 두 번째 인자(zeroText)는 seconds가 0일 때 표시할 텍스트, 기본값은 "데이터가 없습니다"
-function customFormatTime(seconds, zeroText = "데이터가 없습니다") {
+function customFormatTime(seconds, zeroText = "0분") {
   if (seconds === 0) return zeroText;
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -23,7 +25,7 @@ function customFormatTime(seconds, zeroText = "데이터가 없습니다") {
     return `${minutes}분`;
   }
   return `${hours}시간 ${minutes}분`;
-}
+ }
 
 export default function ChallengeDataSection({
   monthlyChallenges = [],
@@ -37,6 +39,17 @@ export default function ChallengeDataSection({
   const [selectedAverageStats, setSelectedAverageStats] = useState(null);
   const [selectedChallengeId, setSelectedChallengeId] = useState(null);
   const [selectedChallengeInfo, setSelectedChallengeInfo] = useState(null);
+  const [numOfChallenges, setNumOfChallenges] = useState(null);
+
+
+  // 2. ChallengeDataSection 컴포넌트 내 useEffect 추가 (import React 부분에 useEffect 추가 필요)
+  useEffect(() => {
+    if (monthlyChallenges.length > 0) {
+      handleThumbnailClick(monthlyChallenges[0].challengeId);
+    }
+    setNumOfChallenges(monthlyChallenges.length)
+  }, [monthlyChallenges]); // monthlyChallenges가 변경될 때마다 실행
+
 
   const handleThumbnailClick = async (challengeId) => {
     console.log("[handleThumbnailClick] challengeId:", challengeId);
@@ -69,7 +82,7 @@ export default function ChallengeDataSection({
   };
 
   // 썸네일이 클릭되었는지에 따라 0초일 때 출력할 텍스트 결정
-  const zeroText = selectedChallengeId ? "0분" : "데이터가 없습니다";
+  const zeroText = selectedChallengeId ? "0분" : "";
 
   const todayValue = selectedTodayStats
     ? customFormatTime(selectedTodayStats.totalScreenTime, zeroText)
@@ -113,18 +126,24 @@ export default function ChallengeDataSection({
         {/* 2행 */}
         <div className="flex gap-4 items-center h-full">
           {/* 총 공부 시간 */}
-          <div className="w-2/5 border-2 p-4 flex flex-col items-center justify-center rounded-xl">
+          <div className="w-2/5 border-2 p-4 flex flex-col items-center justify-center rounded-xl ">
             <DataLabel label="평균 공부 시간" />
             <div className="mt-2 text-2xl font-normal">
               <p>{totalStudyValue}</p>
             </div>
           </div>
           {/* 추가 데이터 (썸네일 영역) */}
-          <div className="w-3/5 border-2 p-4 flex flex-col items-center justify-center h-full rounded-xl">
-            <div className="flex gap-4 mt-0">
+          <div className="w-3/5 border-2 p-4 flex flex-col items-center justify-center h-full rounded-xl relative">
+            <div className="flex gap-4 mt-0 w-full justify-center ">
+              <div className="flex gap-1 items-center justify-center absolute top-0 left-3 select-none text-gray-300 hover:text-gray-400">
+                <div>Top</div>
+                <div className="text-xl">
+                {numOfChallenges !== 0 ? `${numOfChallenges}` : ''}
+                </div>
+              </div>
               {monthlyChallenges.length === 0 ? (
-                <p>챌린지 참여 정보가 없습니다</p>
-              ) : (
+                <p>챌린지에 참여하세요!</p>
+                ) : (
                 monthlyChallenges.map((ch) => (
                   <ThumbnailItem
                     key={ch.challengeId}

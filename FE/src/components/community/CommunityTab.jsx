@@ -22,7 +22,8 @@ export default function CommunityTab() {
         <button
           key={tab.name}
           onClick={() => navigate(tab.path)}
-          className={`w-1/2 py-3 text-center font-semibold text-lg transition-all ${
+          style={{ fontFamily: "mbc" }}
+          className={`w-1/2 py-3 text-center mbc-font font-family-mbc font-semibold text-lg transition-all ${
             currentPath.includes(tab.path)
               ? "bg-my-blue-1 text-white border-b-4 border-my-blue-1"
               : "text-gray-500 hover:bg-gray-100"

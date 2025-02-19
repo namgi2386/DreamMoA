@@ -154,10 +154,10 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-[28rem] text-right">
+                <div className="w-[28rem] text-right " >
                   {Math.floor(count).toLocaleString()}
                 </div>
-                <div className="ml-4 text-[7rem]">시간</div>
+                <div className="ml-4 text-[7rem]" style={{fontFamily:"mbc"}}>시간</div>
               </motion.div>
             )}
 
@@ -170,10 +170,10 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="text-white text-6xl mb-4 font-medium">
+                <div className="text-white text-6xl mb-4 font-medium" style={{fontFamily:"mbc"}}>
                   꿈을 모으다
                 </div>
-                <div className="text-white text-8xl font-extrabold tracking-wider">
+                <div className="text-white text-8xl font-extrabold tracking-wider" style={{fontFamily:"mbc"}}>
                   DreamMoA
                 </div>
               </motion.div>

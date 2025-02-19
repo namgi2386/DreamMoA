@@ -28,10 +28,17 @@ export default function TitleSection() {
   }, []);
 
   return (
-    <div className="w-full h-full flex items-center justify-center text-hmy-blue-1">
+    <div className="w-full h-full flex items-center justify-center ">
       {/* 중앙 텍스트: "nickname has been dreaming for XX hour" */}
-      <div className="text-[3rem] leading-none font-bold">
-        {nickname} has been dreaming for {totalHour} hour
+      <div className=" leading-none font-bold gap-2 flex items-center">
+        <span className="text-[4rem] text-hmy-blue-1 ">
+        {nickname}
+        </span >
+        <span className="text-[2rem] text-hmy-blue-4 ">
+          has been dreaming for 
+        </span>
+        <span className="text-[4rem] text-hmy-blue-1 ">{totalHour} </span>
+        <span className="text-[2rem] text-hmy-blue-4 ">hour</span>
       </div>
     </div>
   );

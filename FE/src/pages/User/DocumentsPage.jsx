@@ -1,5 +1,5 @@
-import SideChatbar from "../../components/challenge/chatbar/SideChatbar";
-import EndButton from "../../components/challenge/finish/EndButton";
+// import SideChatbar from "../../components/challenge/chatbar/SideChatbar";
+// import EndButton from "../../components/challenge/finish/EndButton";
 import { Link } from "react-router-dom";
 import testlogo from "/logo/testlogo.png";
 import testlogochallengecreate from "/logo/dreammoa-bg.png";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useRecoilValue } from 'recoil';
 import { selectedTagsState } from '/src/recoil/atoms/tags/selectedTagsState';
 import TagSelector from "../../components/common/tags/TagSelector";
+// import TestForAiStt from "../../components/test/TestForAiStt";
 
 export default function DocumentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,8 +32,8 @@ export default function DocumentsPage() {
           <img src={testlogoforopenvidu} alt="openvidu바로가기" className="h-10 w-auto" />
         </Link>
       </div>
-      <EndButton/>
-      <SideChatbar/>
+      {/* <EndButton/>
+      <SideChatbar/> */}
       <div className="min-h-screen w-full bg-gray-200 flex flex-col gap-10 items-center justify-center">
         <p>documents</p>
 
@@ -62,6 +63,7 @@ export default function DocumentsPage() {
           </div>
         </div>
         <TagSelector/>
+        {/* <TestForAiStt/> */}
         
 
       </div>

@@ -69,7 +69,8 @@ export default function CommunityFreeListPage() {
         
         <div className="flex justify-between mb-4">
           <h1
-            className="text-2xl font-bold cursor-pointer"
+            className="text-2xl   cursor-pointer"
+            style={{ fontFamily: "mbc" }}
             onClick={() => {
               navigate("/community/free?page=1&sort=최신순", { replace: true }); // ✅ URL 변경
               setTimeout(() => {
@@ -81,6 +82,7 @@ export default function CommunityFreeListPage() {
           </h1>
           <Link
             to="/community/free/write"
+            style={{ fontFamily: "mbc" }}
             className="px-4 py-2 bg-my-blue-1 text-white rounded"
           >
             글쓰기

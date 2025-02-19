@@ -166,7 +166,7 @@ export default function TagSelector() {
                     : "bg-yellow-50 text-my-blue-1 hover:bg-blue-300"
                 }
               `}
-            ><div className="transition-all duration-200 ease-in-out hover:scale-105">
+            ><div className="transition-all duration-200 ease-in-out hover:scale-105" style={{fontFamily:"mbc"}}>
               # {tag.name}
             </div>
             </button>

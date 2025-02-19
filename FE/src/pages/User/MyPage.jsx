@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { userState } from "../../recoil/atoms/authState";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import MyInfoCard from "../../components/mypage/MyInfoCard";
 import ChallengeImages from "../../components/mypage/ChallengeImages";
@@ -14,9 +14,18 @@ export default function MyPage() {
   const userInfo = useRecoilValue(userState);
   const [isEditModeState, setIsEditModeState] = useState(false);
   const [isEdittagState, setIsEdittagState] = useState(false);
-  const socialLoginDependency = localStorage.getItem("socialLoginDependency");
+  const [socialLoginDependency, setSocialLoginDependency] = useState(() => {
+    const stored = localStorage.getItem("socialLoginDependency");
+    return stored ?? "false";  // 없으면 "false"로 초기화
+  });
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isVerified, setIsVerified] = useState(1);
+
+  useEffect(() => {
+    // localStorage 동기화
+    localStorage.setItem("socialLoginDependency", socialLoginDependency);
+  }, [socialLoginDependency]);
+
 
   // 수정/완료 버튼을 위한 핸들러
   const handleEditMode = () => {
@@ -65,7 +74,7 @@ export default function MyPage() {
       // 수정 모드로 진입
       setIsEdittagState(true);
     } else {
-      // 완료 버튼을 눌렀을 때
+      // 완료 버튼을 눌렀을 때  
       try {
         // TODO: API 호출하여 태그 저장
         // await tagApi.saveTags(selectedTags);

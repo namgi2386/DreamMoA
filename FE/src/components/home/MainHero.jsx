@@ -109,14 +109,14 @@ const MainHero = () => {
       <div className="container mx-auto h-full px-10 flex items-center justify-center ">
         <div className="text-center space-y-8 z-10">
           <h1 className="font-bold text-my-yellow">
-            <span className="text-[66px] block mb-0 tracking-wider select-none">
+            <span className="text-[66px] block mb-0 tracking-wider select-none" style={{fontFamily:"mbc"}}>
               우리의 꿈이 모인지
             </span>
             <div className="whitespace-nowrap block -mt-5">
               <span className="text-[135px] tracking-wider inline-block animate-sparkle select-none">
                 {totalHours.toLocaleString()}
               </span>
-              <span className="text-[98px] tracking-wider inline-block select-none ">
+              <span className="text-[98px] font-thin tracking-wider inline-block select-none " style={{fontFamily:"mbc"}}>
                 시간째
               </span>
             </div>
@@ -125,7 +125,7 @@ const MainHero = () => {
             <span className="text-[32px] text-my-blue-3 font-bold tracking-wider select-none">
               DreamMoA
             </span>
-            <span className="text-[26px] text-my-blue-3 ml-2 tracking-wider select-none">
+            <span className="text-[26px] text-my-blue-3 ml-2 tracking-wider select-none" style={{fontFamily:"mbc"}}>
               에서 당신의 꿈을 이뤄보세요
             </span>
           </div>

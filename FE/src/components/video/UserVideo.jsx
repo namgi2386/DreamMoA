@@ -22,7 +22,7 @@ const UserVideo = ({ streamManager, isMyVideo, isMainStream }) => {
   }, [streamManager]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className={`relative w-full h-full `}>
       {/* ✅ 기본 비디오 스트림 표시 */}
       <OvVideo streamManager={streamManager} isMainStream={isMainStream} />
       

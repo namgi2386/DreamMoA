@@ -29,6 +29,10 @@ body {
   src: url("/public/fonts/ChosunCentennial.ttf");
 }
 @font-face {
+  font-family: "mbc";
+  src: url("/public/fonts/MBC-M.ttf");
+}
+@font-face {
   font-family: "Cheetos";
   src: url("/public/fonts/OtherHand.otf");
 }

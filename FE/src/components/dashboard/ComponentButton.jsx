@@ -2,13 +2,13 @@ export default function ComponentButton({ text, isDate, date, mode, challengeNam
   return (
     <button 
       onClick={onClick}
-      className="px-6 py-3 bg-my-blue-4 text-white rounded-md text-center min-w-[150px] text-2xl"
+      className="absolute bottom-0 left-0 px-6 py-3  text-my-blue-1 rounded-md text-center min-w-[150px] text-2xl"
       style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
     >
       {isDate 
         ? (mode === "date" 
               ? (date ? formatDate(date) : "날짜 선택") 
-              : (challengeName ? challengeName : "챌린지명")
+              : (challengeName ? challengeName : "my challenge")
           )
         : text}
     </button>

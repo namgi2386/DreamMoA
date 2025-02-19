@@ -73,13 +73,13 @@ export default function QuoteSection() {
           />
           <div className="mt-2 flex justify-end space-x-2">
             <button
-              className="px-3 py-1 bg-gray-300 rounded"
+              className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded duration-300 transition ease-in "
               onClick={handleCancel}
             >
               취소
             </button>
             <button
-              className="px-3 py-1 bg-blue-500 text-white rounded"
+              className="px-3 py-1 bg-my-blue-4 hover:bg-hmy-blue-4 text-white rounded duration-300 transition ease-in "
               onClick={handleSave}
             >
               저장
