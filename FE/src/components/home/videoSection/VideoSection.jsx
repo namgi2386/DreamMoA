@@ -1,5 +1,8 @@
 import VideoItem from "./VideoItem";
-import defaultImage from "/test/testvideo1.gif";
+import defaultImage from "/gifs/testvideo1.gif";
+import defaultImageB from "/gifs/testvideo1.gif";
+import defaultImageA from "/gifs/testvideo1.gif";
+import defaultImageC from "/gifs/testvideo1.gif";
 
 
 export default function VideoSection() {
