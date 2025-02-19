@@ -79,6 +79,7 @@ export default function Dashboard() {
       ? topChallenges.slice(0, 4).map((ch) => ({
           label: ch.title,
           value: formatTime(ch.totalPureStudyTime),
+          url : ch.thumbnailUrl,
         }))
       : [];
 

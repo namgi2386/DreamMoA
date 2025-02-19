@@ -100,30 +100,30 @@ export default function ChallengeListMyTagSorted() {
 
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
         <div className="flex-1 bg-[#FEFDD5] rounded-r-lg mr-1 text-white 
-opacity-0 sm:opacity-100 invisible sm:visible transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
-  <div className="w-full h-full flex items-center">
-    <motion.div 
-      className="flex gap-6"
-      animate={{
-        x: [0, -((challenges.length) * 260*4)], // 각 카드의 너비(200) + gap(60)를 고려한 거리
-      }}
-      transition={{
-        duration: 180, // 애니메이션 지속 시간
-        repeat: Infinity, // 무한 반복
-        ease: "linear" // 일정한 속도로 이동
-      }}
-    >
-      {[...Array(getRepeatCount(challenges.length))].map((_, index) => (
-        challenges.slice(0, 8).map((challenge) => (
-          <ChallengeCard 
-            key={`${challenge.challengeId}-${index}`} 
-            challenge={challenge}
-          />
-        ))
-      ))}
-    </motion.div>
-  </div>
-</div>
+          opacity-0 sm:opacity-100 invisible sm:visible transition duration-800 overflow-hidden"> {/* overflow-auto를 overflow-hidden으로 변경 */}
+            <div className="w-full h-full flex items-center">
+              <motion.div 
+                className="flex gap-6"
+                animate={{
+                  x: [0, -((challenges.length) * 260*4)], // 각 카드의 너비(200) + gap(60)를 고려한 거리
+                }}
+                transition={{
+                  duration: 660, // 애니메이션 지속 시간
+                  repeat: Infinity, // 무한 반복
+                  ease: "linear" // 일정한 속도로 이동
+                }}
+              >
+                {[...Array(getRepeatCount(challenges.length))].map((_, index) => (
+                  challenges.slice(0, 8).map((challenge) => (
+                    <ChallengeCard 
+                      key={`${challenge.challengeId}-${index}`} 
+                      challenge={challenge}
+                    />
+                  ))
+                ))}
+              </motion.div>
+            </div>
+          </div>
 
         {/* Create 버튼 */}
         <div className="absolute -top-0 right-0 flex justify-center items-center bg-white rounded-t-lg rounded-bl-lg pr-1 

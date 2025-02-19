@@ -160,10 +160,10 @@ export default function HomeCommunity() {
     <div className="flex justify-center py-6">
       <div className="relative w-full max-w-[1380px] min-h-[600px] bg-my-blue-2 rounded-lg p-8 overflow-hidden">
         <h2 className="text-white   mb-8 cursor-default select-none">
-          <span className="text-4xl">
+          <span className="text-4xl" style={{fontFamily:"mbc"}}>
           {myNumber.toLocaleString()}
           </span>
-          <span className='text-2xl'>
+          <span className='text-2xl' style={{fontFamily:"mbc"}}>
             + 명의 학습자들과 함께해보세요
             </span>
         </h2>
