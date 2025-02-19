@@ -55,9 +55,6 @@ export default function HomePage() {
       <div>
         <MainHero totalHours={totalHours} />
         <div className="snap-start">
-          <HomeCommunity />
-        </div>
-        <div className="snap-start">
           <ServiceHighlight />
         </div>
         <section className="w-full py-16 snap-start bg-my-blue-3 overflow-visible">
@@ -70,6 +67,9 @@ export default function HomePage() {
             <ChallengeCarousel />
           </div>
         </section>
+        <div className="snap-start">
+          <HomeCommunity />
+        </div>
         <div>
           <ReviewGradation/>
         </div>

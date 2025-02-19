@@ -105,7 +105,7 @@ const ChallengeCarousel = () => {
   }
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full h-[400px]  flex items-center overflow-hidden">
       <motion.div
         ref={carouselRef}
         className="flex -ml-5"

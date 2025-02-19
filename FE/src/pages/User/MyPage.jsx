@@ -170,7 +170,7 @@ export default function MyPage() {
               className="ml-4 bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
               text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60"
             >
-              관심 태그
+              my tag
             </h1>
 
             <div className="relative">
@@ -220,9 +220,9 @@ export default function MyPage() {
           {/* 챌린지 섹션 */}
           <h1
             className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
-                        text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
+                        text-xl w-40 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
-            challenge
+            my challenge
           </h1>
           <ChallengeImages />
         </div>
