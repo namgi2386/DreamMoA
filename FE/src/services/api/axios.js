@@ -76,7 +76,7 @@ api.interceptors.response.use(
         // refresh 토큰도 만료되었거나 유효하지 않은 경우
         localStorage.removeItem("accessToken");
         // 사용자에게 알림
-        alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+        // alert("로그인이 만료되었습니다. 다시 로그인해 주세요.");
         // 현재 URL을 state로 전달하여 로그인 후 원래 페이지로 돌아올 수 있게 함
         window.location.href = `/login?redirect=${window.location.pathname}`;
         // 로그인 페이지로 리다이렉트 등 추가 처리

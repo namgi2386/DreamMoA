@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import testlogo from "/logo/dreammoa-bg.png";
+import testlogo from "/logo/dreammoa.png";
 
 import { useEffect, useState } from "react";
 import authChangeApi from "../../services/api/authChangeApi.js";
@@ -33,7 +33,18 @@ export default function FindpwPage() {
     const validationResult = validatePassword(confirmpassword, email);
     if (validationResult === '') {
       console.log("완료!!");
-      
+      setTimeout(() => {
+        navigate('/login')
+        setSuccessModalState({
+          isOpen: true,
+          message: "변경 완료!",
+          onCancel: () => {
+            // 실행 취소 시 수행할 작업
+            console.log('작업 취소됨');
+          },
+          isCancellable: false, // 실행 취소 버튼 표시 여부
+        });
+      }, 2000);
     } else {
       setFinErrorMessage(validationResult);
     }
@@ -187,12 +198,12 @@ export default function FindpwPage() {
         </Link>
       </div>
       {/* 화면 전체 */}
-      <div className="min-h-screen flex bg-red-100 flex-col 
+      <div className="min-h-screen flex bg-gray-100 flex-col 
                         items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         {/* 가운데 상자 */}
-        <div className="max-w-md w-full relative p-8 rounded-lg shadow-lg bg-green-100">
+        <div className="max-w-md w-full relative p-8 rounded-lg shadow-lg bg-gray-100">
           {/* 제목 */}
-          <div className="mb-6 bg-blue-100">
+          <div className="mb-6 ">
             <h2 className="text-center text-3xl font-extrabold text-gray-900">
               DreamMoa
             </h2>
@@ -229,17 +240,7 @@ export default function FindpwPage() {
               </div>
             )}
             {/* 버튼 */}
-            <button
-              type="submit"
-              
-              className="w-full flex justify-center py-2 px-4 border border-transparent 
-                text-sm font-medium rounded-md text-white bg-my-blue-1 mb-6
-                hover:bg-hmy-blue-1 focus:outline-none focus:ring-2 
-                focus:ring-offset-2 focus:ring-indigo-500"
-              disabled={true}
-            >
-              {isLoading ? '확인중...' : 'Continue'}
-            </button>
+
             {/* 남희 인증버튼 배껴오기 */}
             <button
               type="button"
@@ -363,6 +364,17 @@ export default function FindpwPage() {
             >
               SUCCESS
             </button>
+            <button
+              type="submit"
+              
+              className="w-full mt-1 flex justify-center py-1 px-4 border border-transparent 
+                text-sm font-medium rounded-md text-my-blue-1 1 mb-6
+                  focus:outline-none focus:ring-2 
+                focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={true}
+            >
+              {isLoading ? '확인중...' : ''}
+            </button>
 
 
 
@@ -371,7 +383,7 @@ export default function FindpwPage() {
           </form>
         </div>
         {/* 최하단 아이디 찾기 */}
-        <div className="flex justify-center space-x-3 items-center bg-gray-200">
+        <div className="flex justify-center space-x-3 items-center ">
           <Link to="/findid" className="text-xs text-my-blue-4 hover:text-hmy-blue-4">
             아이디가 기억나지 않나요?
           </Link>

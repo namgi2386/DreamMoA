@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import LoginForm from "../../components/auth/LoginForm.jsx";
 import SocialLoginButton from "../../components/common/SocialLoginButton.jsx";
 import { socialLogin } from "../../services/api/authApi.js";
-import testlogo from "/logo/dreammoa-bg.png";
+import testlogo from "/logo/dreammoa.png";
 
 
 const LoginPage = () => {
