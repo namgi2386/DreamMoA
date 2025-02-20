@@ -36,11 +36,9 @@ export default function ChallengeChartSection({ details = [], challengePeriod })
     const data = dateRange.map((date) => {
       const iso = date.toISOString().split("T")[0];
       const record = details.find((item) => {
-        let rec = item.recordAt;
-        if (rec.includes("T")) {
-          rec = rec.split("T")[0];
-        }
-        return rec === iso;
+        // recordAt에 'T00:00:00'을 추가하여 로컬 기준으로 Date 객체를 생성
+        const recDate = new Date(`${item.recordAt}T00:00:00`);
+        return recDate.toISOString().split("T")[0] === iso;
       });
       return record ? record.screenTime / 3600 : 0;
     });
