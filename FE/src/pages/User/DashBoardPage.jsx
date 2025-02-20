@@ -153,7 +153,7 @@ export default function Dashboard() {
               />
               {/* 오른쪽: 모드 전환 버튼 */}
               
-              <div className="flex space-x-4 p-2 bg-gray-100 rounded-lg">
+              <div className="ml-auto flex space-x-4 p-2 bg-gray-100 rounded-lg">
                 <button
                   onClick={() => setDashboardType("date")}
                   className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-xl ${

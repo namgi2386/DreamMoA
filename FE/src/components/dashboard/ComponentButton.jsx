@@ -2,7 +2,7 @@ export default function ComponentButton({ text, isDate, date, mode, challengeNam
   return (
     <button 
       onClick={onClick}
-      className="absolute bottom-0 left-0 px-6 py-3  text-my-blue-1 rounded-md text-center min-w-[150px] text-2xl"
+      className="absolute bottom-0 left-0 px-6 py-3  text-my-blue-1 rounded-md text-center min-w-[150px] text-3xl"
       style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
     >
       {isDate 
