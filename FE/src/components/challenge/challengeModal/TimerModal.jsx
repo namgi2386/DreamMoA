@@ -38,6 +38,7 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
       
       if (aiFocusValue[0] === 1) {
         setCurrentPureTime(prev => prev + 1);
+        setIsNotGood(false) //########################################################################
       } else {
         setIsNotGood(true)
       }

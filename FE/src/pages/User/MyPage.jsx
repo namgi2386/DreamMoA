@@ -92,9 +92,9 @@ export default function MyPage() {
 
   return (
     <>
-      <div className="bg-white">
+      <div className="bg-hmy-blue-1">
         <div
-          className={`max-w-5xl mx-auto pt-4 pb-20 min-h-screen px-20 bg-white`}
+          className={`max-w-5xl mx-auto pt-4 pb-20 min-h-screen px-20 bg-white rounded-2xl`}
         >
           {/* 헤더 섹션 */}
           <div className="relative flex justify-between items-center pb-2">
@@ -164,7 +164,7 @@ export default function MyPage() {
 
           {/* 뱃지 섹션 */}
           <h1
-            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+            className={`ml-4 mt-10 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
                         text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
             my badge
@@ -174,7 +174,7 @@ export default function MyPage() {
           </div>
 
           {/* 관심 태그 섹션 */}
-          <div className="flex justify-between items-center mt-20 mb-4">
+          <div className="flex justify-between items-center mt-10 mb-4">
             <h1
               className="ml-4 bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
               text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60"
@@ -228,7 +228,7 @@ export default function MyPage() {
 
           {/* 챌린지 섹션 */}
           <h1
-            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+            className={`ml-4 mt-10 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
                         text-xl w-40 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
             my challenge

@@ -97,7 +97,8 @@ const ConstellationFooter = () => {
 
       <div className="container mx-auto grid grid-cols-3 relative z-10">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-[#F5CBA7]">꿈모아</h2>
+          <h2 className="text-2xl font-bold text-[#F5CBA7]">DreamMoA</h2> 
+          {/* ######################################################################## */}
           <p className="text-sm text-gray-300">
             모든 학습자의 꿈을 함께 모아 이루는 공간
           </p>
@@ -187,7 +188,8 @@ const ConstellationFooter = () => {
 
       {/* Bottom Bar */}
       <div className="text-center mt-8 pt-4 border-t border-gray-700 text-sm text-gray-400">
-        © 2025 꿈모아. All rights reserved.
+        © 2025 DreamMoA. All rights reserved.
+        {/* ######################################################################## */}
       </div>
     </footer>
   );
