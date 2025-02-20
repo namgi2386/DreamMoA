@@ -17,13 +17,13 @@ export default function CommunityTab() {
   };
 
   return (
-    <div className="flex space-x-4 mb-6 border-b-2 border-gray-200">
+    <div className="flex space-x-4 mb-6 border-b-2 border-gray-200 ">
       {tabItems.map((tab) => (
         <button
           key={tab.name}
           onClick={() => navigate(tab.path)}
           style={{ fontFamily: "mbc" }}
-          className={`w-1/2 py-3 text-center mbc-font font-family-mbc font-semibold text-lg transition-all ${
+          className={`w-1/2 py-3 text-center mbc-font font-family-mbc  font-semibold text-lg transition-all ${
             currentPath.includes(tab.path)
               ? "bg-my-blue-1 text-white border-b-4 border-my-blue-1"
               : "text-gray-500 hover:bg-gray-100"

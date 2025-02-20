@@ -28,7 +28,7 @@ export default function App() {
   const shouldHideHeader = hideHeaderPaths.includes(location.pathname) || location.pathname.startsWith('/video/');
   return (
     <RecoilRoot>
-      <div className="h-screen w-full bg-gray-300 dark:bg-gray-800 relative ">  
+      <div className="h-screen w-full bg-gray-100 dark:bg-gray-800 relative ">  
         {!shouldHideHeader && <Header />}
         {!shouldHideSideNavbar && <SideNavbar />}
         {!shouldHideHeader && <main className=" bg-gray-100"> 

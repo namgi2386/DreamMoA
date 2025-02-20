@@ -14,8 +14,8 @@ export default function ChallengeListPage() {
   const isModalOpen = useRecoilValue(challengeModalState);
   const isHideSidebar = useRecoilValue(isHideSideState);
   return (
-    <div className="flex justify-center bg-white">
-      <div className={`min-h-screen w-full bg-white py-12 ${isHideSidebar ? 'pl-6':'pl-20'}  pr-6 transition-[padding] ease-in-out duration-300 max-w-[1600px]`}>
+    <div className="flex justify-center bg-gray-100">
+      <div className={`min-h-screen w-full bg-gray-100 py-12 ${isHideSidebar ? 'pl-6':'pl-20'}  pr-6 transition-[padding] ease-in-out duration-300 max-w-[1600px]`}>
         {/* 내 태그기반 챌린지리스트 */}
         <ChallengeListMyTagSorted/>
         {/* 챌린지 검색창+태그창 */}

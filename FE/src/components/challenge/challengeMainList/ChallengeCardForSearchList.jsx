@@ -36,7 +36,7 @@ export default function ChallengeCard({ challenge }) {
   return (
     <div className="w-full flex-shrink-0 "
     onClick={cardDetail}> {/* 카드 너비 고정 및 축소 방지 */}
-      <div className="w-full h-[240px] rounded-lg overflow-hidden  group "> {/* 고정 높이 설정 */}
+      <div className="w-full h-[240px] rounded-lg overflow-hidden  group cursor-pointer"> {/* 고정 높이 설정 */}
         {/* 썸네일 이미지 */}
         <div className="h-[200px] flex  flex-col relative bg-cover bg-center bg-no-repeat rounded-xl "
           style={{ backgroundImage: `url(${thumbnail})` }}>
@@ -58,7 +58,7 @@ export default function ChallengeCard({ challenge }) {
             </div>
           </div>
           {/* 우하단 태그 */}
-          <div className="absolute bottom-1 right-2 flex flex-wrap gap-1.5 ">
+          <div className="absolute bottom-1 right-2 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition duration-300 ease-in">
             {tags.slice(0, 3).map((tag, index) => (
               <span 
               key={index}
