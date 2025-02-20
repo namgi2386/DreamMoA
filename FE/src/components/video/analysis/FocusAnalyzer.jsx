@@ -38,7 +38,7 @@ const FocusAnalysis = ({ serverUrl }) => {
                     studyTimer += 1;
                 }
                 const data = JSON.parse(event.data);
-                // console.log("📡 집중도 분석 결과:", data.focus_prediction);
+                console.log("📡 집중도 분석 결과:", data.focus_prediction);
                 setAiFocusValue(data.focus_prediction)
                 if (data.focus_prediction == 1) {
                     studyAttitude = true;

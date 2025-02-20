@@ -3,7 +3,7 @@ import ChallengeCreateForm from "../../components/challenge/challengeEdit/Challe
 export default function ChallengeCreatePage() {
   return (
     <>
-      <div className="min-h-screen w-full bg-green-200 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-hmy-blue-1 flex items-center justify-center">
         <ChallengeCreateForm/>
       </div>
     </>

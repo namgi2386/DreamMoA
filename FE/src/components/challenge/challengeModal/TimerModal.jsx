@@ -1,16 +1,18 @@
 import { FaClock, FaBrain } from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { aiFocusState,currentScreenTimeState,currentPureTimeState } from "../../../recoil/atoms/ai/aiState";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const TimerModal = ({ screenTime, pureStudyTime  }) => {
   const aiFocusValue = useRecoilState(aiFocusState);
+
   // console.log("@@@@@@@@@@@@1" , screenTime);
   // console.log("@@@@@@@@@@@@2" , pureStudyTime);
   // const [currentScreenTime, setCurrentScreenTime] = useState(screenTime);
   // const [currentPureTime, setCurrentPureTime] = useState(pureStudyTime);
   const [currentScreenTime, setCurrentScreenTime] = useRecoilState(currentScreenTimeState);
   const [currentPureTime, setCurrentPureTime] = useRecoilState(currentPureTimeState);
+  const [isNotGood, setIsNotGood] = useState(false);
 
   // 컴포넌트 마운트 시 초기값 설정
   useEffect(() => {
@@ -36,6 +38,9 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
       
       if (aiFocusValue[0] === 1) {
         setCurrentPureTime(prev => prev + 1);
+        setIsNotGood(false) //########################################################################
+      } else {
+        setIsNotGood(true)
       }
     }, 1000);
   
@@ -47,9 +52,9 @@ const TimerModal = ({ screenTime, pureStudyTime  }) => {
     };
   }, [aiFocusValue, setCurrentScreenTime, setCurrentPureTime, currentScreenTime, currentPureTime]); // 의존성 배열에 현재 시간 상태 추가
   return (
-    <div className="absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
+    <div className="z-[999] absolute top-4 left-4 bg-gray-800 rounded-lg shadow-lg border border-gray-700 backdrop-blur-sm bg-opacity-90">
       {/* 컨테이너 */}
-      <div className="flex items-center space-x-6 p-3">
+      <div className={`flex items-center space-x-6 p-3 ${isNotGood ? 'animate-pulse border-2 border-my-red rounded-md' : ''}`}>
         {/* 스크린타임 */}
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">

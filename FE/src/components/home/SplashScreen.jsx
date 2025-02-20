@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { homeApi } from "../../services/api/homeApi";
-import dreammoaLogo from "../../assets/logo/dreammoa.png";
+import dreammoaLogo from "/logo/dreammoa.png";
 
 // 랜덤한 별 생성 함수
 const generateStars = (count) => {
@@ -61,7 +61,7 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
     const fetchAndSetupAnimation = async () => {
       try {
         const totalMinutes = await homeApi.getTotalScreenTime();
-        const hours = Math.round(totalMinutes / 60);
+        const hours = Math.round(totalMinutes / 3600);
         setFinalHours(hours);
 
         // 카운터 애니메이션
@@ -154,10 +154,10 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="w-[28rem] text-right">
+                <div className="w-[28rem] text-right " >
                   {Math.floor(count).toLocaleString()}
                 </div>
-                <div className="ml-4 text-[7rem]">시간</div>
+                <div className="ml-4 text-[7rem]" style={{fontFamily:"mbc"}}>시간</div>
               </motion.div>
             )}
 
@@ -170,10 +170,10 @@ const SplashScreen = ({ onComplete, setFinalHours, forceComplete }) => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.8 }}
               >
-                <div className="text-white text-6xl mb-4 font-medium">
+                <div className="text-white text-6xl mb-4 font-medium" style={{fontFamily:"mbc"}}>
                   꿈을 모으다
                 </div>
-                <div className="text-white text-8xl font-extrabold tracking-wider">
+                <div className="text-white text-8xl font-extrabold tracking-wider" style={{fontFamily:"mbc"}}>
                   DreamMoA
                 </div>
               </motion.div>

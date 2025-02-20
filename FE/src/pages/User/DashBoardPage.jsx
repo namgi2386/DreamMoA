@@ -79,6 +79,7 @@ export default function Dashboard() {
       ? topChallenges.slice(0, 4).map((ch) => ({
           label: ch.title,
           value: formatTime(ch.totalPureStudyTime),
+          url : ch.thumbnailUrl,
         }))
       : [];
 
@@ -125,7 +126,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="w-full min-h-screen p-4 flex flex-col bg-white items-center">
+    <div className="w-full min-h-screen p-4 flex flex-col bg-white items-center overflow-hidden">
       {/* Title 영역 */}
       <div className="w-full h-24 max-w-[1800px]">
         <TitleSection />
@@ -138,7 +139,7 @@ export default function Dashboard() {
         <div className="order-2 lg:order-1 w-full lg:w-3/5 flex flex-col border-2 border-gray-300 rounded-xl p-4 mt-4 md:mt-0 ">
           {/* 상단 버튼 영역 */}
           <div className="w-full">
-            <div className="flex items-center justify-between text-lg">
+            <div className="flex items-center justify-center relative text-lg">
               {/* 왼쪽: 날짜 표시 버튼 */}
               <ComponentButton
                 isDate
@@ -151,14 +152,29 @@ export default function Dashboard() {
                 }
               />
               {/* 오른쪽: 모드 전환 버튼 */}
-              <ComponentButton
-                text={dashboardType === "date" ? "날짜별" : "챌린지별"}
-                onClick={() =>
-                  setDashboardType(
-                    dashboardType === "date" ? "challenge" : "date"
-                  )
-                }
-              />
+              
+              <div className="flex space-x-4 p-2 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setDashboardType("date")}
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-xl ${
+                    dashboardType === "date"
+                      ? "bg-my-blue-4 text-white"
+                      : "bg-gray-300 text-white hover:bg-my-blue-4"
+                  }`}
+                >
+                  📅 날짜별 보기
+                </button>
+                <button
+                  onClick={() => setDashboardType("challenge")}
+                  className={` rounded-md transition-colors duration-300 ease-in px-6 py-3  rounded-md text-center min-w-[150px] text-xl ${
+                    dashboardType === "challenge"
+                      ? "bg-my-blue-4 text-white"
+                      : "bg-gray-300 text-white hover:bg-my-blue-4"
+                  }`}
+                >
+                  🎯 챌린지별 보기
+                </button>
+              </div>
             </div>
           </div>
 
@@ -210,7 +226,7 @@ export default function Dashboard() {
 
         {/* Section 2: 인용구/달력 영역 (데스크탑: 오른쪽 - 40%) */}
         {/* 모바일에서는 상단에 표시 */}
-        <div className="order-1 lg:order-2 w-full lg:w-2/5 flex flex-col ">
+        <div className="order-1 lg:order-2 w-full lg:w-2/5 flex flex-col -ml-12">
           <div className="w-full flex items-start justify-center text-lg">
             <div>
               <div className="w-full flex items-center justify-center text-lg mt-10">

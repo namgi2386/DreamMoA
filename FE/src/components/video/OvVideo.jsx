@@ -22,7 +22,7 @@ const OvVideo = ({ streamManager, isMainStream }) => {
   }, [streamManager]);
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full ">
       <video autoPlay ref={videoRef} className="w-full h-full rounded-xl" />
       
       {/* ✅ 자막 표시 (displayedSubtitlesState → processedSubtitlesState로 변경) */}

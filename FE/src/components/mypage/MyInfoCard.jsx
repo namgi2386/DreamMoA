@@ -8,7 +8,8 @@ import { successModalState } from "/src/recoil/atoms/modalState";
 import { validateNickname, validateName } from "../../utils/validation";
 
 // 프로필 기본 이미지
-import defaultUserImageOrange from "/src/assets/default/defaultUserImageOrange.png";
+import defaultUserImageOrange from "/logo/dreammoa-bg.png";
+
 import authChangeApi from "../../services/api/authChangeApi";
 import { authApi } from "../../services/api/authApi";
 

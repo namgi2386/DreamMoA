@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { authState, userState } from "../../recoil/atoms/authState";
-import dreammoaLogo from "../../assets/logo/dreammoa.png";
+import dreammoaLogo from "/logo/dreammoa.png";
 import useAuth from "../../hooks/useAuth";
 import { RiAdminFill } from "react-icons/ri";
 import { CiLogin, CiLogout } from "react-icons/ci";

@@ -13,10 +13,10 @@ export default function VideoItem({ title, content, videogif, bgcolor, location 
   );
 
   const textSection = (
-    <div className={`w-1/2 p-8 ${bgcolor}  h-full overflow-hidden transition-all duration-1000 hover:w-3/5
+    <div className={`w-1/2 p-8 ${bgcolor}  h-full overflow-hidden transition-all duration-1000 hover:w-3/5 
                     ${location === 'right' ? 'md:rounded-l-2xl' : 'md:rounded-r-2xl'}`}>
-      <h2 className="text-4xl font-bold mb-4">{title}</h2>
-      <p className="text-gray-700">{content}</p>
+      <h2 className="text-[36px] font-main-title font-bold mb-2  ">{title}</h2>
+      <p className="text-gray-700  text-md  tracking-wider whitespace-pre-line leading-tight font-main-title font-semibold">{content}</p>
     </div>
   );
   // select-none : 텍스트 드래그 방지

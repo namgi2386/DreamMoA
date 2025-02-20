@@ -77,6 +77,7 @@ export default function ChallengeListTagListSection({isEdittag}) {
         tags.push(
           <motion.button
             key={i}
+            style={{fontFamily:"mbc"}}
             variants={tagVariants}
             onClick={() => isEdittag && tag && handleTagDelete(tag)}
             className={`
@@ -101,7 +102,7 @@ export default function ChallengeListTagListSection({isEdittag}) {
 
   return (
     <>    
-      <div className="w-full bg-white rounded-3xl border-2 border-gray-300 p-4">
+      <div className="w-full bg-white rounded-3xl border-2 border-gray-300 p-4" >
         <div className="mb-4">{renderTagContent()}</div>
 
           {isEdittag && (

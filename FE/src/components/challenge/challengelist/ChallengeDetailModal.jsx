@@ -275,7 +275,7 @@ export default function ChallengeDetailModal() {
                   transition={{ type: "spring", stiffness: 200 }}
                 >
                   <span className="inline-block bg-rose-500 text-white px-4 py-2 rounded-full text-sm flex gap-1">
-                    <FaUser /> {currentParticipants} / {maxParticipants} <span>참가중</span>
+                    <FaUser /> {currentParticipants} / {maxParticipants} <span style={{fontFamily:"mbc"}}>참가중</span>
                   </span>
                 </motion.div>
               </div>
@@ -292,10 +292,11 @@ export default function ChallengeDetailModal() {
             {/* 성공률 */}
             <ProgressRing progress={progressRate} />
             {/* 목표일수 */}
-            <div className="text-2xl font-bold text-my-blue-1">목표 {standard}일</div>
+            <div style={{fontFamily:"mbc"}} className="text-2xl font-bold text-my-blue-1">목표 {standard}일</div>
             {/* 오늘일수 총일수 */}
             <div className="text-right flex flex-col items-center">
-              <div className={`text-2xl font-bold  flex justify-center hover:scale-105 transition duration-300 
+              <div style={{fontFamily:"mbc"}} 
+              className={`text-2xl font-bold  flex justify-center hover:scale-105 transition duration-300 
                 ${isSetup? 'mb-1 bg-rose-500 px-3 rounded-full text-gray-100 ':'text-my-blue-1'}`}>
                 {isSetup ? 'D-':'오늘 '}{currentDay}{isSetup ? '':'일차'}
               </div>
@@ -322,7 +323,7 @@ export default function ChallengeDetailModal() {
           <div className="relative cursor-default select-none">
             <div className="absolute inset-0  rounded-xl opacity-10"></div>
             <div className="relative bg-white rounded-xl p-4 border border-gray-200">
-              <h3 className="font-semibold mb-2 text-my-blue-2">챌린지 설명</h3>
+              <h3 style={{fontFamily:"mbc"}} className="tracking-wider font-semibold mb-2 text-my-blue-2">챌린지 설명</h3>
               <p className="text-sm text-gray-600">{description}</p>
             </div>
           </div>
@@ -336,7 +337,7 @@ export default function ChallengeDetailModal() {
           */}
           <button 
           onClick={() => {StartChallenge(isSetup, isMyChallenge)}}
-          className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white py-4 rounded-xl font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg">
+          className="w-full bg-gradient-to-b from-hmy-blue-1 to-hmy-blue-2 text-white  font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg py-4 rounded-xl">
             {getButtonText(isSetup, isMyChallenge)}
           </button>
           <div id="아래 빈칸용"></div>

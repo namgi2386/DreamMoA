@@ -1,7 +1,7 @@
 import { useRecoilValue } from "recoil";
 import { userState } from "../../recoil/atoms/authState";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import MyInfoCard from "../../components/mypage/MyInfoCard";
 import ChallengeImages from "../../components/mypage/ChallengeImages";
@@ -14,9 +14,18 @@ export default function MyPage() {
   const userInfo = useRecoilValue(userState);
   const [isEditModeState, setIsEditModeState] = useState(false);
   const [isEdittagState, setIsEdittagState] = useState(false);
-  const socialLoginDependency = localStorage.getItem("socialLoginDependency");
+  const [socialLoginDependency, setSocialLoginDependency] = useState(() => {
+    const stored = localStorage.getItem("socialLoginDependency");
+    return stored ?? "false";  // 없으면 "false"로 초기화
+  });
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isVerified, setIsVerified] = useState(1);
+
+  useEffect(() => {
+    // localStorage 동기화
+    localStorage.setItem("socialLoginDependency", socialLoginDependency);
+  }, [socialLoginDependency]);
+
 
   // 수정/완료 버튼을 위한 핸들러
   const handleEditMode = () => {
@@ -65,7 +74,7 @@ export default function MyPage() {
       // 수정 모드로 진입
       setIsEdittagState(true);
     } else {
-      // 완료 버튼을 눌렀을 때
+      // 완료 버튼을 눌렀을 때  
       try {
         // TODO: API 호출하여 태그 저장
         // await tagApi.saveTags(selectedTags);
@@ -83,9 +92,9 @@ export default function MyPage() {
 
   return (
     <>
-      <div className="bg-white">
+      <div className="bg-hmy-blue-1">
         <div
-          className={`max-w-5xl mx-auto pt-4 pb-20 min-h-screen px-20 bg-white`}
+          className={`max-w-5xl mx-auto pt-4 pb-20 min-h-screen px-20 bg-white rounded-2xl`}
         >
           {/* 헤더 섹션 */}
           <div className="relative flex justify-between items-center pb-2">
@@ -155,7 +164,7 @@ export default function MyPage() {
 
           {/* 뱃지 섹션 */}
           <h1
-            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+            className={`ml-4 mt-10 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
                         text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
             my badge
@@ -165,12 +174,12 @@ export default function MyPage() {
           </div>
 
           {/* 관심 태그 섹션 */}
-          <div className="flex justify-between items-center mt-20 mb-4">
+          <div className="flex justify-between items-center mt-10 mb-4">
             <h1
               className="ml-4 bg-blue-200 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-bold tracking-wider
               text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60"
             >
-              관심 태그
+              my tag
             </h1>
 
             <div className="relative">
@@ -219,10 +228,10 @@ export default function MyPage() {
 
           {/* 챌린지 섹션 */}
           <h1
-            className={`ml-4 mt-20 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
-                        text-xl w-32 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
+            className={`ml-4 mt-10 mb-4 bg-blue-200 px-4 py-2 rounded-xl  cursor-pointer transition-all duration-300 font-bold tracking-wider
+                        text-xl w-40 text-center text-gray-900 bg-opacity-30 hover:bg-opacity-60  `}
           >
-            challenge
+            my challenge
           </h1>
           <ChallengeImages />
         </div>

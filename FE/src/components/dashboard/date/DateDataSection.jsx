@@ -84,9 +84,20 @@ export default function DateDataSection({ studyItems = [], challengeItems = [] }
                 >
                   {item ? (
                     <>
-                      <DataLabel label={item.label} />
-                      <div className="mt-2 text-2xl font-normal">
-                        <p>{removeZeroHour(item.value)}</p>
+                      <div className={`flex gap-6 items-center`}>
+                        <div className="w-16 h-16 overflow-hidden rounded-full  hover:scale-105 duration-200 transition ease-in border-2 border-gray-300 hover:border-rose-300">
+                          <img 
+                            src={item.url} 
+                            alt="" 
+                            className="w-full h-full object-cover "
+                          />
+                        </div>
+                        <div className="flex flex-col items-center ">
+                          <DataLabel label={item.label} />
+                          <div className="mt-2 text-2xl font-normal select-none">
+                            <p>{removeZeroHour(item.value)}</p>
+                          </div>
+                        </div>
                       </div>
                     </>
                   ) : (

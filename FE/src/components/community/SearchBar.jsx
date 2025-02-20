@@ -18,7 +18,8 @@ export default function SearchBar({ onSearch }) {
         />
         <button
           onClick={() => onSearch(titleQuery, "")}
-          className="px-3 py-1 bg-blue-500 text-white text-sm rounded ml-2"
+          style={{ fontFamily: "mbc" }}
+          className="px-3 py-1 bg-my-blue-1 text-white text-sm rounded ml-2"
         >
           검색
         </button>
@@ -36,7 +37,8 @@ export default function SearchBar({ onSearch }) {
         />
         <button
           onClick={() => onSearch("", tagQuery)}
-          className="px-3 py-1 bg-blue-500 text-white text-sm rounded ml-2"
+          style={{ fontFamily: "mbc" }}
+          className="px-3 py-1 bg-my-blue-1 text-white text-sm rounded ml-2"
         >
           검색
         </button>

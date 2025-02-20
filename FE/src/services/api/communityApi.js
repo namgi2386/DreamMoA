@@ -7,7 +7,7 @@ const communityApi = {
   getList: () =>
     api
       .get(COMMUNITY_URL)
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("에러 발생:", error);
         throw error;
@@ -22,7 +22,7 @@ const communityApi = {
       .get(`${COMMUNITY_URL}/sorted-by-newest`, {
         params: { page, size, category },
       })
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("최신순 정렬 에러:", error);
         throw error;
@@ -34,7 +34,7 @@ const communityApi = {
   getSortedByViews: (page, size) =>
     api
       .get(`${COMMUNITY_URL}/sorted-by-views`, { params: { page, size } })
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("조회순 정렬 에러:", error);
         throw error;
@@ -48,7 +48,7 @@ const communityApi = {
       .get(`${COMMUNITY_URL}/sorted-by-likes`, {
         params: { page, size, category },
       })
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("좋아요순 정렬 에러:", error);
         throw error;
@@ -60,7 +60,7 @@ const communityApi = {
       .get(`${COMMUNITY_URL}/sorted-by-comments`, {
         params: { page, size, category },
       })
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("댓글순 정렬 에러:", error);
         throw error;
@@ -70,7 +70,7 @@ const communityApi = {
   getDetail: (id) =>
     api
       .get(`${COMMUNITY_URL}/${id}`)
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("에러 발생:", error);
         throw error;
@@ -89,7 +89,7 @@ const communityApi = {
   update: (id, data) =>
     api
       .put(`${COMMUNITY_URL}/${id}`, data)
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("에러 발생:", error);
         throw error;
@@ -99,7 +99,7 @@ const communityApi = {
   delete: (id) =>
     api
       .delete(`${COMMUNITY_URL}/${id}`)
-      .then((response) => response.data) // ✅ response.data 반환
+      .then((response) => response.data) // response.data 반환
       .catch((error) => {
         console.error("에러 발생:", error);
         throw error;
@@ -126,7 +126,7 @@ const communityApi = {
   getCommentCount: (postId) =>
     api
     .get(`/api/post/${postId}/comment-count`)
-    .then((response) => response.data) // ✅ data만 반환
+    .then((response) => response.data) // data만 반환
     .catch((error) => {
       console.error("댓글 개수 조회 에러:", error);
       throw error;
@@ -135,7 +135,7 @@ const communityApi = {
   getLikeCount: (postId) =>
     api
       .get(`/api/likes/${postId}/count`)
-      .then((response) => response.data) // ✅ data만 반환
+      .then((response) => response.data) // data만 반환
       .catch((error) => {
         console.error("좋아요 개수 조회 에러:", error);
         throw error;
@@ -162,7 +162,7 @@ const communityApi = {
       .then((response) => response.data)
       .catch((error) => {
         console.error("의미 기반 검색 에러:", error);
-        return { content: [], totalPages: 1 }; // ✅ AI 검색 에러 발생 시 빈 배열 반환
+        return { content: [], totalPages: 1 }; // AI 검색 에러 발생 시 빈 배열 반환
       }),
 
   //태그 검색 api

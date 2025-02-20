@@ -54,7 +54,8 @@ export default function HomeCommunityItem({ item, initialPosition, maxZ, setMaxZ
         left: '35%',
         top: '35%',
         transform: 'translate(-50%, -50%)',  // 이 부분 추가
-        zIndex: zIndex
+        zIndex: zIndex,
+
       }}
       variants={itemVariants}
       initial="initial"
@@ -85,7 +86,7 @@ export default function HomeCommunityItem({ item, initialPosition, maxZ, setMaxZ
             className="w-8 h-8 rounded-full"
           />
           {/* <p>{item.avatarUrl}</p> */}
-          <p className="font-medium text-sm ">{item.nickname}</p>
+          <p className="font-medium text-sm " style={{fontFamily:"mbc"}}>{item.nickname}</p>
         </div>
       </div>
     </motion.div>

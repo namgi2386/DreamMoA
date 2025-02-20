@@ -35,7 +35,7 @@ export default function ChallengeListSearchResultSection() {
       <div className="relative flex  flex-col w-full cursor-default mt-5">
         {/* 진행중 */}
         {runningChallenges.length !== 0 ? (
-          <div className="w-40 text-white text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
+          <div style={{fontFamily:"mbc"}}  className="w-40 text-white text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
             진행 중
           </div>
         ) : (
@@ -68,7 +68,7 @@ export default function ChallengeListSearchResultSection() {
         </div>
 
         {/* 모집중 */}
-        <div className="w-40 text-white text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
+        <div style={{fontFamily:"mbc"}} className="w-40 text-white   text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
           모집 중
         </div>
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}
@@ -92,7 +92,7 @@ export default function ChallengeListSearchResultSection() {
         </div>
 
         {/* 전체보기 (인기순) */}
-        <div className="w-40 text-white text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
+        <div style={{fontFamily:"mbc"}} className="w-40 text-white text-xl px-12 py-2 flex justify-center  hover:text-gray-100 transition-all duration-200 bg-my-blue-1 px-4 h-10 items-center rounded-lg transition-all duration-300 ">
           전체 보기
         </div>
         {/* 오른쪽 카드 영역 (임시 검은색 배경) */}

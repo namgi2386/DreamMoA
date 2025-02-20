@@ -7,6 +7,7 @@ import SearchBar from "../../../components/community/SearchBar";
 import SortButtons from "../../../components/community/SortButtons";
 import Pagination from "../../../components/community/Pagination";
 import { fetchPosts } from "../../../utils/fetchPosts";
+import CommunityTab from "../../../components/community/CommunityTab";
 
 export default function CommunityFreeListPage() {
   const setPosts = useSetRecoilState(communityListState);
@@ -63,13 +64,17 @@ export default function CommunityFreeListPage() {
   return (
     <div className="bg-gray-100">
       <div className="max-w-4xl mx-auto p-4 min-h-screen bg-white">
+
+        <CommunityTab />
+        
         <div className="flex justify-between mb-4">
           <h1
-            className="text-2xl font-bold cursor-pointer"
+            className="text-2xl   cursor-pointer"
+            style={{ fontFamily: "mbc" }}
             onClick={() => {
               navigate("/community/free?page=1&sort=최신순", { replace: true }); // ✅ URL 변경
               setTimeout(() => {
-                window.location.reload(); // ✅ 강제 리렌더링
+                window.location.reload(); // 강제 리렌더링
               }, 100);
             }}
           >
@@ -77,7 +82,8 @@ export default function CommunityFreeListPage() {
           </h1>
           <Link
             to="/community/free/write"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
+            style={{ fontFamily: "mbc" }}
+            className="px-4 py-2 bg-my-blue-1 text-white rounded"
           >
             글쓰기
           </Link>

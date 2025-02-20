@@ -1,5 +1,5 @@
 import Filter from "badwords-ko";
-import defaultUserUrl from '/src/assets/default/defaultUserImageGreen.png'
+import defaultUserUrl from "/logo/dreammoa-bg.png";
 
   // ☆★☆★☆★ 채팅 단 하나 ☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★
 

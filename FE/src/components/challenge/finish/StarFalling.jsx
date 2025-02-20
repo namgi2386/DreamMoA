@@ -3,15 +3,15 @@ import { motion } from 'framer-motion';
 import { useRecoilValue } from 'recoil';
 import {autoFallingState} from  '../../../recoil/atoms/challenge/starState';
 import { IoCall } from "react-icons/io5";
-import star1 from "./../../../assets/stars/star1.png";
-import star2 from "./../../../assets/stars/star2.png";
-import star3 from "./../../../assets/stars/star3.png";
-import star4 from "./../../../assets/stars/star4.png";
-import star5 from "./../../../assets/stars/star5.png";
-import star6 from "./../../../assets/stars/star6.png";
-import star7 from "./../../../assets/stars/star7.png";
-import star8 from "./../../../assets/stars/star8.png";
-import star9 from "./../../../assets/stars/star9.png";
+import star1 from "/stars/star1.png";
+import star2 from "/stars/star2.png";
+import star3 from "/stars/star3.png";
+import star4 from "/stars/star4.png";
+import star5 from "/stars/star5.png";
+import star6 from "/stars/star6.png";
+import star7 from "/stars/star7.png";
+import star8 from "/stars/star8.png";
+import star9 from "/stars/star9.png";
 import FinalMotion from "./FinalMotion"
 
 const starImages = [star1, star2, star3, star4, star5, star6, star7, star8, star9]

@@ -69,6 +69,8 @@ const dashboardApi = {
         params: { year, month },
       });
       // 예: [{ challengeId, title, thumbnailUrl, totalScreenTime, totalPureStudyTime }, ...]
+      console.log("이게 챌?" , response.data);
+      
       return response.data;
     } catch (error) {
       console.error("챌린지 히스토리 조회 실패:", error);
@@ -82,6 +84,8 @@ const dashboardApi = {
       const response = await api.get(`/dashboard/challenge/${challengeId}/monthly-total-stats`, {
         params: { year, month },
       });
+      console.log("나의챌린지들 " , response.data);
+      
       return response.data; // { challengeId, challengeTitle, startDate, expireDate, totalPureStudyTime, totalScreenTime }
     } catch (error) {
       console.error("챌린지별 월간 통계 조회 실패:", error);

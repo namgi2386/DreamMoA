@@ -249,6 +249,7 @@ const JoinForm = () => {
       await Swal.fire({
         icon: "success",
         title: "회원가입 완료",
+        confirmButtonColor : "#003458", // ######################################## 추가Z
         text: "회원가입이 정상적으로 완료되었습니다.",
         confirmButtonText: "로그인 페이지로 이동",
       });

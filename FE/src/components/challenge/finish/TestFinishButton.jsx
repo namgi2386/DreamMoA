@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import testlogo from '../../../assets/logo/testlogo.png';
+import testlogo from '/logo/testlogo.png';
 import { useSetRecoilState  } from 'recoil';
 import {starState } from  '../../../recoil/atoms/challenge/starState';
 import { useNavigate } from "react-router-dom";

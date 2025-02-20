@@ -1,6 +1,8 @@
 import { useRecoilState } from 'recoil';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import defaultImage from "/logo/dreammoa-bg.png";
+
 
 import {
   speakerOnState,
@@ -101,7 +103,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <img 
-                  src="/src/assets/test/peaples/m6.jpeg" 
+                  src={defaultImage}
                   alt="Preview" 
                   className="rounded-full w-32 h-32 object-cover object-center" 
                 />
@@ -118,10 +120,11 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
             {/* 스피커 설정 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-white">스피커</h3>
+                <h3 className="text-white" style={{fontFamily:"mbc"}}>스피커</h3>
                 <button
+                  style={{fontFamily:"mbc"}}
                   onClick={() => setSpeakerOn(!speakerOn)}
-                  className={`p-2 rounded ${speakerOn ? 'bg-blue-500' : 'bg-red-500'}`}
+                  className={`p-2 rounded ${speakerOn ? 'bg-my-blue-1' : 'bg-my-red'}  text-white  font-medium transform hover:scale-105 transition-transform duration-300 shadow-lg`}
                 >
                   {speakerOn ? '켜짐' : '꺼짐'}
                 </button>
@@ -129,6 +132,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
               <select
                 value={selectedSpeaker}
                 onChange={(e) => setSelectedSpeaker(e.target.value)}
+                style={{fontFamily:"mbc"}}
                 className="w-full p-2 rounded bg-gray-700 text-white"
               >
                 {devices.audioOutputDevices.map((device) => (
@@ -144,12 +148,13 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
                 step="0.1"
                 value={speakerVolume}
                 onChange={(e) => setSpeakerVolume(Number(e.target.value))}
-                className="w-full"
+                className="w-full "
                 disabled={isLoading}
               />
               <button
                 onClick={playTestSound}
-                className="w-full p-2 bg-blue-500 text-white rounded"
+                style={{fontFamily:"mbc"}}
+                className="w-full p-2 bg-my-blue-1 text-white  font-medium transform hover:opacity-80 transition-transform duration-300 shadow-lg rounded"
                 disabled={!speakerOn}
               >
                 테스트 사운드 재생
@@ -159,16 +164,17 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
             {/* 마이크 설정 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-white">마이크</h3>
+                <h3 className="text-white" style={{fontFamily:"mbc"}}>마이크</h3>
                 <button
                   onClick={() => setMicOn(!micOn)}
-                  className={`p-2 rounded ${micOn ? 'bg-blue-500' : 'bg-red-500'}`}
+                  className={`p-2 rounded ${micOn ? 'bg-my-blue-1' : 'bg-my-red'}`}
                 >
                   {micOn ? '켜짐' : '꺼짐'}
                 </button>
               </div>
               <select
                 value={selectedMic}
+                style={{fontFamily:"mbc"}}
                 onChange={(e) => setSelectedMic(e.target.value)}
                 className="w-full p-2 rounded bg-gray-700 text-white"
               >
@@ -198,10 +204,11 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
             {/* 카메라 설정 - 스피커와 유사한 구조 */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-white">카메라</h3>
+                <h3 className="text-white" style={{fontFamily:"mbc"}}>카메라</h3>
                 <button
+                
                   onClick={() => setCameraOn(!cameraOn)}
-                  className={`p-2 rounded ${cameraOn ? 'bg-blue-500' : 'bg-red-500'}`}
+                  className={`p-2 rounded ${cameraOn ? 'bg-my-blue' : 'bg-my-red'}`}
                 >
                   {cameraOn ? (<IoVideocam />) : (<IoVideocamOff />)}
                 </button>
@@ -210,6 +217,7 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
                   value={selectedCamera}
                   onChange={(e) => setSelectedCamera(e.target.value)}
                   className="w-full p-2 rounded bg-gray-700 text-white"
+                  style={{fontFamily:"mbc"}}
                 >
                   {devices.videoDevices.map((device) => (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -224,14 +232,16 @@ export default function VideoSettingForm({ onJoin, isLoading }) {
         {/* 하단 버튼 */}
         <div className="flex justify-center gap-4 mt-6">
           <button
+          style={{fontFamily:"mbc"}}
             onClick={handleJoinRoom}
-            className="px-6 py-2 bg-blue-500 text-white rounded-lg"
+            className="px-6 py-2 bg-my-blue-1 text-white  font-medium transform hover:bg-hmy-blue-1 transition-transform duration-300 shadow-lg rounded-lg"
           >
             {isLoading ? '연결 중...' : '챌린지 입장하기'}
           </button>
           <button
+          style={{fontFamily:"mbc"}}
             onClick={handleExit}
-            className="p-2 bg-red-500 text-white rounded-lg"
+            className="p-2 rounded-lg bg-my-red text-white  font-medium transform hover:bg-hmy-red transition-transform duration-300 shadow-lg"
           >
             나가기
           </button>

@@ -1,11 +1,9 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useRecoilState } from 'recoil'; // useRecoilValue에서 변경
-import { communityDetailState } from '../../recoil/atoms/communityState';
-import CommunityForm from '../../components/community/CommunityForm';
-import communityApi from '../../services/api/communityApi';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import CommunityForm from "../../components/community/CommunityForm";
+import communityApi from "../../services/api/communityApi";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 console.log("CommunityEditPage 렌더링");
 
@@ -28,9 +26,11 @@ export default function CommunityEditPage() {
   if (!post) return null;
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">글 수정</h1>
-      <CommunityForm key={post.postId} initialData={post} mode="edit" />
+    <div className="bg-my-blue-1 flex flex-col min-h-screen w-full">
+      <div className="flex-grow w-[800px] max-w-screen-lg mx-auto p-6 bg-gray-300 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6">글 수정</h1>
+        <CommunityForm key={post.postId} initialData={post} mode="edit" />
+      </div>
     </div>
   );
 }
